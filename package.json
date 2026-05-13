@@ -1,12 +1,16 @@
 {
-  "name": "webapp",
+  "name": "circle-webapp",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "wrangler pages dev",
     "deploy": "npm run build && wrangler pages deploy",
-    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "db:migrate:local": "wrangler d1 migrations apply circle-production --local",
+    "db:seed:local": "wrangler d1 execute circle-production --local --file=./seed.sql",
+    "db:reset:local": "rm -rf .wrangler/state/v3/d1 && npm run db:migrate:local && npm run db:seed:local",
+    "clean-port": "fuser -k 3000/tcp 2>/dev/null || true"
   },
   "dependencies": {
     "hono": "^4.12.12"
