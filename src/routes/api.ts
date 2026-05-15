@@ -296,17 +296,121 @@ api.get('/apps', async (c) => {
 })
 
 // ────────────────────────────────────────────────────────────────────────────
-// UNIVERSAL TRANSLATION (stub — on-device in real client)
+// UNIVERSAL TRANSLATION (§24) — stub, on-device in real client
 // ────────────────────────────────────────────────────────────────────────────
 api.post('/translate', async (c) => {
   const body = await c.req.json<{ text: string; to: string; from?: string }>()
   // Deterministic stub: in production this runs on-device with NLLB-200
+  const samples: Record<string, Record<string, string>> = {
+    en: { ar: 'مرحبا بكم في دواير', zh: '欢迎来到圆圈', fr: 'Bienvenue sur Cercle', es: 'Bienvenido a Círculo', de: 'Willkommen bei Kreis', it: 'Benvenuti in Cerchio' },
+    ar: { en: 'Welcome to Circle',  zh: '欢迎来到圆圈', fr: 'Bienvenue sur Cercle', es: 'Bienvenido a Círculo', de: 'Willkommen bei Kreis', it: 'Benvenuti in Cerchio' }
+  }
+  const translated = samples[body.from ?? 'auto']?.[body.to] ?? `[${body.to}] ${body.text}`
   return c.json({
     ok: true,
     from: body.from ?? 'auto',
     to: body.to,
     original: body.text,
-    translated: `[${body.to}] ${body.text}`,
-    model: 'Xenova/nllb-200-distilled-600M (on-device)'
+    translated,
+    model: 'NLLB-200 Distilled 600M (on-device, int8)'
   })
+})
+
+// ────────────────────────────────────────────────────────────────────────────
+// §15 LOCAL MESH
+// ────────────────────────────────────────────────────────────────────────────
+api.get('/mesh/peers', async (c) => {
+  const peers = await all(c.env.DB, 'SELECT * FROM mesh_peers ORDER BY rssi_dbm DESC LIMIT 30')
+  return c.json({ peers })
+})
+
+api.get('/mesh/sos', async (c) => {
+  const alerts = await all(c.env.DB, 'SELECT s.*, u.display_name FROM sos_alerts s JOIN users u ON u.id=s.user_id ORDER BY s.created_at DESC LIMIT 20')
+  return c.json({ alerts })
+})
+
+api.post('/mesh/sos', async (c) => {
+  const body = await c.req.json<{ user_id: number; message?: string; severity?: string; city?: string }>()
+  const r = await run(c.env.DB,
+    `INSERT INTO sos_alerts (user_id, message, severity, city, peers_reached) VALUES (?, ?, ?, ?, ?)`,
+    body.user_id ?? 1, body.message ?? null, body.severity ?? 'sos', body.city ?? 'Cairo',
+    Math.floor(Math.random() * 25) + 8) // simulate mesh reach
+  const alert = await first<{ peers_reached: number }>(c.env.DB, 'SELECT peers_reached FROM sos_alerts WHERE id=?', r.meta?.last_row_id)
+  return c.json({ ok: true, id: r.meta?.last_row_id, peers_reached: alert?.peers_reached ?? 0 })
+})
+
+// ────────────────────────────────────────────────────────────────────────────
+// §17 AI SAFETY / MODERATION
+// ────────────────────────────────────────────────────────────────────────────
+api.get('/moderation/actions', async (c) => {
+  const actions = await all(c.env.DB, 'SELECT * FROM moderation_actions ORDER BY created_at DESC LIMIT 50')
+  return c.json({ actions })
+})
+
+// ────────────────────────────────────────────────────────────────────────────
+// §18 SELF-LEARNING AI CORE
+// ────────────────────────────────────────────────────────────────────────────
+api.get('/ai/training/:user_id', async (c) => {
+  const uid = c.req.param('user_id')
+  const stats = await all(c.env.DB, 'SELECT * FROM ai_training_stats WHERE user_id = ? ORDER BY updated_at DESC', uid)
+  const rounds = await all(c.env.DB, 'SELECT * FROM federated_rounds ORDER BY round_no DESC LIMIT 10')
+  return c.json({ stats, rounds })
+})
+
+api.post('/ai/training/:user_id/opt', async (c) => {
+  const uid = c.req.param('user_id')
+  const body = await c.req.json<{ model_name: string; opt_in: number }>()
+  await run(c.env.DB, 'UPDATE ai_training_stats SET fed_opt_in = ? WHERE user_id = ? AND model_name = ?',
+    body.opt_in, uid, body.model_name)
+  return c.json({ ok: true })
+})
+
+// ────────────────────────────────────────────────────────────────────────────
+// §23 MAPS — offline region packs
+// ────────────────────────────────────────────────────────────────────────────
+api.get('/maps/regions', async (c) => {
+  const regions = await all(c.env.DB, 'SELECT * FROM map_regions ORDER BY pinned_by DESC')
+  return c.json({ regions })
+})
+
+// ────────────────────────────────────────────────────────────────────────────
+// §27 BACKUPS
+// ────────────────────────────────────────────────────────────────────────────
+api.get('/backup/:user_id', async (c) => {
+  const uid = c.req.param('user_id')
+  const items = await all(c.env.DB, 'SELECT * FROM backups WHERE user_id = ? ORDER BY created_at DESC', uid)
+  return c.json({ items })
+})
+
+// ────────────────────────────────────────────────────────────────────────────
+// §28 PRIVACY CONSENT
+// ────────────────────────────────────────────────────────────────────────────
+api.get('/privacy/:user_id', async (c) => {
+  const uid = c.req.param('user_id')
+  const consents = await all(c.env.DB, 'SELECT * FROM privacy_consent WHERE user_id = ? ORDER BY scope, granted_to', uid)
+  return c.json({ consents })
+})
+
+// ────────────────────────────────────────────────────────────────────────────
+// §32 AI MODEL CATALOGUE
+// ────────────────────────────────────────────────────────────────────────────
+api.get('/models', async (c) => {
+  const models = await all(c.env.DB, 'SELECT * FROM ai_models ORDER BY required DESC, category, size_mb')
+  return c.json({ models })
+})
+
+// ────────────────────────────────────────────────────────────────────────────
+// §33 SELF-HOSTING NODES
+// ────────────────────────────────────────────────────────────────────────────
+api.get('/selfhost/nodes', async (c) => {
+  const nodes = await all(c.env.DB, 'SELECT * FROM self_host_nodes ORDER BY users_served DESC')
+  return c.json({ nodes })
+})
+
+// ────────────────────────────────────────────────────────────────────────────
+// §34 ROADMAP
+// ────────────────────────────────────────────────────────────────────────────
+api.get('/roadmap', async (c) => {
+  const phases = await all(c.env.DB, 'SELECT * FROM roadmap_phases ORDER BY phase_no')
+  return c.json({ phases: phases.map((p: any) => ({ ...p, deliverables: p.deliverables ? JSON.parse(p.deliverables) : [] })) })
 })

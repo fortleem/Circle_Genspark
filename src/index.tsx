@@ -22,6 +22,18 @@ import { appsPage } from './pages/apps'
 import { governancePage } from './pages/governance'
 import { transparencyPage } from './pages/transparency'
 import { covenantPage, idPage, settingsPage, eventsPage } from './pages/static_pages'
+import { meshPage }      from './pages/mesh'
+import { aicorePage }    from './pages/aicore'
+import { aisafetyPage }  from './pages/aisafety'
+import { mapsPage }      from './pages/maps'
+import { translatePage } from './pages/translate'
+import { uniquePage }    from './pages/unique'
+import { backupPage }    from './pages/backup'
+import { privacyPage }   from './pages/privacy'
+import { modelsPage }    from './pages/models'
+import { selfhostPage }  from './pages/selfhost'
+import { roadmapPage }   from './pages/roadmap'
+import { journeysPage }  from './pages/journeys'
 
 const app = new Hono<{ Bindings: Env }>()
 
@@ -67,6 +79,20 @@ app.get('/covenant',      (c) => covenantPage(c, langOf(c), ctryOf(c)))
 app.get('/id',            (c) => idPage(c, langOf(c), ctryOf(c)))
 app.get('/settings',      (c) => settingsPage(c, langOf(c), ctryOf(c)))
 app.get('/events',        (c) => eventsPage(c, langOf(c), ctryOf(c)))
+
+// v12 gap-section routes
+app.get('/mesh',          (c) => meshPage(c, langOf(c), ctryOf(c)))
+app.get('/aicore',        (c) => aicorePage(c, langOf(c), ctryOf(c)))
+app.get('/aisafety',      (c) => aisafetyPage(c, langOf(c), ctryOf(c)))
+app.get('/maps',          (c) => mapsPage(c, langOf(c), ctryOf(c)))
+app.get('/translate',     (c) => translatePage(c, langOf(c), ctryOf(c)))
+app.get('/unique',        (c) => uniquePage(c, langOf(c), ctryOf(c)))
+app.get('/backup',        (c) => backupPage(c, langOf(c), ctryOf(c)))
+app.get('/privacy',       (c) => privacyPage(c, langOf(c), ctryOf(c)))
+app.get('/models',        (c) => modelsPage(c, langOf(c), ctryOf(c)))
+app.get('/selfhost',      (c) => selfhostPage(c, langOf(c), ctryOf(c)))
+app.get('/roadmap',       (c) => roadmapPage(c, langOf(c), ctryOf(c)))
+app.get('/journeys',      (c) => journeysPage(c, langOf(c), ctryOf(c)))
 
 app.notFound((c) => c.render(
   <div class="text-center py-20">

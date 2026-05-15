@@ -28,6 +28,19 @@ export interface NameMatrix {
   nav_transparency: string
   nav_apps: string
   covenant: string
+  // Added in v12 expansion — gap section names
+  module_mesh: string           // §15 Local Mesh
+  module_aisafety: string       // §17 AI Safety
+  module_aicore: string         // §18 Self-Learning AI
+  module_maps: string           // §23 Maps
+  module_translate: string      // §24 Translation
+  module_unique: string         // §26 Unique features
+  module_backup: string         // §27 Backup
+  module_privacy: string        // §28 Privacy
+  module_models: string         // §32 Model catalogue
+  module_selfhost: string       // §33 Self-host
+  module_roadmap: string        // §34 Roadmap
+  module_journeys: string       // §35 User journeys
 }
 
 const dict: Record<Lang, NameMatrix> = {
@@ -52,7 +65,19 @@ const dict: Record<Lang, NameMatrix> = {
     nav_governance: 'الحوكمة',
     nav_transparency: 'الشفافية',
     nav_apps: 'التطبيقات المصغّرة',
-    covenant: 'العهد'
+    covenant: 'العهد',
+    module_mesh: 'الشبكة المحلية',
+    module_aisafety: 'الأمان والإشراف',
+    module_aicore: 'الذكاء الذاتي',
+    module_maps: 'الخرائط',
+    module_translate: 'الترجمة',
+    module_unique: 'المميزات الفريدة',
+    module_backup: 'النسخ الاحتياطي',
+    module_privacy: 'الخصوصية',
+    module_models: 'كتالوج النماذج',
+    module_selfhost: 'الاستضافة الذاتية',
+    module_roadmap: 'خارطة الطريق',
+    module_journeys: 'رحلات المستخدمين'
   },
   'en-BRAND': {
     brand_name: 'Circle',
@@ -75,7 +100,19 @@ const dict: Record<Lang, NameMatrix> = {
     nav_governance: 'Governance',
     nav_transparency: 'Transparency',
     nav_apps: 'Mini Apps',
-    covenant: 'The Covenant'
+    covenant: 'The Covenant',
+    module_mesh: 'Local Mesh',
+    module_aisafety: 'AI Safety',
+    module_aicore: 'Self-Learning AI',
+    module_maps: 'Maps',
+    module_translate: 'Translate',
+    module_unique: 'Unique Features',
+    module_backup: 'Backup & Migration',
+    module_privacy: 'Privacy',
+    module_models: 'Model Catalogue',
+    module_selfhost: 'Self-Host',
+    module_roadmap: 'Roadmap',
+    module_journeys: 'User Journeys'
   },
   'en': {
     brand_name: 'Circle',
@@ -98,7 +135,19 @@ const dict: Record<Lang, NameMatrix> = {
     nav_governance: 'Governance',
     nav_transparency: 'Transparency',
     nav_apps: 'Mini Apps',
-    covenant: 'The Covenant'
+    covenant: 'The Covenant',
+    module_mesh: 'Local Mesh',
+    module_aisafety: 'AI Safety',
+    module_aicore: 'Self-Learning AI',
+    module_maps: 'Maps',
+    module_translate: 'Translate',
+    module_unique: 'Unique Features',
+    module_backup: 'Backup & Migration',
+    module_privacy: 'Privacy',
+    module_models: 'Model Catalogue',
+    module_selfhost: 'Self-Host',
+    module_roadmap: 'Roadmap',
+    module_journeys: 'User Journeys'
   },
   'zh': {
     brand_name: '圆圈',
@@ -121,7 +170,19 @@ const dict: Record<Lang, NameMatrix> = {
     nav_governance: '治理',
     nav_transparency: '透明度',
     nav_apps: '小程序',
-    covenant: '盟约'
+    covenant: '盟约',
+    module_mesh: '本地网络',
+    module_aisafety: '内容安全',
+    module_aicore: '自学习AI',
+    module_maps: '地图',
+    module_translate: '翻译',
+    module_unique: '独特功能',
+    module_backup: '备份迁移',
+    module_privacy: '隐私',
+    module_models: '模型库',
+    module_selfhost: '自托管',
+    module_roadmap: '路线图',
+    module_journeys: '用户旅程'
   },
   'fr': {
     brand_name: 'Cercle',
@@ -144,7 +205,19 @@ const dict: Record<Lang, NameMatrix> = {
     nav_governance: 'Gouvernance',
     nav_transparency: 'Transparence',
     nav_apps: 'Mini-apps',
-    covenant: 'Le Pacte'
+    covenant: 'Le Pacte',
+    module_mesh: 'Maillage Local',
+    module_aisafety: 'Sécurité IA',
+    module_aicore: 'IA Auto-Apprenante',
+    module_maps: 'Cartes',
+    module_translate: 'Traduire',
+    module_unique: 'Fonctions Uniques',
+    module_backup: 'Sauvegarde',
+    module_privacy: 'Confidentialité',
+    module_models: 'Catalogue IA',
+    module_selfhost: 'Auto-Hébergement',
+    module_roadmap: 'Feuille de Route',
+    module_journeys: 'Parcours Utilisateurs'
   },
   'es': {
     brand_name: 'Círculo',
@@ -167,7 +240,19 @@ const dict: Record<Lang, NameMatrix> = {
     nav_governance: 'Gobernanza',
     nav_transparency: 'Transparencia',
     nav_apps: 'Mini-apps',
-    covenant: 'El Pacto'
+    covenant: 'El Pacto',
+    module_mesh: 'Malla Local',
+    module_aisafety: 'Seguridad IA',
+    module_aicore: 'IA Auto-Aprendizaje',
+    module_maps: 'Mapas',
+    module_translate: 'Traducir',
+    module_unique: 'Funciones Únicas',
+    module_backup: 'Respaldo',
+    module_privacy: 'Privacidad',
+    module_models: 'Catálogo IA',
+    module_selfhost: 'Auto-Alojamiento',
+    module_roadmap: 'Hoja de Ruta',
+    module_journeys: 'Recorridos'
   },
   'de': {
     brand_name: 'Kreis',
@@ -190,7 +275,19 @@ const dict: Record<Lang, NameMatrix> = {
     nav_governance: 'Governance',
     nav_transparency: 'Transparenz',
     nav_apps: 'Mini-Apps',
-    covenant: 'Der Pakt'
+    covenant: 'Der Pakt',
+    module_mesh: 'Lokales Mesh',
+    module_aisafety: 'KI-Sicherheit',
+    module_aicore: 'Selbstlernende KI',
+    module_maps: 'Karten',
+    module_translate: 'Übersetzen',
+    module_unique: 'Einzigartige Funktionen',
+    module_backup: 'Sicherung',
+    module_privacy: 'Privatsphäre',
+    module_models: 'KI-Katalog',
+    module_selfhost: 'Selbst-Hosten',
+    module_roadmap: 'Roadmap',
+    module_journeys: 'Nutzerreisen'
   },
   'it': {
     brand_name: 'Cerchio',
@@ -213,7 +310,19 @@ const dict: Record<Lang, NameMatrix> = {
     nav_governance: 'Governance',
     nav_transparency: 'Trasparenza',
     nav_apps: 'Mini-app',
-    covenant: 'Il Patto'
+    covenant: 'Il Patto',
+    module_mesh: 'Rete Locale',
+    module_aisafety: 'Sicurezza IA',
+    module_aicore: 'IA Auto-Apprendente',
+    module_maps: 'Mappe',
+    module_translate: 'Tradurre',
+    module_unique: 'Funzioni Uniche',
+    module_backup: 'Backup',
+    module_privacy: 'Privacy',
+    module_models: 'Catalogo IA',
+    module_selfhost: 'Auto-Hosting',
+    module_roadmap: 'Roadmap',
+    module_journeys: 'Percorsi Utente'
   }
 }
 
