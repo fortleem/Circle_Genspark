@@ -1,16 +1,14 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "circle-webapp",
-  "compatibility_date": "2026-04-13",
+  "compatibility_date": "2024-12-01",
+  "compatibility_flags": ["nodejs_compat"],
   "pages_build_output_dir": "./dist",
-  "compatibility_flags": [
-    "nodejs_compat"
-  ],
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "circle-production",
-      "database_id": "local-dev-placeholder"
+      "database_id": "local-circle-production"
     }
   ]
 }
