@@ -93,15 +93,26 @@ api.get('/midan/trending', async (c) => {
 
 // ─── §6 WASL (Chat) ─────────────────────────────────────────────────────────
 api.get('/wasl/rooms', async (c) => {
-  const kind = c.req.query('kind') // dm | group | channel | maktab
-  const sql = kind
-    ? `SELECT r.*, (SELECT body FROM messages m WHERE m.room_id=r.id ORDER BY m.created_at DESC LIMIT 1) AS last_message,
-              (SELECT created_at FROM messages m WHERE m.room_id=r.id ORDER BY m.created_at DESC LIMIT 1) AS last_at
-       FROM rooms r WHERE r.kind=? ORDER BY last_at DESC NULLS LAST, r.created_at DESC`
-    : `SELECT r.*, (SELECT body FROM messages m WHERE m.room_id=r.id ORDER BY m.created_at DESC LIMIT 1) AS last_message,
-              (SELECT created_at FROM messages m WHERE m.room_id=r.id ORDER BY m.created_at DESC LIMIT 1) AS last_at
-       FROM rooms r ORDER BY last_at DESC NULLS LAST, r.created_at DESC`
-  const rooms = kind ? await all(c.env.DB, sql, kind) : await all(c.env.DB, sql)
+  // Client kinds: dm | group | channel | maktab → DB room_type: direct | group | broadcast | workspace
+  const kindMap: Record<string, string> = {
+    dm: 'direct',
+    group: 'group',
+    channel: 'broadcast',
+    maktab: 'workspace',
+  }
+  const kind = c.req.query('kind')
+  const dbKind = kind ? (kindMap[kind] ?? kind) : null
+  const base = `SELECT r.*,
+       (SELECT body FROM messages m WHERE m.room_id=r.id ORDER BY m.created_at DESC LIMIT 1) AS last_message,
+       (SELECT created_at FROM messages m WHERE m.room_id=r.id ORDER BY m.created_at DESC LIMIT 1) AS last_at,
+       (SELECT COUNT(*) FROM room_members rm WHERE rm.room_id=r.id) AS member_count
+       FROM rooms r`
+  const sql = dbKind
+    ? `${base} WHERE r.room_type=? ORDER BY last_at DESC, r.created_at DESC`
+    : `${base} ORDER BY last_at DESC, r.created_at DESC`
+  // Normalise field name for client (room_type → kind alias) by aliasing in JS layer
+  const rows: any[] = dbKind ? await all(c.env.DB, sql, dbKind) : await all(c.env.DB, sql)
+  const rooms = rows.map((r) => ({ ...r, kind: r.room_type, member_count: r.member_count ?? 0 }))
   return c.json({ rooms })
 })
 

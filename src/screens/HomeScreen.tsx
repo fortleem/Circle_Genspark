@@ -1,6 +1,11 @@
-// §5 — Home Dashboard. Pulls real /api data (events, midan trending, channels)
+// §5 — Home Dashboard. Pulls real /api data with EXPLICIT §5.3.1-§5.3.9 sub-section breakdown
+// per blueprint walkthrough order.
 import { motion } from "framer-motion";
-import { Sparkles, MapPin, TrendingUp, Briefcase, Zap, Plus, Mic, Camera, ScanLine, Heart, Repeat2 } from "lucide-react";
+import {
+  Sparkles, MapPin, TrendingUp, Briefcase, Zap, Plus, Mic, Camera, ScanLine,
+  Heart, Repeat2, Megaphone, Users, Building2, Calendar, AlertTriangle,
+  BellRing, Radio, Shield, Hash, ChevronRight
+} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useApp } from "@/providers/AppProvider";
 import { ui } from "@/lib/uiStrings";
@@ -16,18 +21,23 @@ export function HomeScreen() {
   const { data: trendData }  = useApi<{ posts: MidanPost[] }>("/midan/trending?limit=5");
   const { data: chanData }   = useApi<{ channels: Channel[] }>("/channels");
 
-  const events = (evData?.events ?? []).slice(0, 6);
-  const trending = trendData?.posts ?? [];
-  const channels = (chanData?.channels ?? []).slice(0, 3);
+  const events = evData?.events ?? [];
+  const carousel = events.slice(0, 5);              // §5.3.1 Top Carousel — 3-5 items
+  const nearby = events.slice(0, 6);                 // §5.3.3 Happening Nearby
+  const upcoming = events.slice(0, 3);               // §5.3.9 Upcoming in Your Circles
+  const trending = trendData?.posts ?? [];           // §5.3.5 Trending
+  const channels = (chanData?.channels ?? []).slice(0, 3); // §5.3.6 Official Updates
 
   return (
-    <div className="space-y-8 pb-32">
+    <div className="space-y-10 pb-32">
       {/* Greeting */}
       <section className="px-5 pt-2">
         <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="font-display text-4xl leading-tight">
           {t.hello}, <span className="gradient-text-gold">Yousef</span>
         </motion.h1>
-        <p className="text-muted-foreground text-sm mt-1">{country} · {names.tagline}</p>
+        <p className="text-muted-foreground text-sm mt-1">
+          {country} · {names.tagline} · <span className="text-secondary">§5 Home Dashboard</span>
+        </p>
       </section>
 
       {/* AI Ask bar */}
@@ -45,121 +55,146 @@ export function HomeScreen() {
                 else if (q.includes("travel") || q.includes("rihla")) navigate("/rihla");
                 else if (q.includes("pay") || q.includes("wallet")) navigate("/pay");
                 else if (q.includes("translate")) navigate("/translate");
+                else if (q.includes("event")) navigate("/midan");
               }
             }}
           />
           <button className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center"><Mic className="w-4 h-4" /></button>
         </div>
+        <p className="text-[10px] text-muted-foreground mt-2 px-2">On-device inference · No data leaves your device</p>
       </section>
 
-      {/* Featured (real events) */}
-      <section>
-        <SectionHeader icon={Zap} title={t.featured} />
+      {/* ─────────────── §5.3.1 Top Carousel ─────────────── */}
+      <BlueprintSection num="§5.3.1" title={t.featured} hint="Emergency · PSAs · Featured events (priority-ordered)">
         <div className="flex gap-3 overflow-x-auto scrollbar-hide px-5 pb-2 snap-x snap-mandatory">
-          {events.length === 0 ? (
+          {carousel.length === 0 ? (
             <SkeletonCard />
-          ) : events.map((f, i) => (
-            <motion.article
-              key={f.id}
-              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
-              className="snap-start shrink-0 w-[78%] sm:w-[60%] md:w-[40%] aspect-[4/5] rounded-2xl border bg-gradient-to-br from-secondary/30 to-secondary/5 border-secondary/40 p-5 relative overflow-hidden glass"
-              style={f.cover_color ? { background: `linear-gradient(135deg, ${f.cover_color}25 0%, transparent 100%)` } : undefined}
-            >
-              <div className="absolute inset-0 aurora-bg opacity-60" />
-              <div className="relative h-full flex flex-col justify-between">
-                <span className="text-[10px] uppercase tracking-widest text-muted-foreground">{f.category}</span>
-                <div>
-                  <h3 className="font-display text-2xl leading-tight">{f.title}</h3>
-                  <p className="text-sm text-muted-foreground mt-2">{f.venue}, {f.city} · {new Date(f.start_time).toLocaleDateString()}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{f.interested.toLocaleString()} interested</p>
+          ) : carousel.map((f, i) => {
+            const isAlert = f.priority >= 90;
+            return (
+              <motion.article
+                key={f.id}
+                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
+                className={`snap-start shrink-0 w-[78%] sm:w-[60%] md:w-[40%] aspect-[4/5] rounded-2xl border p-5 relative overflow-hidden glass ${
+                  isAlert
+                    ? "border-red-500/50 bg-gradient-to-br from-red-500/20 to-transparent"
+                    : "border-secondary/40 bg-gradient-to-br from-secondary/30 to-secondary/5"
+                }`}
+                style={!isAlert && f.cover_color ? { background: `linear-gradient(135deg, ${f.cover_color}25 0%, transparent 100%)` } : undefined}
+              >
+                <div className="absolute inset-0 aurora-bg opacity-60" />
+                <div className="relative h-full flex flex-col justify-between">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                      {isAlert ? "EMERGENCY" : f.category}
+                    </span>
+                    {isAlert && <AlertTriangle className="w-4 h-4 text-red-500" />}
+                  </div>
+                  <div>
+                    <h3 className="font-display text-2xl leading-tight">{f.title}</h3>
+                    <p className="text-sm text-muted-foreground mt-2">{f.venue}, {f.city} · {new Date(f.start_time).toLocaleDateString()}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{f.interested.toLocaleString()} interested</p>
+                  </div>
                 </div>
-              </div>
-            </motion.article>
-          ))}
+              </motion.article>
+            );
+          })}
         </div>
-      </section>
+      </BlueprintSection>
 
-      {/* Quick actions */}
-      <section className="px-5">
-        <h2 className="font-display text-base mb-3 text-muted-foreground">{t.quickActions}</h2>
-        <div className="grid grid-cols-4 gap-3">
-          {[
-            { icon: ScanLine, label: "Scan & Pay",  to: "/pay" },
-            { icon: Camera,   label: "Story",       to: "/lamahat" },
-            { icon: Plus,     label: "Post",        to: "/midan" },
-            { icon: Sparkles, label: "Ask AI",      to: "/translate" },
-          ].map((q, i) => (
-            <Link key={i} to={q.to} className="glass rounded-2xl py-3 flex flex-col items-center gap-2 hover:scale-[1.03] transition shadow-soft">
-              <q.icon className="w-5 h-5 text-secondary" />
-              <span className="text-[11px] text-foreground/80">{q.label}</span>
-            </Link>
-          ))}
+      {/* ─────────────── §5.3.2 Quick Actions ─────────────── */}
+      <BlueprintSection num="§5.3.2" title={t.quickActions} hint="4 fixed actions · user-customizable (8 available)">
+        <div className="px-5">
+          <div className="grid grid-cols-4 gap-3">
+            {[
+              { icon: ScanLine, label: "Scan & Pay",  to: "/pay" },
+              { icon: Plus,     label: "New Post",    to: "/midan" },
+              { icon: Camera,   label: "Go Live",     to: "/mashahd" },
+              { icon: Users,    label: "New Circle",  to: "/circles" },
+            ].map((q, i) => (
+              <Link key={i} to={q.to} className="glass rounded-2xl py-3 flex flex-col items-center gap-2 hover:scale-[1.03] transition shadow-soft">
+                <q.icon className="w-5 h-5 text-secondary" />
+                <span className="text-[11px] text-foreground/80">{q.label}</span>
+              </Link>
+            ))}
+          </div>
         </div>
-      </section>
+      </BlueprintSection>
 
-      {/* Nearby (events) */}
-      <section>
-        <SectionHeader icon={MapPin} title={t.nearby} />
+      {/* ─────────────── §5.3.3 Happening Nearby ─────────────── */}
+      <BlueprintSection num="§5.3.3" title={t.nearby} hint="City-level precision (geohash-5, ~4.9 km) · No precise location sent">
         <div className="flex gap-3 overflow-x-auto scrollbar-hide px-5 pb-2">
-          {events.length === 0 ? <SkeletonCard /> : events.map(n => (
+          {nearby.length === 0 ? <SkeletonCard /> : nearby.map(n => (
             <div key={n.id} className="shrink-0 w-56 rounded-2xl bg-gradient-card border border-border p-4 shadow-soft">
               <div className="aspect-video rounded-xl bg-gradient-mesh opacity-90 mb-3 relative overflow-hidden">
                 <div className="absolute top-2 right-2 glass text-[10px] px-2 py-0.5 rounded-full">{n.category}</div>
+                <div className="absolute bottom-2 left-2 glass text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <MapPin className="w-2.5 h-2.5" />{n.city}
+                </div>
               </div>
               <div className="font-medium truncate">{n.title}</div>
-              <div className="text-xs text-muted-foreground mt-0.5 truncate">{n.venue} · {n.city}</div>
+              <div className="text-xs text-muted-foreground mt-0.5 truncate">{n.venue} · {new Date(n.start_time).toLocaleDateString()}</div>
+              <button className="mt-2 text-[11px] text-secondary hover:underline">Interested</button>
             </div>
           ))}
         </div>
-      </section>
+      </BlueprintSection>
 
-      {/* For you AI */}
-      <section className="px-5">
-        <SectionHeader icon={Sparkles} title="For you" inline />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-          {[
-            { t: "A 3-day getaway to AlUla", s: "Based on your wishlist · Rihla AI" , to: "/rihla" },
-            { t: "Weekly read: Calm tech", s: "12-min curated by Circle AI", to: "/mashahd" },
-          ].map((c, i) => (
-            <Link key={i} to={c.to} className="rounded-2xl border border-secondary/30 bg-gradient-to-br from-secondary/10 to-transparent p-4 relative overflow-hidden block">
-              <div className="absolute -top-10 -right-10 w-32 h-32 bg-secondary/20 rounded-full blur-3xl" />
-              <span className="text-[10px] uppercase tracking-widest text-secondary">AI Recommendation</span>
-              <h4 className="font-display text-xl mt-1">{c.t}</h4>
-              <p className="text-sm text-muted-foreground mt-1">{c.s}</p>
-            </Link>
-          ))}
+      {/* ─────────────── §5.3.4 For You (On-Device Personalization) ─────────────── */}
+      <BlueprintSection num="§5.3.4" title="For you" hint="On-device matrix factorization (64-dim vector) · Trained while charging">
+        <div className="px-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {[
+              { t: "A 3-day getaway to AlUla", s: "Based on your wishlist · Rihla AI" , to: "/rihla", icon: Calendar },
+              { t: "Weekly read: Calm tech", s: "12-min curated by Circle AI", to: "/mashahd", icon: Sparkles },
+            ].map((c, i) => (
+              <Link key={i} to={c.to} className="rounded-2xl border border-secondary/30 bg-gradient-to-br from-secondary/10 to-transparent p-4 relative overflow-hidden block">
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-secondary/20 rounded-full blur-3xl" />
+                <span className="text-[10px] uppercase tracking-widest text-secondary flex items-center gap-1">
+                  <c.icon className="w-3 h-3" /> AI Recommendation
+                </span>
+                <h4 className="font-display text-xl mt-1">{c.t}</h4>
+                <p className="text-sm text-muted-foreground mt-1">{c.s}</p>
+              </Link>
+            ))}
+          </div>
+          <div className="mt-3 flex items-center gap-2 text-[10px] text-muted-foreground px-1">
+            <Shield className="w-3 h-3 text-secondary" />
+            User vector never leaves the device. Item embeddings public via CDN.
+          </div>
         </div>
-      </section>
+      </BlueprintSection>
 
-      {/* Midan trending */}
-      <section className="px-5">
-        <SectionHeader icon={TrendingUp} title={t.trending} inline />
-        <div className="mt-3 glass rounded-2xl divide-y divide-border/60 overflow-hidden">
-          {trending.length === 0 ? (
-            <div className="px-4 py-6 text-sm text-muted-foreground text-center">No trending posts yet</div>
-          ) : trending.map((p) => (
-            <Link key={p.id} to="/midan" className="flex flex-col gap-2 px-4 py-3 hover:bg-muted/30 transition">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="font-medium text-foreground">{p.display_name}</span>
-                <span>·</span>
-                <span>@{p.handle}</span>
-                {p.city && (<><span>·</span><span>{p.city}</span></>)}
-              </div>
-              <p className="text-sm line-clamp-2">{p.content}</p>
-              <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1"><Heart className="w-3 h-3" /> {p.likes}</span>
-                <span className="flex items-center gap-1"><Repeat2 className="w-3 h-3" /> {p.reposts}</span>
-                <span>· {p.replies_count} replies</span>
-              </div>
-            </Link>
-          ))}
+      {/* ─────────────── §5.3.5 Trending in [City] ─────────────── */}
+      <BlueprintSection num="§5.3.5" title={`${t.trending} in ${country}`} hint="Aggregated from public Midan posts · No per-user tracking">
+        <div className="px-5">
+          <div className="glass rounded-2xl divide-y divide-border/60 overflow-hidden">
+            {trending.length === 0 ? (
+              <div className="px-4 py-6 text-sm text-muted-foreground text-center">No trending posts yet</div>
+            ) : trending.map((p) => (
+              <Link key={p.id} to="/midan" className="flex flex-col gap-2 px-4 py-3 hover:bg-muted/30 transition">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Hash className="w-3 h-3 text-secondary" />
+                  <span className="font-medium text-foreground">{p.display_name}</span>
+                  <span>·</span>
+                  <span>@{p.handle}</span>
+                  {p.city && (<><span>·</span><span>{p.city}</span></>)}
+                </div>
+                <p className="text-sm line-clamp-2">{p.content}</p>
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1"><Heart className="w-3 h-3" /> {p.likes}</span>
+                  <span className="flex items-center gap-1"><Repeat2 className="w-3 h-3" /> {p.reposts}</span>
+                  <span>· {p.replies_count} replies</span>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
-      </section>
+      </BlueprintSection>
 
-      {/* Channels shortcut */}
-      <section className="px-5">
-        <SectionHeader icon={Briefcase} title="Follow verified channels" inline />
-        <div className="mt-3 space-y-2">
+      {/* ─────────────── §5.3.6 Official Updates ─────────────── */}
+      <BlueprintSection num="§5.3.6" title="Official updates" hint="Latest message from each followed Official Channel">
+        <div className="px-5 space-y-2">
           {channels.length === 0 ? (
             <div className="glass rounded-2xl p-4 text-sm text-muted-foreground">Loading channels…</div>
           ) : channels.map((ch) => (
@@ -169,23 +204,99 @@ export function HomeScreen() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-medium truncate">{ch.name}</div>
-                <div className="text-xs text-muted-foreground truncate">{ch.subscriber_count.toLocaleString()} subscribers · {ch.category ?? "general"}</div>
+                <div className="text-xs text-muted-foreground truncate">
+                  {ch.subscriber_count.toLocaleString()} subscribers · {ch.category ?? "general"}
+                </div>
               </div>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary/15 text-secondary">{ch.channel_type}</span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary/15 text-secondary uppercase">
+                {ch.channel_type}
+              </span>
             </Link>
           ))}
+        </div>
+      </BlueprintSection>
+
+      {/* ─────────────── §5.3.7 Your Workspaces ─────────────── */}
+      <BlueprintSection num="§5.3.7" title="Your workspaces" hint="Maktab rooms marked dashboard-visible">
+        <div className="px-5">
+          <Link to="/maktab" className="block glass rounded-2xl p-4 hover:bg-muted/20 transition">
+            <div className="flex items-center gap-3">
+              <Building2 className="w-5 h-5 text-secondary" />
+              <div className="flex-1">
+                <div className="font-medium">Jozour Egypt · Engineering</div>
+                <div className="text-xs text-muted-foreground">#announcements · 14 members · Last activity 2h ago</div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            </div>
+          </Link>
+        </div>
+      </BlueprintSection>
+
+      {/* ─────────────── §5.3.8 Sponsored Banner ─────────────── */}
+      <BlueprintSection num="§5.3.8" title="Sponsored" hint="City-level targeting only · 1 per session · Max 3/day">
+        <div className="px-5">
+          <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-rose-500/10 p-4 flex items-center gap-4">
+            <Radio className="w-8 h-8 text-amber-500 shrink-0" />
+            <div className="flex-1 min-w-0">
+              <div className="text-[10px] uppercase tracking-widest text-amber-600">Sponsored · Cairo</div>
+              <div className="font-medium">El Sawy Cultural Centre — Friday Poetry Night</div>
+              <div className="text-xs text-muted-foreground">No retargeting · No tracking · CPM $0.50</div>
+            </div>
+            <button className="text-xs px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-600 hover:bg-amber-500/30 transition">
+              Learn More
+            </button>
+          </div>
+        </div>
+      </BlueprintSection>
+
+      {/* ─────────────── §5.3.9 Upcoming in Your Circles ─────────────── */}
+      <BlueprintSection num="§5.3.9" title="Upcoming in your circles" hint="Next 3 events from joined Circles (private + public)">
+        <div className="px-5 space-y-2">
+          {upcoming.map((e) => (
+            <Link key={e.id} to="/circles" className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 hover:bg-muted/30 transition">
+              <Calendar className="w-5 h-5 text-secondary" />
+              <div className="flex-1 min-w-0">
+                <div className="font-medium truncate">{e.title}</div>
+                <div className="text-xs text-muted-foreground truncate">
+                  {new Date(e.start_time).toLocaleString()} · {e.venue}
+                </div>
+              </div>
+              <button className="text-[10px] px-2.5 py-1 rounded-full bg-primary/10 text-primary">RSVP</button>
+            </Link>
+          ))}
+        </div>
+      </BlueprintSection>
+
+      {/* §5.7 Mini journey hint */}
+      <section className="px-5">
+        <div className="rounded-2xl border border-secondary/20 bg-secondary/5 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <BellRing className="w-4 h-4 text-secondary" />
+            <span className="text-xs uppercase tracking-widest text-secondary">§5.7 Journey · §5.5 Offline-first</span>
+          </div>
+          <p className="text-sm text-foreground/90">
+            All 9 sections cache locally. Reorder or hide them under Settings → Dashboard Layout. Your dashboard works offline; an indicator shows when data is stale.
+          </p>
         </div>
       </section>
     </div>
   );
 }
 
-function SectionHeader({ icon: Icon, title, inline }: { icon: any; title: string; inline?: boolean }) {
+/* ─────────────────────────── Helpers ─────────────────────────── */
+
+function BlueprintSection({
+  num, title, hint, children,
+}: { num: string; title: string; hint?: string; children: React.ReactNode }) {
   return (
-    <div className={`flex items-center gap-2 px-5 ${inline ? "" : "mb-3"}`}>
-      <Icon className="w-4 h-4 text-secondary" />
-      <h2 className="font-display text-xl">{title}</h2>
-    </div>
+    <section>
+      <div className="px-5 mb-3 flex items-baseline gap-2">
+        <span className="text-[10px] uppercase tracking-widest text-secondary font-mono">{num}</span>
+        <h2 className="font-display text-xl">{title}</h2>
+      </div>
+      {hint && <p className="px-5 -mt-2 mb-3 text-[11px] text-muted-foreground">{hint}</p>}
+      {children}
+    </section>
   );
 }
 
@@ -194,3 +305,5 @@ function SkeletonCard() {
     <div className="shrink-0 w-[78%] sm:w-[60%] md:w-[40%] aspect-[4/5] rounded-2xl glass animate-pulse" />
   );
 }
+
+export default HomeScreen;
