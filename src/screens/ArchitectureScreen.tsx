@@ -1,21 +1,21 @@
-// §3 — Zero-Cost Technical Architecture (full 3.1 → 3.12 coverage)
+// — Zero-Cost Technical Architecture (full 3.1 → 3.12 coverage)
 import { PageShell, GlassCard, SectionHeader, StatTile } from "@/components/shell/PageShell";
 import { Layers, Database, Network, Workflow, Cpu, Bell, Map as MapIcon, Mail, DollarSign, Server, Check } from "lucide-react";
 import { useApp } from "@/providers/AppProvider";
 
 // 3.1 Tech stack layers
 const TECH_LAYERS = [
-  { layer: "Mobile client",     tech: "Flutter 3 + Dart 3",            cost: "$0",  why: "Single codebase, iOS + Android + Web from one binary" },
-  { layer: "Web companion",     tech: "Vite 5 + React 18 + TypeScript", cost: "$0",  why: "Cloudflare Pages free tier covers 100k req/day" },
-  { layer: "Edge functions",    tech: "Cloudflare Workers + Hono 4",    cost: "$0",  why: "Free tier 100k req/day; Cloudflare D1 SQLite included" },
-  { layer: "Messaging",         tech: "Matrix (Synapse / Dendrite)",    cost: "$0",  why: "Self-host on $5 VPS or use volunteer homeservers" },
-  { layer: "Social graph",      tech: "ActivityPub + Mastodon-compat", cost: "$0",  why: "Federation = no single point of paid storage" },
-  { layer: "Media storage",     tech: "IPFS (go-ipfs/Kubo)",            cost: "$0",  why: "Content-addressed, viewers become seeders" },
-  { layer: "Video",             tech: "PeerTube + WebTorrent + HLS",   cost: "$0",  why: "P2P streaming eliminates CDN costs" },
-  { layer: "Push notifications", tech: "ntfy (self-host)",              cost: "$0",  why: "Replaces Firebase. Single $5 VPS handles 100k devices" },
-  { layer: "Email",             tech: "Mailcow (Docker)",               cost: "$0",  why: "Free @circle.app via volunteer-hosted Mailcow node" },
-  { layer: "Maps",              tech: "MapLibre + OSM + IPFS tiles",   cost: "$0",  why: "OSM tiles pinned via IPFS, no Google Maps API" },
-  { layer: "AI inference",      tech: "ONNX Runtime + Hugging Face FREE", cost: "$0", why: "On-device for users; community VPS for heavy" },
+  { layer: "Mobile client", tech: "Flutter 3 + Dart 3", cost: "$0", why: "Single codebase, iOS + Android + Web from one binary" },
+  { layer: "Web companion", tech: "Vite 5 + React 18 + TypeScript", cost: "$0", why: "Cloudflare Pages free tier covers 100k req/day" },
+  { layer: "Edge functions", tech: "Cloudflare Workers + Hono 4", cost: "$0", why: "Free tier 100k req/day; Cloudflare D1 SQLite included" },
+  { layer: "Messaging", tech: "Matrix (Synapse / Dendrite)", cost: "$0", why: "Self-host on $5 VPS or use volunteer homeservers" },
+  { layer: "Social graph", tech: "ActivityPub + Mastodon-compat", cost: "$0", why: "Federation = no single point of paid storage" },
+  { layer: "Media storage", tech: "IPFS (go-ipfs/Kubo)", cost: "$0", why: "Content-addressed, viewers become seeders" },
+  { layer: "Video", tech: "PeerTube + WebTorrent + HLS", cost: "$0", why: "P2P streaming eliminates CDN costs" },
+  { layer: "Push notifications", tech: "ntfy (self-host)", cost: "$0", why: "Replaces Firebase. Single $5 VPS handles 100k devices" },
+  { layer: "Email", tech: "Mailcow (Docker)", cost: "$0", why: "Free @circle.app via volunteer-hosted Mailcow node" },
+  { layer: "Maps", tech: "MapLibre + OSM + IPFS tiles", cost: "$0", why: "OSM tiles pinned via IPFS, no Google Maps API" },
+  { layer: "AI inference", tech: "ONNX Runtime + Hugging Face FREE", cost: "$0", why: "On-device for users; community VPS for heavy" },
 ];
 
 // 3.2 Message data flow steps
@@ -34,11 +34,11 @@ const DATA_FLOW = [
 
 // 3.3 Drift DB schema
 const DB_TABLES = [
-  { name: "Messages",              cols: ["id", "roomId", "sender", "body", "timestamp", "status", "isEncrypted", "attachmentCid"] },
+  { name: "Messages", cols: ["id", "roomId", "sender", "body", "timestamp", "status", "isEncrypted", "attachmentCid"] },
   { name: "IdentityAttestations", cols: ["id", "userId", "verifiedClaim", "issuedAt", "attestationHash", "revoked"] },
-  { name: "Backups",               cols: ["backupId", "createdAt", "encryptedData", "encryptionAlgorithm", "signature"] },
-  { name: "Contacts",              cols: ["matrixId", "displayName", "avatarCid", "lastSeen", "trustLevel"] },
-  { name: "MediaCache",            cols: ["cid", "mediaType", "size_bytes", "downloadedAt", "expiresAt"] },
+  { name: "Backups", cols: ["backupId", "createdAt", "encryptedData", "encryptionAlgorithm", "signature"] },
+  { name: "Contacts", cols: ["matrixId", "displayName", "avatarCid", "lastSeen", "trustLevel"] },
+  { name: "MediaCache", cols: ["cid", "mediaType", "size_bytes", "downloadedAt", "expiresAt"] },
 ];
 
 // 3.4 Maktab installer
@@ -66,14 +66,14 @@ const MASHAHD_FLOW = [
 
 // 3.10 Cost table
 const COSTS = [
-  { item: "Hosting (per 1M users)",     legacy: "$50,000/mo", circle: "$0",     why: "Volunteer Matrix + IPFS" },
-  { item: "CDN (video)",                 legacy: "$20,000/mo", circle: "$0",     why: "WebTorrent P2P" },
-  { item: "Push notifications",          legacy: "$5,000/mo",  circle: "$60/yr",  why: "Single ntfy VPS" },
-  { item: "Maps API",                    legacy: "$10,000/mo", circle: "$0",     why: "OSM + IPFS tiles" },
-  { item: "Email (1M users)",            legacy: "$8,000/mo",  circle: "$60/yr",  why: "Mailcow VPS" },
-  { item: "AI inference",                legacy: "$30,000/mo", circle: "$0",     why: "On-device ONNX + free HF API" },
-  { item: "Translation",                 legacy: "$15,000/mo", circle: "$0",     why: "NLLB on-device" },
-  { item: "TOTAL (1M users)",            legacy: "$138,000/mo", circle: "≈ $120/yr", why: "VPS for ntfy + mail" },
+  { item: "Hosting (per 1M users)", legacy: "$50,000/mo", circle: "$0", why: "Volunteer Matrix + IPFS" },
+  { item: "CDN (video)", legacy: "$20,000/mo", circle: "$0", why: "WebTorrent P2P" },
+  { item: "Push notifications", legacy: "$5,000/mo", circle: "$60/yr", why: "Single ntfy VPS" },
+  { item: "Maps API", legacy: "$10,000/mo", circle: "$0", why: "OSM + IPFS tiles" },
+  { item: "Email (1M users)", legacy: "$8,000/mo", circle: "$60/yr", why: "Mailcow VPS" },
+  { item: "AI inference", legacy: "$30,000/mo", circle: "$0", why: "On-device ONNX + free HF API" },
+  { item: "Translation", legacy: "$15,000/mo", circle: "$0", why: "NLLB on-device" },
+  { item: "TOTAL (1M users)", legacy: "$138,000/mo", circle: "≈ $120/yr", why: "VPS for ntfy + mail" },
 ];
 
 export function ArchitectureScreen() {
@@ -83,7 +83,7 @@ export function ArchitectureScreen() {
       icon={Layers}
       title={names.module_architecture}
       arabicTitle="البنية"
-      section="§3"
+      section=""
       tagline="The full open-source stack that powers a $0/year super-app"
       intro="Circle's architecture eliminates all recurring cloud costs through federation, P2P, self-hosting, and free tiers. Every layer is open-source, swappable, and self-hostable. Below is every component, its cost, and the exact data flow."
     >
@@ -96,7 +96,7 @@ export function ArchitectureScreen() {
       </div>
 
       {/* 3.1 Tech Stack */}
-      <SectionHeader title="§3.1 100% Free & Open-Source Stack" />
+      <SectionHeader title="100% Free & Open-Source Stack" />
       <GlassCard className="overflow-x-auto mb-12">
         <table className="w-full text-sm">
           <thead>
@@ -121,7 +121,7 @@ export function ArchitectureScreen() {
       </GlassCard>
 
       {/* 3.2 Data flow */}
-      <SectionHeader title="§3.2 Personal Mode Data Flow" hint="Wasl Shakhsi message path" />
+      <SectionHeader title="Personal Mode Data Flow" hint="Wasl Shakhsi message path" />
       <GlassCard className="mb-12">
         <div className="flex items-center gap-2 mb-3 text-muted-foreground text-xs">
           <Workflow className="w-4 h-4" /> User A (Cairo) → A's Homeserver → B's Homeserver → User B (Alexandria)
@@ -140,7 +140,7 @@ export function ArchitectureScreen() {
       </GlassCard>
 
       {/* 3.3 DB schema */}
-      <SectionHeader title="§3.3 Local Database Schema" hint="Drift / SQLite" />
+      <SectionHeader title="Local Database Schema" hint="Drift / SQLite" />
       <div className="grid sm:grid-cols-2 gap-3 mb-12">
         {DB_TABLES.map((t) => (
           <GlassCard key={t.name}>
@@ -157,7 +157,7 @@ export function ArchitectureScreen() {
       </div>
 
       {/* 3.4 Maktab */}
-      <SectionHeader title="§3.4 Wasl Maktab — Self-Hosted Workspaces" />
+      <SectionHeader title="Wasl Maktab — Self-Hosted Workspaces" />
       <GlassCard className="mb-12">
         <p className="text-sm text-muted-foreground mb-3">
           Companies, schools, and governments deploy a sovereign workspace on a $5/mo VPS via one command:
@@ -174,7 +174,7 @@ export function ArchitectureScreen() {
       </GlassCard>
 
       {/* 3.5 Public content flow */}
-      <SectionHeader title="§3.5 Public Content — Federated & P2P" hint="Mashahd upload flow" />
+      <SectionHeader title="Public Content — Federated & P2P" hint="Mashahd upload flow" />
       <GlassCard className="mb-12">
         <ol className="space-y-2">
           {MASHAHD_FLOW.map((s, i) => (
@@ -187,28 +187,28 @@ export function ArchitectureScreen() {
       </GlassCard>
 
       {/* 3.6-3.9 Supporting stacks */}
-      <SectionHeader title="§3.6 → §3.9 Supporting infrastructure" />
+      <SectionHeader title="→ Supporting infrastructure" />
       <div className="grid sm:grid-cols-2 gap-3 mb-12">
         <GlassCard>
-          <h3 className="font-medium flex items-center gap-2"><Cpu className="w-4 h-4 text-secondary" /> §3.6 AI integration</h3>
+          <h3 className="font-medium flex items-center gap-2"><Cpu className="w-4 h-4 text-secondary" /> AI integration</h3>
           <p className="text-sm text-muted-foreground mt-2">Hugging Face free tier for hosting ONNX models, GROQ for optional cloud LLM calls (community-hosted secrets), HF Spaces for fine-tuning research.</p>
         </GlassCard>
         <GlassCard>
-          <h3 className="font-medium flex items-center gap-2"><Bell className="w-4 h-4 text-secondary" /> §3.7 Push without Firebase</h3>
+          <h3 className="font-medium flex items-center gap-2"><Bell className="w-4 h-4 text-secondary" /> Push without Firebase</h3>
           <p className="text-sm text-muted-foreground mt-2">ntfy self-hosted on $5 VPS replaces FCM/APNs. Topic-based subscriptions, end-to-end encrypted payloads.</p>
         </GlassCard>
         <GlassCard>
-          <h3 className="font-medium flex items-center gap-2"><MapIcon className="w-4 h-4 text-secondary" /> §3.8 Mapping stack</h3>
+          <h3 className="font-medium flex items-center gap-2"><MapIcon className="w-4 h-4 text-secondary" /> Mapping stack</h3>
           <p className="text-sm text-muted-foreground mt-2">MapLibre GL + OpenStreetMap tiles + IPFS-pinned regional mbtiles. Vector style customization, on-device routing via Valhalla.</p>
         </GlassCard>
         <GlassCard>
-          <h3 className="font-medium flex items-center gap-2"><Mail className="w-4 h-4 text-secondary" /> §3.9 Email stack</h3>
+          <h3 className="font-medium flex items-center gap-2"><Mail className="w-4 h-4 text-secondary" /> Email stack</h3>
           <p className="text-sm text-muted-foreground mt-2">Mailcow (Docker) on volunteer VPS hosts @circle.app addresses. SPF, DKIM, DMARC, PGP-by-default.</p>
         </GlassCard>
       </div>
 
       {/* 3.10 Cost analysis */}
-      <SectionHeader title="§3.10 Cost Analysis — Real Numbers" hint="vs incumbent platforms" />
+      <SectionHeader title="Cost Analysis — Real Numbers" hint="vs incumbent platforms" />
       <GlassCard className="overflow-x-auto mb-12">
         <table className="w-full text-sm">
           <thead>
@@ -233,7 +233,7 @@ export function ArchitectureScreen() {
       </GlassCard>
 
       {/* 3.11 Self-host single script */}
-      <SectionHeader title="§3.11 Self-Host Everything — Single Script" />
+      <SectionHeader title="Self-Host Everything — Single Script" />
       <GlassCard className="mb-12">
         <p className="text-sm text-muted-foreground mb-3">
           Advanced users can deploy the full Circle stack (Synapse + IPFS + PeerTube + ntfy + Mailcow + Pleroma + MapLibre tile server) on a single beefy VPS with:
@@ -243,7 +243,7 @@ export function ArchitectureScreen() {
       </GlassCard>
 
       {/* 3.12 Summary */}
-      <SectionHeader title="§3.12 Summary of Part 3" />
+      <SectionHeader title="Summary of Part 3" />
       <GlassCard>
         <ul className="space-y-2">
           {[
@@ -252,7 +252,7 @@ export function ArchitectureScreen() {
             "Personal mode data flow: end-to-end encrypted, offline-queueable, federated",
             "Work mode (Maktab): one-click Docker installer on $5 VPS",
             "Public content: IPFS + ActivityPub + PeerTube + WebTorrent (zero CDN cost)",
-            "Push (§3.7), Maps (§3.8), Mail (§3.9): all self-hosted with single small VPS",
+            "Push (), Maps (), Mail (): all self-hosted with single small VPS",
           ].map((s) => (
             <li key={s} className="flex items-start gap-2 text-sm">
               <Check className="w-4 h-4 text-secondary shrink-0 mt-0.5" /> {s}

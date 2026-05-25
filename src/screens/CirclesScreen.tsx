@@ -1,5 +1,5 @@
-// §10 — The Circle (Group System). Prototype design language.
-// Covers §10.2 Creating, §10.3 Roles, §10.4 Modes, §10.5 Features, §10.13 Summary.
+// — The Circle (Group System). Prototype design language.
+// Covers Creating, Roles, Modes, Features, Summary.
 import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
@@ -39,7 +39,7 @@ export function CirclesScreen() {
       <ProtoHeader
         title="Circles"
         arabic="الدائرة"
-        section="§10"
+        section=""
         tagline="Public · private · federated"
         right={
           <button className="w-10 h-10 rounded-full bg-gradient-hero text-primary-foreground flex items-center justify-center">
@@ -61,7 +61,7 @@ export function CirclesScreen() {
         </div>
       </div>
 
-      {/* §10.4 Mode filter */}
+      {/* Mode filter */}
       <div className="flex gap-2 px-5 overflow-x-auto scrollbar-hide">
         {([
           { k: "all", l: "All" },
@@ -81,10 +81,10 @@ export function CirclesScreen() {
         ))}
       </div>
 
-      {/* §10.5 Features row */}
+      {/* Features row */}
       <div className="px-5">
         <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
-          §10.5 Built into every Circle
+          Built into every Circle
         </div>
         <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
           {[
@@ -154,7 +154,7 @@ export function CirclesScreen() {
         </ul>
       )}
 
-      <ProtoFooter section="§10.13 Summary" title="Long-haul communities">
+      <ProtoFooter section="Summary" title="Long-haul communities">
         Owner / admin / moderator / member roles · IPFS-pinned archives · member voting · bylaws ·
         audit log · full data export. No algorithmic engagement traps — Circles are for the long haul.
       </ProtoFooter>

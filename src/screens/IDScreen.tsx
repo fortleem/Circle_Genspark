@@ -1,4 +1,4 @@
-// §21 — Circle ID (sovereign identity)
+// — Circle ID (sovereign identity)
 import { PageShell, GlassCard, StatTile, SectionHeader } from "@/components/shell/PageShell";
 import { KeyRound, Fingerprint, ShieldCheck, Globe } from "lucide-react";
 import { useApp } from "@/providers/AppProvider";
@@ -10,7 +10,7 @@ export function IDScreen() {
       icon={KeyRound}
       title={names.module_id}
       arabicTitle="هوية دواير"
-      section="§21"
+      section=""
       tagline="One self-custodial identity, valid across all 31 modules"
       intro="Circle ID is a DID (Decentralized Identifier) you fully own. Your handle, verification badges, payment addresses, and reputation travel with you across federated nodes — no platform can deplatform you, only your local server can."
     >
@@ -40,9 +40,9 @@ export function IDScreen() {
       <div className="grid sm:grid-cols-2 gap-3">
         {[
           { icon: ShieldCheck, t: "Sign in everywhere", d: "Single signature unlocks all 31 modules + federated 3rd-party apps." },
-          { icon: Globe,       t: "Migrate freely",     d: "Export your full state and re-import to any other Circle node." },
-          { icon: KeyRound,    t: "Recover safely",     d: "3-of-5 Shamir backup — split keys across trusted contacts." },
-          { icon: Fingerprint, t: "Biometric local",    d: "Face/fingerprint unlocks the local key vault — never sent anywhere." },
+          { icon: Globe, t: "Migrate freely", d: "Export your full state and re-import to any other Circle node." },
+          { icon: KeyRound, t: "Recover safely", d: "3-of-5 Shamir backup — split keys across trusted contacts." },
+          { icon: Fingerprint, t: "Biometric local", d: "Face/fingerprint unlocks the local key vault — never sent anywhere." },
         ].map((x) => (
           <GlassCard key={x.t}>
             <div className="flex items-start gap-3">

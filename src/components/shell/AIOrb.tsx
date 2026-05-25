@@ -80,7 +80,7 @@ export function AIOrb() {
               <input
                 autoFocus
                 value={q} onChange={(e) => setQ(e.target.value)}
-                placeholder="Try: mesh, payments, mashahd, §22 …"
+                placeholder="Try: mesh, payments, mashahd, …"
                 className="w-full bg-muted/40 rounded-2xl pl-4 pr-24 py-3 text-sm outline-none focus:bg-muted/60 transition"
               />
               <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">

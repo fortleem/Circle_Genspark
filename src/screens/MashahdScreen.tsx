@@ -1,6 +1,6 @@
-// §7 — Mashahd (Video Module). Prototype reels-stack UI preserved.
-// Wired to /api/mashahd/videos. Adds §7.1 overview, §7.3.x revenue chips,
-// §7.4 tipping widget mock, §7.5 compliance footer.
+// — Mashahd (Video Module). Prototype reels-stack UI preserved.
+// Wired to /api/mashahd/videos. Adds overview, .x revenue chips,
+// tipping widget mock, compliance footer.
 import { useEffect, useState } from "react";
 import {
   Heart, MessageCircle, Share2, Music, Sparkles, Radio, Gift, Coins,
@@ -41,7 +41,7 @@ export function MashahdScreen() {
             Mashahd <span className="text-base text-muted-foreground tracking-widest uppercase">مشاهد</span>
           </h1>
           <p className="text-[10px] uppercase tracking-widest text-secondary mt-1">
-            §7 · PeerTube + IPFS · P2P
+            · PeerTube + IPFS · P2P
           </p>
         </div>
         <div className="flex items-center gap-2 text-xs text-secondary">
@@ -64,10 +64,10 @@ export function MashahdScreen() {
         ))}
       </div>
 
-      {/* §7.3.5 Sponsored Hashtag strip (city-level) */}
+      {/* Sponsored Hashtag strip (city-level) */}
       <div className="mx-5 mt-4 rounded-2xl border border-amber-500/30 bg-amber-500/5 px-3 py-2 flex items-center gap-2 text-[11px]">
         <Tag className="w-3.5 h-3.5 text-amber-500" />
-        <span className="uppercase tracking-wider text-amber-600 text-[9px]">Sponsored §7.3.5</span>
+        <span className="uppercase tracking-wider text-amber-600 text-[9px]">Sponsored </span>
         <span className="text-foreground/80">#BestCoffeeAlex</span>
         <span className="ms-auto text-muted-foreground text-[10px]">City-level only · no profiling</span>
       </div>
@@ -132,14 +132,14 @@ export function MashahdScreen() {
         </div>
       )}
 
-      {/* §7.1 / §7.6 footer — overview + commitments */}
+      {/* / footer — overview + commitments */}
       <div className="mx-5 mt-8 rounded-2xl border border-secondary/30 bg-gradient-to-br from-secondary/10 to-transparent p-4 relative overflow-hidden">
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-secondary/15 rounded-full blur-3xl" />
         <div className="relative">
           <div className="flex items-center gap-2 mb-2">
             <BadgeCheck className="w-4 h-4 text-secondary" />
             <span className="text-[10px] uppercase tracking-widest text-secondary">
-              §7.1 · 100% free · zero-cost
+              · 100% free · zero-cost
             </span>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -148,11 +148,11 @@ export function MashahdScreen() {
         </div>
       </div>
 
-      {/* §7.3 Revenue model grid */}
+      {/* Revenue model grid */}
       <div className="mx-5 mt-4 rounded-2xl glass p-4">
         <div className="flex items-center gap-2 mb-3">
           <DollarSign className="w-4 h-4 text-secondary" />
-          <h3 className="font-display text-sm">§7.3 Income streams · zero cost to Circle</h3>
+          <h3 className="font-display text-sm">Income streams · zero cost to Circle</h3>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
           <RevTile num="7.3.1" title="Local CPM ads" desc="30% Circle / 70% creator" />
@@ -166,18 +166,18 @@ export function MashahdScreen() {
         </div>
       </div>
 
-      {/* §7.5 Compliance footer */}
+      {/* Compliance footer */}
       <div className="mx-5 mt-4 rounded-2xl border border-border bg-card p-4 text-[11px]">
         <div className="flex items-center gap-2 mb-2">
           <Shield className="w-3.5 h-3.5 text-secondary" />
-          <span className="uppercase tracking-widest text-secondary text-[10px]">§7.5 Compliance</span>
+          <span className="uppercase tracking-widest text-secondary text-[10px]">Compliance</span>
         </div>
         <p className="text-muted-foreground leading-relaxed">
           Circle never receives, holds, or sends user funds. Widget providers (MoonPay/Ramp/Paymob) handle KYC/AML, sanctions screening, cross-border tax. No money-transmitter licence required. Tipping disabled for under-18; sanctioned regions auto-blocked at widget level.
         </p>
       </div>
 
-      {/* §7.4 Tipping modal — non-custodial widget mock */}
+      {/* Tipping modal — non-custodial widget mock */}
       <AnimatePresence>
         {tipping && (
           <motion.div
@@ -208,7 +208,7 @@ export function MashahdScreen() {
               </div>
 
               <p className="text-[10px] text-muted-foreground mb-3 flex items-center gap-1">
-                <Globe2 className="w-3 h-3" /> §7.4 Widget auto-selected by your country
+                <Globe2 className="w-3 h-3" /> Widget auto-selected by your country
               </p>
 
               <div className="grid grid-cols-4 gap-2 mb-3">

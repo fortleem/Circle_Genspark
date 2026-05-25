@@ -1,4 +1,4 @@
-// §5 — Home Dashboard. Pulls real /api data with EXPLICIT §5.3.1-§5.3.9 sub-section breakdown
+// — Home Dashboard. Pulls real /api data with EXPLICIT -sub-section breakdown
 // per blueprint walkthrough order.
 import { motion } from "framer-motion";
 import {
@@ -17,16 +17,16 @@ export function HomeScreen() {
   const t = ui(locale).home;
   const navigate = useNavigate();
 
-  const { data: evData }     = useApi<{ events: CityEvent[] }>("/events");
-  const { data: trendData }  = useApi<{ posts: MidanPost[] }>("/midan/trending?limit=5");
-  const { data: chanData }   = useApi<{ channels: Channel[] }>("/channels");
+  const { data: evData } = useApi<{ events: CityEvent[] }>("/events");
+  const { data: trendData } = useApi<{ posts: MidanPost[] }>("/midan/trending?limit=5");
+  const { data: chanData } = useApi<{ channels: Channel[] }>("/channels");
 
   const events = evData?.events ?? [];
-  const carousel = events.slice(0, 5);              // §5.3.1 Top Carousel — 3-5 items
-  const nearby = events.slice(0, 6);                 // §5.3.3 Happening Nearby
-  const upcoming = events.slice(0, 3);               // §5.3.9 Upcoming in Your Circles
-  const trending = trendData?.posts ?? [];           // §5.3.5 Trending
-  const channels = (chanData?.channels ?? []).slice(0, 3); // §5.3.6 Official Updates
+  const carousel = events.slice(0, 5); // Top Carousel — 3-5 items
+  const nearby = events.slice(0, 6); // Happening Nearby
+  const upcoming = events.slice(0, 3); // Upcoming in Your Circles
+  const trending = trendData?.posts ?? []; // Trending
+  const channels = (chanData?.channels ?? []).slice(0, 3); // Official Updates
 
   return (
     <div className="space-y-10 pb-32">
@@ -36,7 +36,7 @@ export function HomeScreen() {
           {t.hello}, <span className="gradient-text-gold">Yousef</span>
         </motion.h1>
         <p className="text-muted-foreground text-sm mt-1">
-          {country} · {names.tagline} · <span className="text-secondary">§5 Home Dashboard</span>
+          {country} · {names.tagline} · <span className="text-secondary">Home Dashboard</span>
         </p>
       </section>
 
@@ -64,8 +64,8 @@ export function HomeScreen() {
         <p className="text-[10px] text-muted-foreground mt-2 px-2">On-device inference · No data leaves your device</p>
       </section>
 
-      {/* ─────────────── §5.3.1 Top Carousel ─────────────── */}
-      <BlueprintSection num="§5.3.1" title={t.featured} hint="Emergency · PSAs · Featured events (priority-ordered)">
+      {/* ─────────────── Top Carousel ─────────────── */}
+      <BlueprintSection num="" title={t.featured} hint="Emergency · PSAs · Featured events (priority-ordered)">
         <div className="flex gap-3 overflow-x-auto scrollbar-hide px-5 pb-2 snap-x snap-mandatory">
           {carousel.length === 0 ? (
             <SkeletonCard />
@@ -102,15 +102,15 @@ export function HomeScreen() {
         </div>
       </BlueprintSection>
 
-      {/* ─────────────── §5.3.2 Quick Actions ─────────────── */}
-      <BlueprintSection num="§5.3.2" title={t.quickActions} hint="4 fixed actions · user-customizable (8 available)">
+      {/* ─────────────── Quick Actions ─────────────── */}
+      <BlueprintSection num="" title={t.quickActions} hint="4 fixed actions · user-customizable (8 available)">
         <div className="px-5">
           <div className="grid grid-cols-4 gap-3">
             {[
-              { icon: ScanLine, label: "Scan & Pay",  to: "/pay" },
-              { icon: Plus,     label: "New Post",    to: "/midan" },
-              { icon: Camera,   label: "Go Live",     to: "/mashahd" },
-              { icon: Users,    label: "New Circle",  to: "/circles" },
+              { icon: ScanLine, label: "Scan & Pay", to: "/pay" },
+              { icon: Plus, label: "New Post", to: "/midan" },
+              { icon: Camera, label: "Go Live", to: "/mashahd" },
+              { icon: Users, label: "New Circle", to: "/circles" },
             ].map((q, i) => (
               <Link key={i} to={q.to} className="glass rounded-2xl py-3 flex flex-col items-center gap-2 hover:scale-[1.03] transition shadow-soft">
                 <q.icon className="w-5 h-5 text-secondary" />
@@ -121,8 +121,8 @@ export function HomeScreen() {
         </div>
       </BlueprintSection>
 
-      {/* ─────────────── §5.3.3 Happening Nearby ─────────────── */}
-      <BlueprintSection num="§5.3.3" title={t.nearby} hint="City-level precision (geohash-5, ~4.9 km) · No precise location sent">
+      {/* ─────────────── Happening Nearby ─────────────── */}
+      <BlueprintSection num="" title={t.nearby} hint="City-level precision (geohash-5, ~4.9 km) · No precise location sent">
         <div className="flex gap-3 overflow-x-auto scrollbar-hide px-5 pb-2">
           {nearby.length === 0 ? <SkeletonCard /> : nearby.map(n => (
             <div key={n.id} className="shrink-0 w-56 rounded-2xl bg-gradient-card border border-border p-4 shadow-soft">
@@ -140,8 +140,8 @@ export function HomeScreen() {
         </div>
       </BlueprintSection>
 
-      {/* ─────────────── §5.3.4 For You (On-Device Personalization) ─────────────── */}
-      <BlueprintSection num="§5.3.4" title="For you" hint="On-device matrix factorization (64-dim vector) · Trained while charging">
+      {/* ─────────────── For You (On-Device Personalization) ─────────────── */}
+      <BlueprintSection num="" title="For you" hint="On-device matrix factorization (64-dim vector) · Trained while charging">
         <div className="px-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {[
@@ -165,8 +165,8 @@ export function HomeScreen() {
         </div>
       </BlueprintSection>
 
-      {/* ─────────────── §5.3.5 Trending in [City] ─────────────── */}
-      <BlueprintSection num="§5.3.5" title={`${t.trending} in ${country}`} hint="Aggregated from public Midan posts · No per-user tracking">
+      {/* ─────────────── Trending in [City] ─────────────── */}
+      <BlueprintSection num="" title={`${t.trending} in ${country}`} hint="Aggregated from public Midan posts · No per-user tracking">
         <div className="px-5">
           <div className="glass rounded-2xl divide-y divide-border/60 overflow-hidden">
             {trending.length === 0 ? (
@@ -192,8 +192,8 @@ export function HomeScreen() {
         </div>
       </BlueprintSection>
 
-      {/* ─────────────── §5.3.6 Official Updates ─────────────── */}
-      <BlueprintSection num="§5.3.6" title="Official updates" hint="Latest message from each followed Official Channel">
+      {/* ─────────────── Official Updates ─────────────── */}
+      <BlueprintSection num="" title="Official updates" hint="Latest message from each followed Official Channel">
         <div className="px-5 space-y-2">
           {channels.length === 0 ? (
             <div className="glass rounded-2xl p-4 text-sm text-muted-foreground">Loading channels…</div>
@@ -216,8 +216,8 @@ export function HomeScreen() {
         </div>
       </BlueprintSection>
 
-      {/* ─────────────── §5.3.7 Your Workspaces ─────────────── */}
-      <BlueprintSection num="§5.3.7" title="Your workspaces" hint="Maktab rooms marked dashboard-visible">
+      {/* ─────────────── Your Workspaces ─────────────── */}
+      <BlueprintSection num="" title="Your workspaces" hint="Maktab rooms marked dashboard-visible">
         <div className="px-5">
           <Link to="/maktab" className="block glass rounded-2xl p-4 hover:bg-muted/20 transition">
             <div className="flex items-center gap-3">
@@ -232,8 +232,8 @@ export function HomeScreen() {
         </div>
       </BlueprintSection>
 
-      {/* ─────────────── §5.3.8 Sponsored Banner ─────────────── */}
-      <BlueprintSection num="§5.3.8" title="Sponsored" hint="City-level targeting only · 1 per session · Max 3/day">
+      {/* ─────────────── Sponsored Banner ─────────────── */}
+      <BlueprintSection num="" title="Sponsored" hint="City-level targeting only · 1 per session · Max 3/day">
         <div className="px-5">
           <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-rose-500/10 p-4 flex items-center gap-4">
             <Radio className="w-8 h-8 text-amber-500 shrink-0" />
@@ -249,8 +249,8 @@ export function HomeScreen() {
         </div>
       </BlueprintSection>
 
-      {/* ─────────────── §5.3.9 Upcoming in Your Circles ─────────────── */}
-      <BlueprintSection num="§5.3.9" title="Upcoming in your circles" hint="Next 3 events from joined Circles (private + public)">
+      {/* ─────────────── Upcoming in Your Circles ─────────────── */}
+      <BlueprintSection num="" title="Upcoming in your circles" hint="Next 3 events from joined Circles (private + public)">
         <div className="px-5 space-y-2">
           {upcoming.map((e) => (
             <Link key={e.id} to="/circles" className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 hover:bg-muted/30 transition">
@@ -267,12 +267,12 @@ export function HomeScreen() {
         </div>
       </BlueprintSection>
 
-      {/* §5.7 Mini journey hint */}
+      {/* Mini journey hint */}
       <section className="px-5">
         <div className="rounded-2xl border border-secondary/20 bg-secondary/5 p-4">
           <div className="flex items-center gap-2 mb-2">
             <BellRing className="w-4 h-4 text-secondary" />
-            <span className="text-xs uppercase tracking-widest text-secondary">§5.7 Journey · §5.5 Offline-first</span>
+            <span className="text-xs uppercase tracking-widest text-secondary">Journey · Offline-first</span>
           </div>
           <p className="text-sm text-foreground/90">
             All 9 sections cache locally. Reorder or hide them under Settings → Dashboard Layout. Your dashboard works offline; an indicator shows when data is stale.

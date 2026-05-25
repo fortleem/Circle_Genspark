@@ -1,4 +1,4 @@
-// §35 — User Journeys
+// — User Journeys
 import { PageShell, GlassCard, SectionHeader } from "@/components/shell/PageShell";
 import { BookOpen } from "lucide-react";
 import { useApp } from "@/providers/AppProvider";
@@ -59,7 +59,7 @@ export function JourneysScreen() {
       icon={BookOpen}
       title={names.module_journeys}
       arabicTitle="رحلات المستخدمين"
-      section="§35"
+      section=""
       tagline="Real user stories that demonstrate what Circle replaces — and unlocks"
       intro="Five personas across five continents showing how Circle's modules combine in practice. Every journey could happen entirely without Big Tech intermediaries."
     >

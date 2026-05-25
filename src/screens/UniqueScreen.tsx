@@ -1,4 +1,4 @@
-// §26 — Unique Features
+// — Unique Features
 import { PageShell, GlassCard, SectionHeader } from "@/components/shell/PageShell";
 import { Star, Bluetooth, CreditCard, Languages, FileText, ShieldCheck, Globe2 } from "lucide-react";
 import { useApp } from "@/providers/AppProvider";
@@ -19,7 +19,7 @@ export function UniqueScreen() {
       icon={Star}
       title={names.module_unique}
       arabicTitle="المميزات الفريدة"
-      section="§26"
+      section=""
       tagline="What no other super app can do"
       intro="Circle ships six capabilities that no centralized competitor can match — because they require user sovereignty, on-device AI, and federated infrastructure."
     >

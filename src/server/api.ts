@@ -17,7 +17,7 @@ api.get('/names', (c) => {
   return c.json({ lang, names: getNames(lang), langs: ALL_LANGS })
 })
 
-// ─── §4 DRE ─────────────────────────────────────────────────────────────────
+// ─── DRE ─────────────────────────────────────────────────────────────────
 api.get('/region', (c) => {
   const country = (c.req.query('country') ?? c.req.header('cf-ipcountry') ?? 'EG').toUpperCase()
   const cfg = configFor(country)
@@ -42,7 +42,7 @@ api.get('/users/:handle', async (c) => {
   return c.json({ user })
 })
 
-// ─── §9 MIDAN ───────────────────────────────────────────────────────────────
+// ─── MIDAN ───────────────────────────────────────────────────────────────
 api.get('/midan/posts', async (c) => {
   const city = c.req.query('city')
   const feed = c.req.query('feed') // home | local | federated | trending | anonymous
@@ -50,9 +50,9 @@ api.get('/midan/posts', async (c) => {
              FROM posts p JOIN users u ON u.id=p.author_id`
   const params: any[] = []
   const wheres: string[] = []
-  if (city)                    { wheres.push('p.city = ?');     params.push(city) }
-  if (feed === 'anonymous')      wheres.push('p.anonymous = 1')
-  if (feed === 'federated')      wheres.push("p.hashtags LIKE '%fediverse%' OR p.hashtags LIKE '%activitypub%'")
+  if (city) { wheres.push('p.city = ?'); params.push(city) }
+  if (feed === 'anonymous') wheres.push('p.anonymous = 1')
+  if (feed === 'federated') wheres.push("p.hashtags LIKE '%fediverse%' OR p.hashtags LIKE '%activitypub%'")
   if (wheres.length) sql += ' WHERE ' + wheres.join(' AND ')
   sql += feed === 'trending'
     ? ' ORDER BY p.likes DESC, p.created_at DESC LIMIT 50'
@@ -78,7 +78,7 @@ api.post('/midan/posts/:id/like', async (c) => {
 })
 
 api.get('/midan/trending', async (c) => {
-  // Simplified trending algorithm per blueprint §9.6.1:
+  // Simplified trending algorithm per blueprint :
   // score = likes * 0.6 + replies * 0.3 + reposts * 1.0, time-decayed
   const rows = await all(c.env.DB, `
     SELECT hashtag, COUNT(*) AS cnt, SUM(likes) AS likes, SUM(reposts) AS reposts
@@ -91,7 +91,7 @@ api.get('/midan/trending', async (c) => {
   return c.json({ trending: rows })
 })
 
-// ─── §6 WASL (Chat) ─────────────────────────────────────────────────────────
+// ─── WASL (Chat) ─────────────────────────────────────────────────────────
 api.get('/wasl/rooms', async (c) => {
   // Client kinds: dm | group | channel | maktab → DB room_type: direct | group | broadcast | workspace
   const kindMap: Record<string, string> = {
@@ -136,7 +136,160 @@ api.post('/wasl/rooms/:id/messages', async (c) => {
   return c.json({ ok: true, id: msgId })
 })
 
-// ─── §7 MASHAHD (Video) ─────────────────────────────────────────────────────
+// Create a new room (DM / group / channel / maktab)
+api.post('/wasl/rooms', async (c) => {
+  const body = await c.req.json<{
+    name: string; kind?: string; topic?: string; creator_id?: number;
+    is_encrypted?: number;
+  }>()
+  if (!body.name) return c.json({ error: 'name_required' }, 400)
+  const kindMap: Record<string, string> = {
+    dm: 'direct', group: 'group', channel: 'broadcast', maktab: 'workspace',
+  }
+  const dbKind = kindMap[body.kind ?? 'group'] ?? 'group'
+  const isEnc = body.is_encrypted ?? (dbKind === 'broadcast' ? 0 : 1)
+  const roomId = 'r' + Date.now().toString(36)
+  await run(c.env.DB,
+    'INSERT INTO rooms (id, name, room_type, topic, is_encrypted, created_by) VALUES (?, ?, ?, ?, ?, ?)',
+    roomId, body.name, dbKind, body.topic ?? null, isEnc, body.creator_id ?? null)
+  if (body.creator_id) {
+    try {
+      await run(c.env.DB, 'INSERT INTO room_members (room_id, user_id, role) VALUES (?, ?, ?)',
+        roomId, body.creator_id, 'owner')
+    } catch {/* schema may differ; ignore */}
+  }
+  if (dbKind === 'broadcast' && body.creator_id) {
+    await run(c.env.DB,
+      'INSERT OR IGNORE INTO wasl_broadcasts (room_id, owner_id) VALUES (?, ?)',
+      roomId, body.creator_id)
+  }
+  return c.json({ ok: true, id: roomId, kind: dbKind })
+})
+
+// Wasl privacy settings (Ghost mode, screenshot, forwarding, disappearing TTL, etc.)
+api.get('/wasl/privacy/:user_id', async (c) => {
+  const uid = c.req.param('user_id')
+  let row = await first<any>(c.env.DB, 'SELECT * FROM wasl_privacy WHERE user_id = ?', uid)
+  if (!row) {
+    await run(c.env.DB, 'INSERT OR IGNORE INTO wasl_privacy (user_id) VALUES (?)', uid)
+    row = await first<any>(c.env.DB, 'SELECT * FROM wasl_privacy WHERE user_id = ?', uid)
+  }
+  return c.json({ privacy: row })
+})
+
+api.post('/wasl/privacy/:user_id', async (c) => {
+  const uid = Number(c.req.param('user_id'))
+  const body = await c.req.json<Record<string, number>>()
+  const allow = [
+    'ghost_mode', 'screenshot_block', 'forwarding_consent',
+    'disappearing_default', 'read_receipts', 'last_seen_visible',
+    'typing_indicator', 'auto_download_media',
+  ]
+  await run(c.env.DB, 'INSERT OR IGNORE INTO wasl_privacy (user_id) VALUES (?)', uid)
+  for (const k of allow) {
+    if (k in body && typeof body[k] === 'number') {
+      await run(c.env.DB,
+        `UPDATE wasl_privacy SET ${k} = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?`,
+        body[k], uid)
+    }
+  }
+  const row = await first<any>(c.env.DB, 'SELECT * FROM wasl_privacy WHERE user_id = ?', uid)
+  return c.json({ ok: true, privacy: row })
+})
+
+// Initiate a WebRTC call (logs to wasl_calls; client handles ICE/SDP via Matrix events)
+api.post('/wasl/calls', async (c) => {
+  const body = await c.req.json<{
+    room_id: string; caller_id: number; callee_id?: number;
+    call_type: 'voice' | 'video';
+  }>()
+  if (!body.room_id || !body.caller_id || !body.call_type) {
+    return c.json({ error: 'invalid' }, 400)
+  }
+  const id = 'call' + Date.now().toString(36)
+  await run(c.env.DB,
+    'INSERT INTO wasl_calls (id, room_id, caller_id, callee_id, call_type) VALUES (?, ?, ?, ?, ?)',
+    id, body.room_id, body.caller_id, body.callee_id ?? null, body.call_type)
+  return c.json({ ok: true, id, status: 'ringing', stun: 'stun:stun.l.google.com:19302' })
+})
+
+api.post('/wasl/calls/:id/end', async (c) => {
+  const id = c.req.param('id')
+  const body = await c.req.json<{ duration_sec?: number; status?: string }>().catch(() => ({} as any))
+  await run(c.env.DB,
+    `UPDATE wasl_calls SET ended_at = CURRENT_TIMESTAMP,
+       duration_sec = ?, status = ? WHERE id = ?`,
+    body.duration_sec ?? 0, body.status ?? 'ended', id)
+  return c.json({ ok: true })
+})
+
+// Recent calls history
+api.get('/wasl/calls/:user_id', async (c) => {
+  const uid = c.req.param('user_id')
+  const calls = await all(c.env.DB, `
+    SELECT * FROM wasl_calls
+    WHERE caller_id = ? OR callee_id = ?
+    ORDER BY started_at DESC LIMIT 30`, uid, uid)
+  return c.json({ calls })
+})
+
+// Workspace (Maktab) admin command — /invite, /set-visibility, /set-retention, /audit-log, /export
+api.post('/wasl/maktab/:workspace_id/command', async (c) => {
+  const wsId = c.req.param('workspace_id')
+  const body = await c.req.json<{
+    actor_id: number; action: string; target?: string; details?: any;
+  }>()
+  await run(c.env.DB,
+    'INSERT INTO wasl_maktab_audit (workspace_id, actor_id, action, target, details) VALUES (?, ?, ?, ?, ?)',
+    wsId, body.actor_id, body.action, body.target ?? null, JSON.stringify(body.details ?? {}))
+  return c.json({ ok: true })
+})
+
+api.get('/wasl/maktab/:workspace_id/audit', async (c) => {
+  const wsId = c.req.param('workspace_id')
+  const rows = await all(c.env.DB, `
+    SELECT a.*, u.display_name AS actor_name
+    FROM wasl_maktab_audit a
+    LEFT JOIN users u ON u.id = a.actor_id
+    WHERE a.workspace_id = ?
+    ORDER BY a.created_at DESC LIMIT 50`, wsId)
+  return c.json({ audit: rows })
+})
+
+// Mark messages as forwarded (consent flow)
+api.post('/wasl/messages/:id/forward', async (c) => {
+  const id = c.req.param('id')
+  const body = await c.req.json<{ to_room_id: string; sender_id: number; approved: boolean }>()
+  if (!body.approved) return c.json({ ok: false, error: 'consent_required' }, 403)
+  const src = await first<{ body: string }>(c.env.DB, 'SELECT body FROM messages WHERE id = ?', id)
+  if (!src) return c.json({ error: 'not_found' }, 404)
+  const newId = 'm' + Date.now().toString(36)
+  await run(c.env.DB,
+    'INSERT INTO messages (id, room_id, sender_id, body, status, is_encrypted) VALUES (?, ?, ?, ?, 3, 1)',
+    newId, body.to_room_id, body.sender_id, src.body)
+  return c.json({ ok: true, id: newId })
+})
+
+// Device verification (SAS / QR)
+api.post('/wasl/verify-device', async (c) => {
+  const body = await c.req.json<{
+    user_id: number; device_id: string; verified_by: number;
+    method: 'qr' | 'sas' | 'manual'; fingerprint?: string;
+  }>()
+  await run(c.env.DB,
+    'INSERT INTO wasl_device_verifications (user_id, device_id, verified_by, method, fingerprint) VALUES (?, ?, ?, ?, ?)',
+    body.user_id, body.device_id, body.verified_by, body.method, body.fingerprint ?? null)
+  return c.json({ ok: true })
+})
+
+api.get('/wasl/verify-device/:user_id', async (c) => {
+  const uid = c.req.param('user_id')
+  const rows = await all(c.env.DB,
+    'SELECT * FROM wasl_device_verifications WHERE user_id = ? ORDER BY verified_at DESC LIMIT 20', uid)
+  return c.json({ verifications: rows })
+})
+
+// ─── MASHAHD (Video) ─────────────────────────────────────────────────────
 api.get('/mashahd/videos', async (c) => {
   const videos = await all(c.env.DB,
     'SELECT v.*, u.handle, u.display_name, u.verified FROM videos v JOIN users u ON u.id=v.uploader_id ORDER BY v.published_at DESC LIMIT 50')
@@ -154,7 +307,7 @@ api.post('/mashahd/videos/:id/like', async (c) => {
 })
 
 api.post('/mashahd/tip', async (c) => {
-  // §7.4 Tipping algorithm — non-custodial: we just record the intent
+  // Tipping algorithm — non-custodial: we just record the intent
   const body = await c.req.json<{ from_user: number; video_id: string; amount: number; currency: string; widget: string }>()
   return c.json({
     ok: true, recorded: true,
@@ -165,7 +318,7 @@ api.post('/mashahd/tip', async (c) => {
   })
 })
 
-// ─── §8 LAMAHAT (Photos) ────────────────────────────────────────────────────
+// ─── LAMAHAT (Photos) ────────────────────────────────────────────────────
 api.get('/lamahat/photos', async (c) => {
   const city = c.req.query('city')
   const sql = city
@@ -180,13 +333,13 @@ api.post('/lamahat/photos/:id/like', async (c) => {
   return c.json({ ok: true })
 })
 
-// ─── §10 CIRCLES (Groups) ───────────────────────────────────────────────────
+// ─── CIRCLES (Groups) ───────────────────────────────────────────────────
 api.get('/circles', async (c) => {
   const circles = await all(c.env.DB, 'SELECT * FROM circles ORDER BY member_count DESC')
   return c.json({ circles })
 })
 
-// ─── §11/§13 CHANNELS ───────────────────────────────────────────────────────
+// ─── /CHANNELS ───────────────────────────────────────────────────────
 api.get('/channels', async (c) => {
   const type = c.req.query('type')
   const sql = type
@@ -203,7 +356,7 @@ api.get('/channels/:slug/posts', async (c) => {
   return c.json({ posts })
 })
 
-// ─── §14 PRO NETWORK ────────────────────────────────────────────────────────
+// ─── PRO NETWORK ────────────────────────────────────────────────────────
 api.get('/pro/jobs', async (c) => {
   const jobs = await all(c.env.DB, `
     SELECT j.*, u.display_name AS posted_by_name FROM pro_jobs j
@@ -218,17 +371,17 @@ api.get('/pro/profiles', async (c) => {
   return c.json({ profiles })
 })
 
-// ─── §22 RIHLA — Travel ─────────────────────────────────────────────────────
+// ─── RIHLA — Travel ─────────────────────────────────────────────────────
 api.post('/rihla/itinerary', async (c) => {
   const body = await c.req.json<{ city: string; days: number; interests: string[]; user_id?: number }>()
   const interests = (body.interests ?? []).join(', ') || 'general'
   const plan: any = {}
   for (let d = 1; d <= Math.min(7, body.days ?? 1); d++) {
     plan[`day${d}`] = {
-      morning:    `Walk a landmark of ${body.city} themed around ${interests.split(',')[0] ?? 'culture'}`,
-      lunch:      `Family-run restaurant — try a regional dish in ${body.city}`,
-      afternoon:  `Visit a museum or open market`,
-      dinner:     `Sunset rooftop dinner with local music`
+      morning: `Walk a landmark of ${body.city} themed around ${interests.split(',')[0] ?? 'culture'}`,
+      lunch: `Family-run restaurant — try a regional dish in ${body.city}`,
+      afternoon: `Visit a museum or open market`,
+      dinner: `Sunset rooftop dinner with local music`
     }
   }
   const r = await run(c.env.DB,
@@ -242,7 +395,7 @@ api.get('/rihla/itineraries', async (c) => {
   return c.json({ items: items.map((i) => ({ ...i, plan_json: JSON.parse(i.plan_json) })) })
 })
 
-// ─── §19 CIRCLE PAYMENTS ────────────────────────────────────────────────────
+// ─── CIRCLE PAYMENTS ────────────────────────────────────────────────────
 api.get('/pay/wallet/:user_id', async (c) => {
   const uid = c.req.param('user_id')
   const wallet = await first(c.env.DB, 'SELECT * FROM wallets WHERE user_id = ?', uid)
@@ -271,7 +424,7 @@ api.post('/pay/send', async (c) => {
   return c.json({ ok: true, id: r.meta?.last_row_id, fee: 0, currency: from.currency })
 })
 
-// ─── §20 CIRCLE MAIL ────────────────────────────────────────────────────────
+// ─── CIRCLE MAIL ────────────────────────────────────────────────────────
 api.get('/mail/:user_id', async (c) => {
   const uid = c.req.param('user_id')
   const folder = c.req.query('folder') ?? 'inbox'
@@ -280,7 +433,7 @@ api.get('/mail/:user_id', async (c) => {
   return c.json({ folder, messages })
 })
 
-// ─── §5 EVENTS ──────────────────────────────────────────────────────────────
+// ─── EVENTS ──────────────────────────────────────────────────────────────
 api.get('/events', async (c) => {
   const city = c.req.query('city') ?? 'Cairo'
   const events = await all(c.env.DB,
@@ -293,7 +446,7 @@ api.post('/events/:id/interested', async (c) => {
   return c.json({ ok: true })
 })
 
-// ─── §29 GOVERNANCE & §30 TRANSPARENCY ──────────────────────────────────────
+// ─── GOVERNANCE & TRANSPARENCY ──────────────────────────────────────
 api.get('/governance/proposals', async (c) => {
   const proposals = await all(c.env.DB, 'SELECT * FROM governance_proposals ORDER BY created_at DESC')
   return c.json({ proposals })
@@ -315,18 +468,18 @@ api.get('/transparency/ledger', async (c) => {
   return c.json({ rows, total, by_allocation: byAlloc })
 })
 
-// ─── §25 MINI APPS ──────────────────────────────────────────────────────────
+// ─── MINI APPS ──────────────────────────────────────────────────────────
 api.get('/apps', async (c) => {
   const apps = await all(c.env.DB, 'SELECT * FROM mini_apps ORDER BY install_count DESC')
   return c.json({ apps })
 })
 
-// ─── §24 TRANSLATION ────────────────────────────────────────────────────────
+// ─── TRANSLATION ────────────────────────────────────────────────────────
 api.post('/translate', async (c) => {
   const body = await c.req.json<{ text: string; to: string; from?: string }>()
   const samples: Record<string, Record<string, string>> = {
     en: { ar: 'مرحبا بكم في دواير', zh: '欢迎来到圆圈', fr: 'Bienvenue sur Cercle', es: 'Bienvenido a Círculo', de: 'Willkommen bei Kreis', it: 'Benvenuti in Cerchio' },
-    ar: { en: 'Welcome to Circle',  zh: '欢迎来到圆圈', fr: 'Bienvenue sur Cercle', es: 'Bienvenido a Círculo', de: 'Willkommen bei Kreis', it: 'Benvenuti in Cerchio' }
+    ar: { en: 'Welcome to Circle', zh: '欢迎来到圆圈', fr: 'Bienvenue sur Cercle', es: 'Bienvenido a Círculo', de: 'Willkommen bei Kreis', it: 'Benvenuti in Cerchio' }
   }
   const translated = samples[body.from ?? 'auto']?.[body.to] ?? `[${body.to}] ${body.text}`
   return c.json({
@@ -336,7 +489,7 @@ api.post('/translate', async (c) => {
   })
 })
 
-// ─── §15 LOCAL MESH ─────────────────────────────────────────────────────────
+// ─── LOCAL MESH ─────────────────────────────────────────────────────────
 api.get('/mesh/peers', async (c) => {
   const peers = await all(c.env.DB, 'SELECT * FROM mesh_peers ORDER BY rssi_dbm DESC LIMIT 30')
   return c.json({ peers })
@@ -358,13 +511,13 @@ api.post('/mesh/sos', async (c) => {
   return c.json({ ok: true, id: r.meta?.last_row_id, peers_reached: alert?.peers_reached ?? 0 })
 })
 
-// ─── §17 AI SAFETY ──────────────────────────────────────────────────────────
+// ─── AI SAFETY ──────────────────────────────────────────────────────────
 api.get('/moderation/actions', async (c) => {
   const actions = await all(c.env.DB, 'SELECT * FROM moderation_actions ORDER BY created_at DESC LIMIT 50')
   return c.json({ actions })
 })
 
-// ─── §18 SELF-LEARNING AI CORE ──────────────────────────────────────────────
+// ─── SELF-LEARNING AI CORE ──────────────────────────────────────────────
 api.get('/ai/training/:user_id', async (c) => {
   const uid = c.req.param('user_id')
   const stats = await all(c.env.DB, 'SELECT * FROM ai_training_stats WHERE user_id = ? ORDER BY updated_at DESC', uid)
@@ -380,39 +533,39 @@ api.post('/ai/training/:user_id/opt', async (c) => {
   return c.json({ ok: true })
 })
 
-// ─── §23 MAPS ───────────────────────────────────────────────────────────────
+// ─── MAPS ───────────────────────────────────────────────────────────────
 api.get('/maps/regions', async (c) => {
   const regions = await all(c.env.DB, 'SELECT * FROM map_regions ORDER BY pinned_by DESC')
   return c.json({ regions })
 })
 
-// ─── §27 BACKUP ─────────────────────────────────────────────────────────────
+// ─── BACKUP ─────────────────────────────────────────────────────────────
 api.get('/backup/:user_id', async (c) => {
   const uid = c.req.param('user_id')
   const items = await all(c.env.DB, 'SELECT * FROM backups WHERE user_id = ? ORDER BY created_at DESC', uid)
   return c.json({ items })
 })
 
-// ─── §28 PRIVACY ────────────────────────────────────────────────────────────
+// ─── PRIVACY ────────────────────────────────────────────────────────────
 api.get('/privacy/:user_id', async (c) => {
   const uid = c.req.param('user_id')
   const consents = await all(c.env.DB, 'SELECT * FROM privacy_consent WHERE user_id = ? ORDER BY scope, granted_to', uid)
   return c.json({ consents })
 })
 
-// ─── §32 MODEL CATALOGUE ────────────────────────────────────────────────────
+// ─── MODEL CATALOGUE ────────────────────────────────────────────────────
 api.get('/models', async (c) => {
   const models = await all(c.env.DB, 'SELECT * FROM ai_models ORDER BY required DESC, category, size_mb')
   return c.json({ models })
 })
 
-// ─── §33 SELF-HOST NODES ────────────────────────────────────────────────────
+// ─── SELF-HOST NODES ────────────────────────────────────────────────────
 api.get('/selfhost/nodes', async (c) => {
   const nodes = await all(c.env.DB, 'SELECT * FROM self_host_nodes ORDER BY users_served DESC')
   return c.json({ nodes })
 })
 
-// ─── §34 ROADMAP ────────────────────────────────────────────────────────────
+// ─── ROADMAP ────────────────────────────────────────────────────────────
 api.get('/roadmap', async (c) => {
   const phases = await all<any>(c.env.DB, 'SELECT * FROM roadmap_phases ORDER BY phase_no')
   return c.json({ phases: phases.map((p) => ({ ...p, deliverables: p.deliverables ? JSON.parse(p.deliverables) : [] })) })

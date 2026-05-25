@@ -1,4 +1,4 @@
-// Tiny data-fetching hook on top of /api/*  (uses TanStack Query if available, falls back to local state)
+// Tiny data-fetching hook on top of /api/* (uses TanStack Query if available, falls back to local state)
 import { useEffect, useState } from "react";
 import { apiGet } from "@/lib/api";
 

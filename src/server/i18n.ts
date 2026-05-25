@@ -1,4 +1,4 @@
-// Circle — Dynamic Naming Convention (Blueprint §2)
+// Circle — Dynamic Naming Convention (Blueprint )
 // 7 languages + 2 English variants. One binary, locally adapted labels.
 
 export type Lang = 'ar' | 'en' | 'en-BRAND' | 'zh' | 'fr' | 'es' | 'de' | 'it'
@@ -180,14 +180,14 @@ export function isRTL(lang: string | undefined | null): boolean {
 }
 
 export const ALL_LANGS: { code: Lang; label: string }[] = [
-  { code: 'ar',        label: 'العربية' },
-  { code: 'en-BRAND',  label: 'English (Brand)' },
-  { code: 'en',        label: 'English (US)' },
-  { code: 'zh',        label: '中文' },
-  { code: 'fr',        label: 'Français' },
-  { code: 'es',        label: 'Español' },
-  { code: 'de',        label: 'Deutsch' },
-  { code: 'it',        label: 'Italiano' }
+  { code: 'ar', label: 'العربية' },
+  { code: 'en-BRAND', label: 'English (Brand)' },
+  { code: 'en', label: 'English (US)' },
+  { code: 'zh', label: '中文' },
+  { code: 'fr', label: 'Français' },
+  { code: 'es', label: 'Español' },
+  { code: 'de', label: 'Deutsch' },
+  { code: 'it', label: 'Italiano' }
 ]
 
 export { dict }

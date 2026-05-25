@@ -1,6 +1,6 @@
-// §11 Official Channels + §13 Creator Channels. Prototype design language.
-// Covers §11.2 Channel types, §11.4 Verification, §11.5 Emergency alerts, §11.6 Discovery,
-// §13.x Creator monetisation, §11.13 + §13 Summary.
+// Official Channels + Creator Channels. Prototype design language.
+// Covers Channel types, Verification, Emergency alerts, Discovery,
+// .x Creator monetisation, + Summary.
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
@@ -47,7 +47,7 @@ export function ChannelsScreen() {
       <ProtoHeader
         title="Channels"
         arabic="القنوات"
-        section="§11 + §13"
+        section="+ "
         tagline="Verified institutions · Independent creators"
         right={
           <button className="w-10 h-10 rounded-full bg-gradient-hero text-primary-foreground flex items-center justify-center">
@@ -77,12 +77,12 @@ export function ChannelsScreen() {
         </div>
       </div>
 
-      {/* §11.2 Filter pills */}
+      {/* Filter pills */}
       <div className="flex gap-2 px-5 overflow-x-auto scrollbar-hide">
         {([
           { k: "all", l: "All" },
-          { k: "official", l: "§11 Official" },
-          { k: "creator", l: "§13 Creators" },
+          { k: "official", l: "Official" },
+          { k: "creator", l: "Creators" },
         ] as { k: Filter; l: string }[]).map((f) => (
           <button
             key={f.k}
@@ -96,13 +96,13 @@ export function ChannelsScreen() {
         ))}
       </div>
 
-      {/* §11.5 Emergency banner */}
+      {/* Emergency banner */}
       <div className="mx-5 rounded-2xl border border-red-500/30 bg-red-500/5 p-3 flex items-center gap-3">
         <div className="w-10 h-10 rounded-xl bg-red-500/15 flex items-center justify-center shrink-0">
           <AlertTriangle className="w-5 h-5 text-red-500" />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-[10px] uppercase tracking-widest text-red-500">§11.5 Emergency alerts</div>
+          <div className="text-[10px] uppercase tracking-widest text-red-500">Emergency alerts</div>
           <div className="text-xs text-foreground/90">Opt-in high-priority push for civil-defense, weather, earthquake.</div>
         </div>
         <button className="text-[11px] px-2.5 py-1 rounded-full bg-red-500/15 text-red-500 hover:bg-red-500/25 transition">Enable</button>
@@ -130,7 +130,7 @@ export function ChannelsScreen() {
                     <span className={`text-[9px] uppercase px-1.5 py-0.5 rounded ${
                       c.channel_type === "official" ? "bg-secondary/15 text-secondary" : "bg-amber-500/15 text-amber-600"
                     }`}>
-                      {c.channel_type === "official" ? "§11 Official" : "§13 Creator"}
+                      {c.channel_type === "official" ? "Official" : "Creator"}
                     </span>
                     {c.category && (
                       <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{c.category}</span>
@@ -151,20 +151,20 @@ export function ChannelsScreen() {
         </ul>
       )}
 
-      {/* §11.4 Verification info card */}
+      {/* Verification info card */}
       <div className="mx-5 rounded-2xl glass p-4">
         <div className="flex items-center gap-2 mb-2">
           <ShieldCheck className="w-4 h-4 text-secondary" />
-          <h3 className="font-display text-sm">§11.4 Verification</h3>
+          <h3 className="font-display text-sm">Verification</h3>
         </div>
         <p className="text-xs text-muted-foreground leading-relaxed">
-          §11.4.1 Government channels verify via diplomatic-mission DNS records ·
-          §11.4.2 Businesses & media self-verify via domain TXT records ·
-          §13 Creators verify via Circle Verify (§16) — no paid blue check.
+          Government channels verify via diplomatic-mission DNS records ·
+          Businesses & media self-verify via domain TXT records ·
+          Creators verify via Circle Verify () — no paid blue check.
         </p>
       </div>
 
-      <ProtoFooter section="§11.13 + §13" title="Broadcast without gatekeepers">
+      <ProtoFooter section="+ " title="Broadcast without gatekeepers">
         Cryptographically verified institutions and creators. Federation via Matrix; content stored on
         IPFS. Anonymous aggregate analytics only. No paid verification.
       </ProtoFooter>

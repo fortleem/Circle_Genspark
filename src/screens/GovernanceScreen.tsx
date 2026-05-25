@@ -1,4 +1,4 @@
-// §29 — Governance & proposals
+// — Governance & proposals
 import { PageShell, GlassCard, EmptyState, SectionHeader } from "@/components/shell/PageShell";
 import { Vote } from "lucide-react";
 import { useApi } from "@/hooks/useApi";
@@ -18,7 +18,7 @@ export function GovernanceScreen() {
       icon={Vote}
       title={names.nav_governance}
       arabicTitle="الحوكمة"
-      section="§29"
+      section=""
       tagline="Bylaws, town halls, and proposals — every user holds a vote"
       intro="Circle is a community-governed platform. Any user can submit a proposal; passing votes trigger a 30-day implementation window. All votes are pseudonymous yet verifiable on-chain."
     >

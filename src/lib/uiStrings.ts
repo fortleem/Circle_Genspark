@@ -38,8 +38,8 @@ const en: UIStrings = {
   },
   onboarding: {
     slide1: { title: "Your connected world", body: "One app for messaging, video, photos, payments, travel and more — privacy first, federated, AI-native." },
-    slide2: { title: "Owned by you",         body: "Federated nodes, IPFS storage, on-device AI. Your data never enters a surveillance economy." },
-    slide3: { title: "Built for everyone",   body: "Eight languages, six data planes, and full offline operation via Bluetooth mesh." },
+    slide2: { title: "Owned by you", body: "Federated nodes, IPFS storage, on-device AI. Your data never enters a surveillance economy." },
+    slide3: { title: "Built for everyone", body: "Eight languages, six data planes, and full offline operation via Bluetooth mesh." },
     skip: "Skip",
     cta: "Get started",
   },
@@ -57,8 +57,8 @@ const ar: UIStrings = {
   },
   onboarding: {
     slide1: { title: "عالمك المتصل", body: "تطبيق واحد للرسائل، الفيديو، الصور، الدفع، السفر، والمزيد — خصوصية أولاً، اتحادي، يعتمد على الذكاء الاصطناعي." },
-    slide2: { title: "ملك لك أنت",   body: "عقد اتحادية، تخزين IPFS، ذكاء اصطناعي على الجهاز. بياناتك لا تدخل أبداً اقتصاد المراقبة." },
-    slide3: { title: "مبني للجميع",   body: "ثماني لغات، ست مناطق بيانات، وعمل كامل دون اتصال عبر شبكة Bluetooth." },
+    slide2: { title: "ملك لك أنت", body: "عقد اتحادية، تخزين IPFS، ذكاء اصطناعي على الجهاز. بياناتك لا تدخل أبداً اقتصاد المراقبة." },
+    slide3: { title: "مبني للجميع", body: "ثماني لغات، ست مناطق بيانات، وعمل كامل دون اتصال عبر شبكة Bluetooth." },
     skip: "تخطي",
     cta: "ابدأ",
   },
@@ -66,14 +66,14 @@ const ar: UIStrings = {
 };
 
 export const uiStrings: Record<Lang, UIStrings> = {
-  "en":        en,
-  "en-BRAND":  en,
-  "ar":        ar,
-  "zh":        en, // TODO: translate
-  "fr":        en,
-  "es":        en,
-  "de":        en,
-  "it":        en,
+  "en": en,
+  "en-BRAND": en,
+  "ar": ar,
+  "zh": en, // TODO: translate
+  "fr": en,
+  "es": en,
+  "de": en,
+  "it": en,
 };
 
 export function ui(lang: Lang): UIStrings {

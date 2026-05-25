@@ -56,7 +56,7 @@ export function TopBar() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/70" />
             <input
               value={q} onChange={(e) => setQ(e.target.value)}
-              placeholder="Go to module…  e.g. §6, mesh, mashahd"
+              placeholder="Go to module… e.g. , mesh, mashahd"
               className="w-full bg-muted/30 rounded-full pl-9 pr-3 py-1.5 text-xs outline-none focus:bg-muted/60 transition"
             />
           </div>

@@ -1,4 +1,4 @@
-// §4 — Dynamic Regional Engine & Multi-Data-Plane Compliance (full 4.1 → 4.12)
+// — Dynamic Regional Engine & Multi-Data-Plane Compliance (full 4.1 → 4.12)
 import { PageShell, GlassCard, SectionHeader, StatTile } from "@/components/shell/PageShell";
 import { Globe2, ShieldAlert, Plane, RefreshCw, Lock, Megaphone, Check } from "lucide-react";
 import { useApp } from "@/providers/AppProvider";
@@ -6,32 +6,32 @@ import { KNOWN_COUNTRIES, configFor, planeFor } from "@/lib/dre";
 import { useState } from "react";
 
 const PLANES = [
-  { id: "global",  flag: "🌍", name: "Global",   desc: "Default plane. EG, SA, US, EU, MENA, Africa, Latam, SE Asia.", count: "150+ countries" },
-  { id: "china",   flag: "🇨🇳", name: "China",    desc: "Real-name verification, no anonymous posting, ICP licensing.", count: "1 country" },
-  { id: "russia",  flag: "🇷🇺", name: "Russia",   desc: "Roskomnadzor data localization. Russian-language defaults.", count: "1 country" },
-  { id: "iran",    flag: "🇮🇷", name: "Iran",      desc: "Sanctions compliance, no US-brand imagery in ads.", count: "1 country" },
-  { id: "vietnam", flag: "🇻🇳", name: "Vietnam",   desc: "Cyber-security law compliance, gov registration required.", count: "1 country" },
-  { id: "eu",      flag: "🇪🇺", name: "EU",       desc: "Full GDPR, cookie disclaimers, right-to-be-forgotten, DSA.", count: "27 countries" },
+  { id: "global", flag: "🌍", name: "Global", desc: "Default plane. EG, SA, US, EU, MENA, Africa, Latam, SE Asia.", count: "150+ countries" },
+  { id: "china", flag: "🇨🇳", name: "China", desc: "Real-name verification, no anonymous posting, ICP licensing.", count: "1 country" },
+  { id: "russia", flag: "🇷🇺", name: "Russia", desc: "Roskomnadzor data localization. Russian-language defaults.", count: "1 country" },
+  { id: "iran", flag: "🇮🇷", name: "Iran", desc: "Sanctions compliance, no US-brand imagery in ads.", count: "1 country" },
+  { id: "vietnam", flag: "🇻🇳", name: "Vietnam", desc: "Cyber-security law compliance, gov registration required.", count: "1 country" },
+  { id: "eu", flag: "🇪🇺", name: "EU", desc: "Full GDPR, cookie disclaimers, right-to-be-forgotten, DSA.", count: "27 countries" },
 ];
 
 // 4.5 compliance per plane
 const COMPLIANCE = [
-  { plane: "China (CN)",     items: ["Real-name verification (gov ID)", "No anonymous posting", "ICP license required", "Content filtered per CAC", "Payment via Alipay/WeChat Pay"] },
-  { plane: "Russia (RU)",    items: ["Roskomnadzor data localization", "Russian privacy law", "MIR payment integration", "No specific EN-only content"] },
-  { plane: "EU (GDPR)",      items: ["Cookie banner", "Data export within 30 days", "Right-to-be-forgotten", "DPA contact in app", "Targeted ads = opt-in only"] },
-  { plane: "Iran (IR)",      items: ["Sanctions compliance", "No US-brand ads", "Local mirror for content", "Mesh networking encouraged"] },
-  { plane: "Vietnam (VN)",    items: ["Gov registration of operators", "Cyber-security law", "Local content review board", "VND payment integration"] },
+  { plane: "China (CN)", items: ["Real-name verification (gov ID)", "No anonymous posting", "ICP license required", "Content filtered per CAC", "Payment via Alipay/WeChat Pay"] },
+  { plane: "Russia (RU)", items: ["Roskomnadzor data localization", "Russian privacy law", "MIR payment integration", "No specific EN-only content"] },
+  { plane: "EU (GDPR)", items: ["Cookie banner", "Data export within 30 days", "Right-to-be-forgotten", "DPA contact in app", "Targeted ads = opt-in only"] },
+  { plane: "Iran (IR)", items: ["Sanctions compliance", "No US-brand ads", "Local mirror for content", "Mesh networking encouraged"] },
+  { plane: "Vietnam (VN)", items: ["Gov registration of operators", "Cyber-security law", "Local content review board", "VND payment integration"] },
 ];
 
 // 4.6 Feature toggles by plane
 const FEATURE_TOGGLES = [
-  { feature: "Anonymous posting",     global: "✅",  china: "❌",  russia: "✅",  iran: "✅",  eu: "✅",   vietnam: "⚠️" },
-  { feature: "Federated Matrix",      global: "✅",  china: "❌",  russia: "⚠️",  iran: "⚠️",  eu: "✅",   vietnam: "✅" },
-  { feature: "IPFS public content",   global: "✅",  china: "❌",  russia: "✅",  iran: "✅",  eu: "✅",   vietnam: "✅" },
-  { feature: "NFC payments",          global: "✅",  china: "✅",  russia: "✅",  iran: "❌",  eu: "✅",   vietnam: "✅" },
-  { feature: "Mashahd PeerTube",      global: "✅",  china: "❌",  russia: "✅",  iran: "✅",  eu: "✅",   vietnam: "✅" },
-  { feature: "Local mesh (BLE)",       global: "✅",  china: "✅",  russia: "✅",  iran: "✅",  eu: "✅",   vietnam: "✅" },
-  { feature: "Voice/Video calls",     global: "✅",  china: "✅",  russia: "✅",  iran: "✅",  eu: "✅",   vietnam: "✅" },
+  { feature: "Anonymous posting", global: "✅", china: "❌", russia: "✅", iran: "✅", eu: "✅", vietnam: "⚠️" },
+  { feature: "Federated Matrix", global: "✅", china: "❌", russia: "⚠️", iran: "⚠️", eu: "✅", vietnam: "✅" },
+  { feature: "IPFS public content", global: "✅", china: "❌", russia: "✅", iran: "✅", eu: "✅", vietnam: "✅" },
+  { feature: "NFC payments", global: "✅", china: "✅", russia: "✅", iran: "❌", eu: "✅", vietnam: "✅" },
+  { feature: "Mashahd PeerTube", global: "✅", china: "❌", russia: "✅", iran: "✅", eu: "✅", vietnam: "✅" },
+  { feature: "Local mesh (BLE)", global: "✅", china: "✅", russia: "✅", iran: "✅", eu: "✅", vietnam: "✅" },
+  { feature: "Voice/Video calls", global: "✅", china: "✅", russia: "✅", iran: "✅", eu: "✅", vietnam: "✅" },
 ];
 
 export function DREScreen() {
@@ -43,7 +43,7 @@ export function DREScreen() {
       icon={Globe2}
       title={names.module_dre}
       arabicTitle="محرك المناطق"
-      section="§4"
+      section=""
       tagline="Smart traffic routing across six data planes — stay reachable everywhere"
       intro="Circle operates in a world of conflicting national laws and censorship regimes. Instead of building separate apps or asking users to 'choose a region', the DRE fetches a signed JSON configuration based on IP-derived country and instantly adapts every module — without an app update."
     >
@@ -54,10 +54,10 @@ export function DREScreen() {
         <StatTile label="Default lang" value={region.defaultLang ?? "—"} />
       </div>
 
-      {/* §4.1 Overview - already in intro */}
+      {/* Overview - already in intro */}
 
-      {/* §4.2 Global data planes */}
-      <SectionHeader title="§4.2 Six Global Data Planes" />
+      {/* Global data planes */}
+      <SectionHeader title="Six Global Data Planes" />
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-12">
         {PLANES.map((p) => (
           <GlassCard key={p.id}>
@@ -69,8 +69,8 @@ export function DREScreen() {
         ))}
       </div>
 
-      {/* §4.3 Country switcher (DRE in action) */}
-      <SectionHeader title="§4.3 Try the DRE" hint="Pick a country to re-evaluate config" />
+      {/* Country switcher (DRE in action) */}
+      <SectionHeader title="Try the DRE" hint="Pick a country to re-evaluate config" />
       <GlassCard className="mb-12">
         <p className="text-sm text-muted-foreground mb-3">
           Below is the live DRE in action. Click any country — Circle re-routes infrastructure, adjusts feature flags, and reloads UI strings without a single app update.
@@ -89,8 +89,8 @@ export function DREScreen() {
         </div>
       </GlassCard>
 
-      {/* §4.5 Compliance */}
-      <SectionHeader title="§4.5 Compliance per Plane" hint="What changes where" />
+      {/* Compliance */}
+      <SectionHeader title="Compliance per Plane" hint="What changes where" />
       <div className="grid sm:grid-cols-2 gap-3 mb-12">
         {COMPLIANCE.map((c) => (
           <GlassCard key={c.plane}>
@@ -106,8 +106,8 @@ export function DREScreen() {
         ))}
       </div>
 
-      {/* §4.6 Feature toggles */}
-      <SectionHeader title="§4.6 Dynamic Feature Toggling" hint="Which features ship where" />
+      {/* Feature toggles */}
+      <SectionHeader title="Dynamic Feature Toggling" hint="Which features ship where" />
       <GlassCard className="overflow-x-auto mb-12">
         <table className="w-full text-sm">
           <thead>
@@ -137,8 +137,8 @@ export function DREScreen() {
         </table>
       </GlassCard>
 
-      {/* §4.7 Travelers */}
-      <SectionHeader title="§4.7 Travelers (Roaming)" />
+      {/* Travelers */}
+      <SectionHeader title="Travelers (Roaming)" />
       <GlassCard className="mb-8">
         <p className="text-sm text-muted-foreground">
           <Plane className="inline w-4 h-4 mr-1 text-secondary" />
@@ -152,8 +152,8 @@ export function DREScreen() {
         </ul>
       </GlassCard>
 
-      {/* §4.8 Caching & fallback */}
-      <SectionHeader title="§4.8 Caching & Fallback" />
+      {/* Caching & fallback */}
+      <SectionHeader title="Caching & Fallback" />
       <GlassCard className="mb-8">
         <p className="text-sm text-muted-foreground">
           <RefreshCw className="inline w-4 h-4 mr-1 text-secondary" />
@@ -161,25 +161,25 @@ export function DREScreen() {
         </p>
       </GlassCard>
 
-      {/* §4.9 + 4.10 + 4.11 */}
-      <SectionHeader title="§4.9 → §4.11 Operational details" />
+      {/* + 4.10 + 4.11 */}
+      <SectionHeader title="→ Operational details" />
       <div className="grid sm:grid-cols-3 gap-3 mb-12">
         <GlassCard>
-          <h3 className="font-medium text-sm">§4.9 Adding a new region</h3>
+          <h3 className="font-medium text-sm">Adding a new region</h3>
           <p className="text-xs text-muted-foreground mt-1">A new data plane (e.g., India) needs only: Matrix homeserver + PeerTube + ntfy on local cloud, a new config JSON, and listing the country code. <strong>Zero code changes</strong> in mobile/web apps.</p>
         </GlassCard>
         <GlassCard>
-          <h3 className="font-medium text-sm flex items-center gap-2"><Lock className="w-3.5 h-3.5 text-secondary" /> §4.10 Config integrity</h3>
+          <h3 className="font-medium text-sm flex items-center gap-2"><Lock className="w-3.5 h-3.5 text-secondary" /> Config integrity</h3>
           <p className="text-xs text-muted-foreground mt-1">Configuration JSON is Ed25519-signed by Circle. The client verifies the signature before applying — prevents MITM attacks that could force a user into a rogue data plane.</p>
         </GlassCard>
         <GlassCard>
-          <h3 className="font-medium text-sm flex items-center gap-2"><Megaphone className="w-3.5 h-3.5 text-secondary" /> §4.11 Advertiser compliance</h3>
+          <h3 className="font-medium text-sm flex items-center gap-2"><Megaphone className="w-3.5 h-3.5 text-secondary" /> Advertiser compliance</h3>
           <p className="text-xs text-muted-foreground mt-1">Same campaign worldwide. DRE adds GDPR disclaimer in EU, blocks alcohol in CN if prohibited, swaps US-brand imagery in IR. No region-specific ad creative needed.</p>
         </GlassCard>
       </div>
 
-      {/* §4.12 Summary */}
-      <SectionHeader title="§4.12 Summary of Part 4" />
+      {/* Summary */}
+      <SectionHeader title="Summary of Part 4" />
       <GlassCard>
         <ul className="space-y-2">
           {[

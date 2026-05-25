@@ -1,4 +1,4 @@
-// §33 — Self-Host Nodes
+// — Self-Host Nodes
 import { PageShell, GlassCard, EmptyState, SectionHeader, StatTile } from "@/components/shell/PageShell";
 import { Server, ExternalLink } from "lucide-react";
 import { useApi } from "@/hooks/useApi";
@@ -15,7 +15,7 @@ export function SelfhostScreen() {
       icon={Server}
       title={names.module_selfhost}
       arabicTitle="الاستضافة الذاتية"
-      section="§33"
+      section=""
       tagline="Run your own Circle node — for one user, your family, or a million"
       intro="Every Circle module is fully self-hostable. Download the docker compose, point your domain, and you have a sovereign social platform running on hardware you own. Browse public community-run nodes below."
     >

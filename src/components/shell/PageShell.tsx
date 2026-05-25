@@ -9,7 +9,7 @@ export interface PageShellProps {
   title: ReactNode;
   /** Arabic / native name displayed above the title */
   arabicTitle?: ReactNode;
-  /** Blueprint section badge e.g. "§17" */
+  /** Blueprint section badge e.g. "" */
   section?: string;
   /** Short tagline shown under the title */
   tagline?: ReactNode;

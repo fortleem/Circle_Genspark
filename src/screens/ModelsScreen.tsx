@@ -1,4 +1,4 @@
-// §32 — AI Model Catalogue
+// — AI Model Catalogue
 import { PageShell, GlassCard, EmptyState, SectionHeader, StatTile } from "@/components/shell/PageShell";
 import { Bot, Download } from "lucide-react";
 import { useApi } from "@/hooks/useApi";
@@ -15,7 +15,7 @@ export function ModelsScreen() {
       icon={Bot}
       title={names.module_models}
       arabicTitle="كتالوج النماذج"
-      section="§32"
+      section=""
       tagline="On-device AI models — open-source, auditable, downloadable separately"
       intro="Circle ships a curated catalogue of small, efficient ONNX models. Required models are bundled; optional ones (specialized translation pairs, niche detectors) can be downloaded on demand to keep the base app small."
     >

@@ -1,4 +1,4 @@
-// §27 — Backup & Recovery
+// — Backup & Recovery
 import { PageShell, GlassCard, SectionHeader, StatTile, EmptyState } from "@/components/shell/PageShell";
 import { ArchiveRestore, Server, Cloud, HardDrive } from "lucide-react";
 import { useApi } from "@/hooks/useApi";
@@ -13,7 +13,7 @@ export function BackupScreen() {
       icon={ArchiveRestore}
       title={names.module_backup}
       arabicTitle="النسخ الاحتياطي"
-      section="§27"
+      section=""
       tagline="Your data, your backups — encrypted, federated, recoverable from anywhere"
       intro="Circle Backup creates encrypted snapshots of your full state (Wasl, Lamahat, Mail, Pay, ID, Contacts) and distributes them across IPFS, your own server, or trusted peer-mesh nodes. Restore on any new device with your Circle ID."
     >
@@ -27,9 +27,9 @@ export function BackupScreen() {
       <SectionHeader title="Backup destinations" />
       <div className="grid sm:grid-cols-3 gap-3 mb-8">
         {[
-          { icon: Cloud,     t: "IPFS pinning",          d: "Distributed storage across federated nodes" },
-          { icon: Server,    t: "Self-hosted",           d: "Your own Circle node or NAS" },
-          { icon: HardDrive, t: "Local + peer mesh",     d: "Encrypted shards across trusted peers" },
+          { icon: Cloud, t: "IPFS pinning", d: "Distributed storage across federated nodes" },
+          { icon: Server, t: "Self-hosted", d: "Your own Circle node or NAS" },
+          { icon: HardDrive, t: "Local + peer mesh", d: "Encrypted shards across trusted peers" },
         ].map((d) => (
           <GlassCard key={d.t}>
             <d.icon className="w-5 h-5 text-secondary mb-2" />

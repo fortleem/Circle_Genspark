@@ -1,4 +1,4 @@
-// §30 — Transparency / Ledger
+// — Transparency / Ledger
 import { PageShell, GlassCard, EmptyState, SectionHeader, StatTile } from "@/components/shell/PageShell";
 import { BarChart3 } from "lucide-react";
 import { useApi } from "@/hooks/useApi";
@@ -15,7 +15,7 @@ export function TransparencyScreen() {
       icon={BarChart3}
       title={names.nav_transparency}
       arabicTitle="الشفافية"
-      section="§30"
+      section=""
       tagline="Every dollar in, every dollar out — published monthly"
       intro="Circle publishes a full revenue & expenditure ledger each month. Ads, premium subscriptions, federated node fees — all sources and allocations are publicly auditable."
     >

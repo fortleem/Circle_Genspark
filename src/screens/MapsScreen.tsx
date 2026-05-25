@@ -1,4 +1,4 @@
-// §23 — Maps (Google Maps replacement)
+// — Maps (Google Maps replacement)
 import { PageShell, GlassCard, EmptyState, SectionHeader, StatTile } from "@/components/shell/PageShell";
 import { Map as MapIcon, Download } from "lucide-react";
 import { useApi } from "@/hooks/useApi";
@@ -15,7 +15,7 @@ export function MapsScreen() {
       icon={MapIcon}
       title={names.module_maps}
       arabicTitle="الخرائط"
-      section="§23"
+      section=""
       tagline="Offline-first maps that don't track your location"
       intro="Circle Maps uses OpenStreetMap tiles, pinned via IPFS for offline navigation. No telemetry, no ad-supported POIs, full vector style customization, and routing computed entirely on-device."
     >

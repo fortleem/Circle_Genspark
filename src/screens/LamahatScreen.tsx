@@ -1,6 +1,6 @@
-// §8 — Lamahat (Photos). Prototype masonry grid preserved; wired to /api/lamahat/photos.
-// Adds §8.2 feed tabs, §8.4 nearby precision selector, §8.5 visual search hint,
-// §8.6 stories/memories, §8.7 privacy, §8.8 NSFW handling, §8.13 summary.
+// — Lamahat (Photos). Prototype masonry grid preserved; wired to /api/lamahat/photos.
+// Adds feed tabs, nearby precision selector, visual search hint,
+// stories/memories, privacy, NSFW handling, summary.
 import { useEffect, useState, useMemo } from "react";
 import {
   Sparkles, Layers, Heart, MapPin, Search, Shield, Camera, Eye, EyeOff,
@@ -52,7 +52,7 @@ export function LamahatScreen() {
             Lamahat <span className="text-base text-muted-foreground tracking-widest uppercase">لمحات</span>
           </h1>
           <p className="text-[10px] uppercase tracking-widest text-secondary mt-1">
-            §8 · IPFS · On-device AI
+            · IPFS · On-device AI
           </p>
         </div>
         <button className="text-xs px-3 py-1.5 rounded-full bg-gradient-gold text-brand-charcoal font-medium flex items-center gap-1">
@@ -60,7 +60,7 @@ export function LamahatScreen() {
         </button>
       </div>
 
-      {/* §8.2 Feed tabs */}
+      {/* Feed tabs */}
       <div className="flex gap-2 px-5 mt-4 overflow-x-auto scrollbar-hide">
         {(["Following", "Nearby", "Trending", "Memories"] as Tab[]).map((f) => (
           <button
@@ -75,13 +75,13 @@ export function LamahatScreen() {
         ))}
       </div>
 
-      {/* §8.4 Nearby precision selector (only shown when on Nearby tab) */}
+      {/* Nearby precision selector (only shown when on Nearby tab) */}
       {tab === "Nearby" && (
         <div className="mx-5 mt-4 rounded-2xl border border-secondary/30 bg-secondary/5 p-3">
           <div className="flex items-center gap-2 mb-2">
             <MapPin className="w-3.5 h-3.5 text-secondary" />
             <span className="text-[10px] uppercase tracking-widest text-secondary">
-              §8.4 Location precision · default Neighbourhood
+              Location precision · default Neighbourhood
             </span>
           </div>
           <div className="flex gap-1.5 flex-wrap">
@@ -113,7 +113,7 @@ export function LamahatScreen() {
         </div>
       )}
 
-      {/* §8.5 Visual search toggle */}
+      {/* Visual search toggle */}
       <div className="px-5 mt-4">
         <button
           onClick={() => setVisualSearch((v) => !v)}
@@ -123,16 +123,16 @@ export function LamahatScreen() {
         >
           <Search className="w-4 h-4 text-muted-foreground" />
           <span className="flex-1 text-start text-sm text-muted-foreground">
-            {visualSearch ? "Drop or capture an image — CLIP runs locally" : "Search by photo (on-device CLIP §8.5)"}
+            {visualSearch ? "Drop or capture an image — CLIP runs locally" : "Search by photo (on-device CLIP )"}
           </span>
           <Camera className="w-4 h-4 text-secondary" />
         </button>
       </div>
 
-      {/* Stories — §8.6.1 */}
+      {/* Stories — */}
       <div className="mt-5">
         <div className="px-5 mb-1.5 flex items-baseline justify-between">
-          <span className="text-[10px] uppercase tracking-widest text-secondary">§8.6.1 Stories · 24h</span>
+          <span className="text-[10px] uppercase tracking-widest text-secondary">Stories · 24h</span>
           <span className="text-[10px] text-muted-foreground">Highlights save permanently</span>
         </div>
         <div className="flex gap-3 px-5 overflow-x-auto scrollbar-hide">
@@ -152,14 +152,14 @@ export function LamahatScreen() {
         </div>
       </div>
 
-      {/* §8.6.2 Memories banner — on this day */}
+      {/* Memories banner — on this day */}
       <div className="mx-5 mt-5 rounded-2xl border border-secondary/30 bg-gradient-to-br from-secondary/15 to-transparent p-4 flex items-center gap-3 relative overflow-hidden">
         <div className="absolute -top-12 -right-8 w-40 h-40 bg-secondary/20 rounded-full blur-3xl" />
         <div className="w-12 h-12 rounded-xl bg-gradient-gold flex items-center justify-center">
           <Sparkles className="w-5 h-5 text-brand-charcoal" />
         </div>
         <div className="flex-1">
-          <div className="text-[10px] uppercase tracking-widest text-secondary">§8.6.2 On this day</div>
+          <div className="text-[10px] uppercase tracking-widest text-secondary">On this day</div>
           <div className="font-display text-lg">A year in golden hour</div>
           <div className="text-xs text-muted-foreground">42 photos · 8 places · generated locally · no cloud</div>
         </div>
@@ -213,28 +213,28 @@ export function LamahatScreen() {
         </div>
       )}
 
-      {/* §8.7 + §8.8 Privacy & NSFW notice */}
+      {/* + Privacy & NSFW notice */}
       <div className="mx-5 mt-6 rounded-2xl glass p-4">
         <div className="flex items-center gap-2 mb-3">
           <Shield className="w-4 h-4 text-secondary" />
-          <h3 className="font-display text-sm">§8.7 Privacy · §8.8 NSFW handling</h3>
+          <h3 className="font-display text-sm">Privacy · NSFW handling</h3>
         </div>
         <div className="grid grid-cols-2 gap-2 text-[11px]">
-          <PolicyChip icon={EyeOff} label="Screenshot block" desc="Inherited §6.3" />
+          <PolicyChip icon={EyeOff} label="Screenshot block" desc="Inherited " />
           <PolicyChip icon={Eye} label="Forwarding consent" desc="One-time per share" />
           <PolicyChip icon={Hash} label="Per-post audience" desc="Followers / Circle / Public" />
           <PolicyChip icon={BadgeCheck} label="On-device NSFW" desc="Falconsai · score >0.7 blur" />
         </div>
       </div>
 
-      {/* §8.13 summary footer */}
+      {/* summary footer */}
       <div className="mx-5 mt-4 rounded-2xl border border-secondary/30 bg-gradient-to-br from-secondary/10 to-transparent p-4 relative overflow-hidden">
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-secondary/15 rounded-full blur-3xl" />
         <div className="relative">
           <div className="flex items-center gap-2 mb-2">
             <BadgeCheck className="w-4 h-4 text-secondary" />
             <span className="text-[10px] uppercase tracking-widest text-secondary">
-              §8.13 Summary · §8.10 Zero-cost
+              Summary · Zero-cost
             </span>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">

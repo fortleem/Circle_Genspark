@@ -1,4 +1,4 @@
-// §25 — Mini Apps
+// — Mini Apps
 import { PageShell, GlassCard, EmptyState, SectionHeader } from "@/components/shell/PageShell";
 import { Grid3X3 } from "lucide-react";
 import { useApi } from "@/hooks/useApi";
@@ -14,7 +14,7 @@ export function AppsScreen() {
       icon={Grid3X3}
       title={names.nav_apps}
       arabicTitle="التطبيقات المصغّرة"
-      section="§25"
+      section=""
       tagline="Sandboxed third-party apps, with permissions you control"
       intro="Mini Apps run in a deno-style WASM sandbox with explicit per-permission grants (contacts, location, mail). Developers publish via IPFS, install counts are public, and any app can be self-hosted."
     >

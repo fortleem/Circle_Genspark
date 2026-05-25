@@ -1,4 +1,4 @@
-// §34 — Roadmap
+// — Roadmap
 import { PageShell, GlassCard, EmptyState, SectionHeader } from "@/components/shell/PageShell";
 import { ListChecks, Check, Clock, Circle as CircleIcon } from "lucide-react";
 import { useApi } from "@/hooks/useApi";
@@ -6,9 +6,9 @@ import type { RoadmapPhase } from "@/lib/api";
 import { useApp } from "@/providers/AppProvider";
 
 const STATUS_MAP: Record<string, { icon: any; color: string }> = {
-  done:        { icon: Check,      color: "text-secondary" },
-  "in-progress": { icon: Clock,    color: "text-primary" },
-  planned:     { icon: CircleIcon, color: "text-muted-foreground" },
+  done: { icon: Check, color: "text-secondary" },
+  "in-progress": { icon: Clock, color: "text-primary" },
+  planned: { icon: CircleIcon, color: "text-muted-foreground" },
 };
 
 export function RoadmapScreen() {
@@ -20,7 +20,7 @@ export function RoadmapScreen() {
       icon={ListChecks}
       title={names.module_roadmap}
       arabicTitle="خارطة الطريق"
-      section="§34"
+      section=""
       tagline="Public, dated, voted-on roadmap — no secret backroom planning"
       intro="Every phase is community-reviewed and time-boxed. Deliverables ship to a public branch first; users vote on prioritization at quarterly town halls."
     >

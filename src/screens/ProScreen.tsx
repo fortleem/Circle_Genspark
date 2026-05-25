@@ -1,5 +1,5 @@
-// §14 — Professional Network. Prototype design language.
-// Covers §14 jobs board, profile verification via Circle ID, regional matching,
+// — Professional Network. Prototype design language.
+// Covers jobs board, profile verification via Circle ID, regional matching,
 // no surveillance / no pay-to-play ranking.
 import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
@@ -70,7 +70,7 @@ export function ProScreen() {
       <ProtoHeader
         title="Pro"
         arabic="الشبكة المهنية"
-        section="§14"
+        section=""
         tagline="Hire & be hired — no surveillance, no pay-to-play"
         right={
           <button className="w-10 h-10 rounded-full bg-gradient-hero text-primary-foreground flex items-center justify-center">
@@ -236,15 +236,15 @@ export function ProScreen() {
       <div className="mx-5 rounded-2xl glass p-4">
         <div className="flex items-center gap-2 mb-2">
           <ShieldCheck className="w-4 h-4 text-secondary" />
-          <h3 className="font-display text-sm">§14 + §16 Verification</h3>
+          <h3 className="font-display text-sm">+ Verification</h3>
         </div>
         <p className="text-xs text-muted-foreground leading-relaxed">
-          Credentials verified via Circle ID (§16/§21). No engagement-bait ranking, no "social selling"
+          Credentials verified via Circle ID (/). No engagement-bait ranking, no "social selling"
           funnel. Federated via ActivityPub — your profile lives on your own homeserver.
         </p>
       </div>
 
-      <ProtoFooter section="§14 Summary" title="Career platform without surveillance">
+      <ProtoFooter section="Summary" title="Career platform without surveillance">
         Open job board · skill-verified profiles · regional matching · IPFS-hosted résumés ·
         no recruiter spam. Federation lets professional networks span multiple Circle instances.
       </ProtoFooter>

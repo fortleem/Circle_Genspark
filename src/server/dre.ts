@@ -1,5 +1,5 @@
 // Circle — Dynamic Regional Engine (DRE)
-// Per blueprint §4: six data planes, instant compliance, no app update needed.
+// Per blueprint : six data planes, instant compliance, no app update needed.
 
 export type DataPlane = 'global' | 'china' | 'russia' | 'iran' | 'vietnam' | 'eu'
 

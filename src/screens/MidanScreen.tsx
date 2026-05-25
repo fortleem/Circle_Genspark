@@ -1,6 +1,6 @@
-// §9 — Midan (Square). Prototype feed-card UI preserved; wired to /api/midan/posts & /trending.
-// Covers §9.2 feed tabs, §9.4 anonymous posting, §9.5 ActivityPub federation chip,
-// §9.6 trending strip from real API, §9.7 moderation badge, §9.8 privacy hints, §9.14 summary.
+// — Midan (Square). Prototype feed-card UI preserved; wired to /api/midan/posts & /trending.
+// Covers feed tabs, anonymous posting, ActivityPub federation chip,
+// trending strip from real API, moderation badge, privacy hints, summary.
 import { useEffect, useMemo, useState } from "react";
 import {
   Heart, MessageCircle, Repeat2, Share2, ShieldCheck, Mic, BadgeCheck, BarChart3, Radio,
@@ -12,10 +12,10 @@ import { apiGet, apiPost, type MidanPost } from "@/lib/api";
 type Feed = "for_you" | "following" | "local" | "global";
 
 const FEED_TABS: { k: Feed; l: string }[] = [
-  { k: "for_you",   l: "For you" },
+  { k: "for_you", l: "For you" },
   { k: "following", l: "Following" },
-  { k: "local",     l: "Local · Cairo" },
-  { k: "global",    l: "Global · Fediverse" },
+  { k: "local", l: "Local · Cairo" },
+  { k: "global", l: "Global · Fediverse" },
 ];
 
 interface TrendingTag { hashtag: string; count?: number; score?: number; post_count?: number }
@@ -46,7 +46,7 @@ export function MidanScreen() {
       .finally(() => setLoading(false));
   }, [feed]);
 
-  // §9.4 Generate a deterministic-looking pseudonym for the composer
+  // Generate a deterministic-looking pseudonym for the composer
   const pseudo = useMemo(() => {
     const code = Math.floor(Math.random() * 0xFFFF).toString(16).toUpperCase().padStart(4, "0");
     return `مواظب #${code}`;
@@ -87,7 +87,7 @@ export function MidanScreen() {
             Midan <span className="text-base text-muted-foreground tracking-widest uppercase">ميدان</span>
           </h1>
           <p className="text-[10px] uppercase tracking-widest text-secondary mt-1">
-            §9 · ActivityPub · Federated
+            · ActivityPub · Federated
           </p>
         </div>
         <button className="text-xs px-3 py-1.5 rounded-full glass flex items-center gap-1.5">
@@ -95,7 +95,7 @@ export function MidanScreen() {
         </button>
       </div>
 
-      {/* §9.2 Feed tabs */}
+      {/* Feed tabs */}
       <div className="flex gap-2 px-5 mt-4 overflow-x-auto scrollbar-hide">
         {FEED_TABS.map((f) => (
           <button
@@ -110,7 +110,7 @@ export function MidanScreen() {
         ))}
       </div>
 
-      {/* Composer — with §9.4 anonymous toggle */}
+      {/* Composer — with anonymous toggle */}
       <div className="mx-5 mt-4 glass rounded-2xl p-3">
         <div className="flex items-start gap-3">
           <div className={`w-9 h-9 rounded-full flex items-center justify-center font-display text-sm shrink-0 ${
@@ -134,11 +134,11 @@ export function MidanScreen() {
                     ? "border-secondary/40 bg-secondary/15 text-secondary"
                     : "border-border text-muted-foreground hover:bg-muted/30"
                 }`}
-                title="§9.4 — server never stores identity ↔ pseudonym mapping"
+                title="— server never stores identity ↔ pseudonym mapping"
               >
                 <EyeOff className="w-3 h-3" /> Anonymous
               </button>
-              <span className="text-muted-foreground">§9.4 pseudonym unmaskable only via jury / lawful order</span>
+              <span className="text-muted-foreground">pseudonym unmaskable only via jury / lawful order</span>
             </div>
           </div>
           <button className="w-9 h-9 rounded-full bg-secondary/20 text-secondary flex items-center justify-center"><Mic className="w-4 h-4" /></button>
@@ -152,18 +152,18 @@ export function MidanScreen() {
         </div>
       </div>
 
-      {/* §9.5 Federation chip */}
+      {/* Federation chip */}
       <div className="mx-5 mt-3 rounded-2xl border border-secondary/20 bg-secondary/5 p-3 flex items-center gap-2 text-[11px]">
         <Globe2 className="w-3.5 h-3.5 text-secondary" />
-        <span className="uppercase tracking-wider text-secondary text-[9px]">§9.5 Federation</span>
+        <span className="uppercase tracking-wider text-secondary text-[9px]">Federation</span>
         <span className="text-foreground/80">Mastodon · Pleroma · Misskey · Pixelfed</span>
         <span className="ms-auto text-muted-foreground text-[10px]">WebFinger + HTTP Signature</span>
       </div>
 
-      {/* §9.6 Trending strip — real data */}
+      {/* Trending strip — real data */}
       <div className="mt-4 px-5">
         <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2 flex items-center gap-1">
-          <Hash className="w-3 h-3" /> §9.6 Trending velocity · cached aggregate
+          <Hash className="w-3 h-3" /> Trending velocity · cached aggregate
         </div>
         <div className="flex gap-2 overflow-x-auto scrollbar-hide">
           {trending.length === 0 ? (
@@ -221,9 +221,9 @@ export function MidanScreen() {
                       </div>
                     )}
 
-                    {/* §9.7 AI moderation badge */}
+                    {/* AI moderation badge */}
                     <div className="mt-2 inline-flex items-center gap-1 text-[10px] text-secondary">
-                      <ShieldCheck className="w-3 h-3" /> §9.7 AI verified · No misinformation
+                      <ShieldCheck className="w-3 h-3" /> AI verified · No misinformation
                       <span className="ms-2 inline-flex items-center gap-0.5 text-muted-foreground">
                         <Sparkles className="w-2.5 h-2.5" /> on-device
                       </span>
@@ -242,7 +242,7 @@ export function MidanScreen() {
                       <button className="flex items-center gap-1.5 hover:text-foreground transition">
                         <Share2 className="w-4 h-4" />
                       </button>
-                      <button className="flex items-center gap-1.5 hover:text-foreground ms-auto transition" title="§9.7 Report">
+                      <button className="flex items-center gap-1.5 hover:text-foreground ms-auto transition" title="Report">
                         <Flag className="w-4 h-4" />
                       </button>
                       <button className="flex items-center gap-1.5 hover:text-foreground transition" title="Engagement">
@@ -257,18 +257,18 @@ export function MidanScreen() {
         </ul>
       )}
 
-      {/* §9.13 + §9.14 footer */}
+      {/* + footer */}
       <div className="mx-5 mt-8 rounded-2xl border border-secondary/30 bg-gradient-to-br from-secondary/10 to-transparent p-4 relative overflow-hidden">
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-secondary/15 rounded-full blur-3xl" />
         <div className="relative">
           <div className="flex items-center gap-2 mb-2">
             <BadgeCheck className="w-4 h-4 text-secondary" />
             <span className="text-[10px] uppercase tracking-widest text-secondary">
-              §9.13 Data planes · §9.14 Summary
+              Data planes · Summary
             </span>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            §9.5.3 federation blocked for China plane, whitelisted for Russia/Iran. Anonymous unmasking requires community jury (§17.4) or lawful court order. No promoted tweets — only labelled sponsored hashtags from §7.3.5.
+            federation blocked for China plane, whitelisted for Russia/Iran. Anonymous unmasking requires community jury () or lawful court order. No promoted tweets — only labelled sponsored hashtags from .
           </p>
         </div>
       </div>

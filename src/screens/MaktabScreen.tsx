@@ -1,7 +1,7 @@
-// §12 — Educational & Institutional Workspaces (Wasl Maktab). Prototype design.
-// Covers §12.2 Multi-audience, §12.3 Onboarding, §12.4 Features (assignments/grades/
-// attendance/conferences/fees/permission), §12.5 Zero-cost, §12.6 Minors compliance,
-// §12.10 Audit, §12.12 Comparison.
+// — Educational & Institutional Workspaces (Wasl Maktab). Prototype design.
+// Covers Multi-audience, Onboarding, Features (assignments/grades/
+// attendance/conferences/fees/permission), Zero-cost, Minors compliance,
+// Audit, Comparison.
 import { motion } from "framer-motion";
 import {
   Building2, GraduationCap, FileText, Video, Calendar, FolderOpen, Upload,
@@ -11,20 +11,20 @@ import {
 import { ProtoHeader, ProtoFooter } from "@/components/shell/ProtoHeader";
 
 const FEATURES = [
-  { icon: ClipboardList, num: "12.4.1", name: "Assignments",    desc: "Submission · auto-grade · feedback inline" },
-  { icon: BarChart3,     num: "12.4.2", name: "Grade Publishing", desc: "Per-student dashboard · weighted rubrics" },
-  { icon: UserCheck,     num: "12.4.3", name: "Attendance",      desc: "QR check-in · BLE proximity · roll-call bot" },
-  { icon: Users,         num: "12.4.4", name: "Parent-Teacher",  desc: "Booked slots · video room · transcript" },
-  { icon: CreditCard,    num: "12.4.5", name: "Fee Payment",     desc: "Optional Paymob/Fawry · school-owned wallet" },
+  { icon: ClipboardList, num: "12.4.1", name: "Assignments", desc: "Submission · auto-grade · feedback inline" },
+  { icon: BarChart3, num: "12.4.2", name: "Grade Publishing", desc: "Per-student dashboard · weighted rubrics" },
+  { icon: UserCheck, num: "12.4.3", name: "Attendance", desc: "QR check-in · BLE proximity · roll-call bot" },
+  { icon: Users, num: "12.4.4", name: "Parent-Teacher", desc: "Booked slots · video room · transcript" },
+  { icon: CreditCard, num: "12.4.5", name: "Fee Payment", desc: "Optional Paymob/Fawry · school-owned wallet" },
   { icon: FileSignature, num: "12.4.6", name: "Permission slips",desc: "Digital consent · legal-guardian signature" },
 ];
 
 const TOOLS = [
-  { icon: FileText,   name: "Docs",    desc: "Collaborative · E2EE · Markdown export" },
-  { icon: Video,      name: "Meet",    desc: "E2EE video · up to 100 participants" },
-  { icon: Calendar,   name: "Cal",     desc: "Shared CalDAV · syncs Outlook/Apple" },
-  { icon: FolderOpen, name: "Drive",   desc: "IPFS-pinned files · version history" },
-  { icon: BookOpen,   name: "Learn",   desc: "Courses · quizzes · certificates on Circle ID" },
+  { icon: FileText, name: "Docs", desc: "Collaborative · E2EE · Markdown export" },
+  { icon: Video, name: "Meet", desc: "E2EE video · up to 100 participants" },
+  { icon: Calendar, name: "Cal", desc: "Shared CalDAV · syncs Outlook/Apple" },
+  { icon: FolderOpen, name: "Drive", desc: "IPFS-pinned files · version history" },
+  { icon: BookOpen, name: "Learn", desc: "Courses · quizzes · certificates on Circle ID" },
 ];
 
 export function MaktabScreen() {
@@ -33,7 +33,7 @@ export function MaktabScreen() {
       <ProtoHeader
         title="Maktab"
         arabic="المكتب"
-        section="§12"
+        section=""
         tagline="Schools · institutions · workspaces"
         right={
           <button className="text-xs px-3 py-1.5 rounded-full bg-gradient-gold text-brand-charcoal font-medium flex items-center gap-1">
@@ -42,7 +42,7 @@ export function MaktabScreen() {
         }
       />
 
-      {/* §12.1 Overview hero */}
+      {/* Overview hero */}
       <div className="mx-5 rounded-2xl border border-secondary/30 bg-gradient-to-br from-secondary/15 to-transparent p-4 relative overflow-hidden">
         <div className="absolute -top-12 -right-8 w-40 h-40 bg-secondary/20 rounded-full blur-3xl" />
         <div className="relative flex items-start gap-3">
@@ -50,7 +50,7 @@ export function MaktabScreen() {
             <GraduationCap className="w-5 h-5 text-brand-charcoal" />
           </div>
           <div className="flex-1">
-            <div className="text-[10px] uppercase tracking-widest text-secondary">§12.1 Overview</div>
+            <div className="text-[10px] uppercase tracking-widest text-secondary">Overview</div>
             <div className="font-display text-lg mt-0.5">Self-hosted Matrix for schools & companies</div>
             <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
               Same Wasl backbone — added admin tools, audit log, retention rules, fee payment hooks.
@@ -60,10 +60,10 @@ export function MaktabScreen() {
         </div>
       </div>
 
-      {/* §12.2 Multi-audience */}
+      {/* Multi-audience */}
       <div className="px-5">
         <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
-          §12.2 Multi-audience management
+          Multi-audience management
         </div>
         <div className="grid grid-cols-3 gap-2">
           {["Students", "Teachers", "Parents"].map((aud) => (
@@ -76,11 +76,11 @@ export function MaktabScreen() {
         </div>
       </div>
 
-      {/* §12.3 CSV onboarding */}
+      {/* CSV onboarding */}
       <div className="mx-5 glass rounded-2xl p-4">
         <div className="flex items-center gap-2 mb-2">
           <Upload className="w-4 h-4 text-secondary" />
-          <h3 className="font-display text-sm">§12.3 CSV onboarding</h3>
+          <h3 className="font-display text-sm">CSV onboarding</h3>
         </div>
         <p className="text-xs text-muted-foreground leading-relaxed">
           Drop a CSV of <code className="text-secondary">email, role, grade, parent_email</code> →
@@ -89,10 +89,10 @@ export function MaktabScreen() {
         </p>
       </div>
 
-      {/* §12.4 Feature grid */}
+      {/* Feature grid */}
       <div className="px-5">
         <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
-          §12.4 Education-specific features
+          Education-specific features
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {FEATURES.map((f, i) => (
@@ -120,7 +120,7 @@ export function MaktabScreen() {
         </div>
       </div>
 
-      {/* §12.8 / suite tools */}
+      {/* / suite tools */}
       <div className="px-5">
         <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
           Workspace suite
@@ -136,11 +136,11 @@ export function MaktabScreen() {
         </div>
       </div>
 
-      {/* §12.6 Minors compliance */}
+      {/* Minors compliance */}
       <div className="mx-5 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4">
         <div className="flex items-center gap-2 mb-2">
           <ShieldCheck className="w-4 h-4 text-amber-500" />
-          <h3 className="font-display text-sm">§12.6 Minors compliance</h3>
+          <h3 className="font-display text-sm">Minors compliance</h3>
         </div>
         <ul className="text-xs text-muted-foreground space-y-1">
           <li>• Under-13: no public posting, parent-only contact</li>
@@ -150,7 +150,7 @@ export function MaktabScreen() {
         </ul>
       </div>
 
-      <ProtoFooter section="§12.13 Summary" title="Sovereign learning OS">
+      <ProtoFooter section="Summary" title="Sovereign learning OS">
         Multi-audience management · CSV provisioning · assignments / grades / attendance ·
         parent-teacher · optional fee payment · minors-safe by design · IPFS files · per-class audit log.
       </ProtoFooter>

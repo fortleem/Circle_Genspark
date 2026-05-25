@@ -1,4 +1,4 @@
-// §24 — Translation (on-device)
+// — Translation (on-device)
 import { PageShell, GlassCard, SectionHeader } from "@/components/shell/PageShell";
 import { Languages, Sparkles } from "lucide-react";
 import { useState } from "react";
@@ -28,7 +28,7 @@ export function TranslateScreen() {
       icon={Languages}
       title={names.module_translate}
       arabicTitle="الترجمة"
-      section="§24"
+      section=""
       tagline="40+ languages, on-device, no text leaves your phone"
       intro="Circle Translate uses NLLB-200 ONNX models running fully offline. Speech-to-speech, OCR, and live conversation modes — all without sending a single word to a remote server."
     >
