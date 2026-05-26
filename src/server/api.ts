@@ -289,6 +289,187 @@ api.get('/wasl/verify-device/:user_id', async (c) => {
   return c.json({ verifications: rows })
 })
 
+// ─── Wasl reactions (per-message emoji) ───────────────────────────
+api.post('/wasl/messages/:id/react', async (c) => {
+  const id = c.req.param('id')
+  const body = await c.req.json<{ user_id: number; emoji: string }>()
+  if (!body.user_id || !body.emoji) return c.json({ error: 'invalid' }, 400)
+  // Toggle: if exists, remove; else insert
+  const existing = await first<any>(c.env.DB,
+    'SELECT 1 AS x FROM wasl_reactions WHERE message_id = ? AND user_id = ? AND emoji = ?',
+    id, body.user_id, body.emoji)
+  if (existing) {
+    await run(c.env.DB,
+      'DELETE FROM wasl_reactions WHERE message_id = ? AND user_id = ? AND emoji = ?',
+      id, body.user_id, body.emoji)
+    return c.json({ ok: true, action: 'removed' })
+  }
+  await run(c.env.DB,
+    'INSERT INTO wasl_reactions (message_id, user_id, emoji) VALUES (?, ?, ?)',
+    id, body.user_id, body.emoji)
+  // Bump broadcast reactions counter if room is a channel
+  const msg = await first<any>(c.env.DB,
+    'SELECT room_id FROM messages WHERE id = ?', id)
+  if (msg) {
+    await run(c.env.DB,
+      'UPDATE wasl_broadcasts SET reactions_total = reactions_total + 1 WHERE room_id = ?',
+      msg.room_id)
+  }
+  return c.json({ ok: true, action: 'added' })
+})
+
+api.get('/wasl/messages/:id/reactions', async (c) => {
+  const id = c.req.param('id')
+  const rows = await all<any>(c.env.DB,
+    'SELECT emoji, COUNT(*) AS count FROM wasl_reactions WHERE message_id = ? GROUP BY emoji',
+    id)
+  return c.json({ reactions: rows })
+})
+
+// ─── Wasl subscriptions (broadcast follow / unfollow) ───────────────────────────
+api.post('/wasl/rooms/:id/subscribe', async (c) => {
+  const id = c.req.param('id')
+  const body = await c.req.json<{ user_id: number }>()
+  if (!body.user_id) return c.json({ error: 'user_id_required' }, 400)
+  const existing = await first<any>(c.env.DB,
+    'SELECT 1 AS x FROM wasl_subscriptions WHERE room_id = ? AND user_id = ?',
+    id, body.user_id)
+  if (existing) {
+    await run(c.env.DB,
+      'DELETE FROM wasl_subscriptions WHERE room_id = ? AND user_id = ?',
+      id, body.user_id)
+    await run(c.env.DB,
+      'UPDATE wasl_broadcasts SET subscriber_count = MAX(0, subscriber_count - 1) WHERE room_id = ?',
+      id)
+    return c.json({ ok: true, subscribed: false })
+  }
+  await run(c.env.DB,
+    'INSERT INTO wasl_subscriptions (room_id, user_id) VALUES (?, ?)',
+    id, body.user_id)
+  await run(c.env.DB,
+    'INSERT OR IGNORE INTO wasl_broadcasts (room_id, owner_id) VALUES (?, ?)',
+    id, body.user_id)
+  await run(c.env.DB,
+    'UPDATE wasl_broadcasts SET subscriber_count = subscriber_count + 1 WHERE room_id = ?',
+    id)
+  return c.json({ ok: true, subscribed: true })
+})
+
+api.get('/wasl/rooms/:id/subscription/:user_id', async (c) => {
+  const room_id = c.req.param('id')
+  const user_id = c.req.param('user_id')
+  const row = await first<any>(c.env.DB,
+    'SELECT subscribed_at FROM wasl_subscriptions WHERE room_id = ? AND user_id = ?',
+    room_id, user_id)
+  return c.json({ subscribed: !!row, since: row?.subscribed_at })
+})
+
+// ─── Wasl broadcast analytics (owner-only aggregates) ──────────────
+api.get('/wasl/broadcasts/:id/analytics', async (c) => {
+  const id = c.req.param('id')
+  const meta = await first<any>(c.env.DB,
+    'SELECT * FROM wasl_broadcasts WHERE room_id = ?', id)
+  const subs = await first<{ n: number }>(c.env.DB,
+    'SELECT COUNT(*) AS n FROM wasl_subscriptions WHERE room_id = ?', id)
+  const messages = await first<{ n: number }>(c.env.DB,
+    'SELECT COUNT(*) AS n FROM messages WHERE room_id = ?', id)
+  const reactions = await first<{ n: number }>(c.env.DB,
+    `SELECT COUNT(*) AS n FROM wasl_reactions r
+     JOIN messages m ON m.id = r.message_id
+     WHERE m.room_id = ?`, id)
+  return c.json({
+    analytics: {
+      subscribers: subs?.n ?? 0,
+      messages: messages?.n ?? 0,
+      reactions: reactions?.n ?? 0,
+      reach_estimate: meta?.reach_estimate ?? (subs?.n ?? 0),
+      created_at: meta?.created_at ?? null,
+    }
+  })
+})
+
+// ─── Wasl per-room overrides (TTL, notifications, mute) ───────────────────────────
+api.post('/wasl/rooms/:id/override', async (c) => {
+  const room_id = c.req.param('id')
+  const body = await c.req.json<{
+    user_id: number
+    disappearing_ttl?: number | null
+    notifications?: 'all' | 'mentions' | 'none'
+    pinned?: number
+    muted_until?: string | null
+  }>()
+  if (!body.user_id) return c.json({ error: 'user_id_required' }, 400)
+  // Upsert row
+  await run(c.env.DB, `
+    INSERT INTO wasl_room_overrides (room_id, user_id, disappearing_ttl, notifications, pinned, muted_until)
+    VALUES (?, ?, ?, ?, ?, ?)
+    ON CONFLICT(room_id, user_id) DO UPDATE SET
+      disappearing_ttl = COALESCE(excluded.disappearing_ttl, wasl_room_overrides.disappearing_ttl),
+      notifications    = COALESCE(excluded.notifications, wasl_room_overrides.notifications),
+      pinned           = COALESCE(excluded.pinned, wasl_room_overrides.pinned),
+      muted_until      = COALESCE(excluded.muted_until, wasl_room_overrides.muted_until)
+  `,
+    room_id, body.user_id,
+    body.disappearing_ttl ?? null,
+    body.notifications ?? null,
+    body.pinned ?? null,
+    body.muted_until ?? null)
+  const row = await first<any>(c.env.DB,
+    'SELECT * FROM wasl_room_overrides WHERE room_id = ? AND user_id = ?',
+    room_id, body.user_id)
+  return c.json({ ok: true, override: row })
+})
+
+api.get('/wasl/rooms/:id/override/:user_id', async (c) => {
+  const room_id = c.req.param('id')
+  const user_id = c.req.param('user_id')
+  const row = await first<any>(c.env.DB,
+    'SELECT * FROM wasl_room_overrides WHERE room_id = ? AND user_id = ?',
+    room_id, user_id)
+  return c.json({ override: row ?? null })
+})
+
+// ─── Wasl auth method (Email / Telegram / SMS) — §6.2 ───────────────────────────
+api.get('/wasl/auth/:user_id', async (c) => {
+  const uid = c.req.param('user_id')
+  let row = await first<any>(c.env.DB, 'SELECT * FROM wasl_auth_method WHERE user_id = ?', uid)
+  if (!row) {
+    await run(c.env.DB, 'INSERT OR IGNORE INTO wasl_auth_method (user_id, method) VALUES (?, ?)', uid, 'email')
+    row = await first<any>(c.env.DB, 'SELECT * FROM wasl_auth_method WHERE user_id = ?', uid)
+  }
+  return c.json({ auth: row })
+})
+
+api.post('/wasl/auth/:user_id', async (c) => {
+  const uid = c.req.param('user_id')
+  const body = await c.req.json<{ method: 'email' | 'telegram' | 'sms'; identifier?: string }>()
+  if (!['email', 'telegram', 'sms'].includes(body.method)) return c.json({ error: 'invalid_method' }, 400)
+  await run(c.env.DB, 'INSERT OR IGNORE INTO wasl_auth_method (user_id, method) VALUES (?, ?)', uid, body.method)
+  await run(c.env.DB,
+    'UPDATE wasl_auth_method SET method = ?, identifier = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?',
+    body.method, body.identifier ?? null, uid)
+  return c.json({ ok: true, method: body.method })
+})
+
+// ─── Wasl outbox flush (mesh / offline retry) ───────────────────────────
+api.post('/wasl/outbox/flush', async (c) => {
+  const body = await c.req.json<{
+    items: { id: string; room_id: string; sender_id: number; body: string }[]
+  }>()
+  if (!body.items?.length) return c.json({ ok: true, sent: 0 })
+  let sent = 0
+  for (const it of body.items) {
+    try {
+      const newId = 'm' + Date.now().toString(36) + Math.floor(Math.random() * 1000)
+      await run(c.env.DB,
+        'INSERT INTO messages (id, room_id, sender_id, body, status, is_encrypted) VALUES (?, ?, ?, ?, 3, 1)',
+        newId, it.room_id, it.sender_id, it.body)
+      sent++
+    } catch { /* skip */ }
+  }
+  return c.json({ ok: true, sent })
+})
+
 // ─── MASHAHD (Video) ─────────────────────────────────────────────────────
 api.get('/mashahd/videos', async (c) => {
   const videos = await all(c.env.DB,

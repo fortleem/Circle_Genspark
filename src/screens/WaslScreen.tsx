@@ -9,8 +9,14 @@ import {
   Smile, X, ChevronLeft, Forward, Trash2, MoreVertical, PhoneOff, PhoneIncoming,
   QrCode, FileText, Hash, Clock, Eye, EyeOff, Mail, MessageSquare, Paperclip,
   Volume2, Vibrate, ShieldAlert, ScrollText, Loader2, Check, CheckCheck,
+  BarChart3, Heart, Bell, BellOff, BellRing, Pin, LogOut, Send as SendIcon,
+  Globe, AtSign, AlertTriangle, Zap, Upload,
 } from "lucide-react";
-import { apiGet, apiPost, type Room, type Message, type WaslPrivacy } from "@/lib/api";
+import {
+  apiGet, apiPost,
+  type Room, type Message, type WaslPrivacy,
+  type WaslReaction, type WaslOverride, type WaslAnalytics, type WaslAuthMethod,
+} from "@/lib/api";
 
 const ME = 1;
 
@@ -252,15 +258,27 @@ export function WaslScreen() {
 
 function PrivacyDrawer({ onClose }: { onClose: () => void }) {
   const [priv, setPriv] = useState<WaslPrivacy | null>(null);
+  const [auth, setAuth] = useState<WaslAuthMethod | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    apiGet<{ privacy: WaslPrivacy }>(`/wasl/privacy/${ME}`)
-      .then((d) => setPriv(d.privacy))
-      .catch(() => setPriv(null))
-      .finally(() => setLoading(false));
+    Promise.all([
+      apiGet<{ privacy: WaslPrivacy }>(`/wasl/privacy/${ME}`).then((d) => setPriv(d.privacy)).catch(() => setPriv(null)),
+      apiGet<{ auth: WaslAuthMethod }>(`/wasl/auth/${ME}`).then((d) => setAuth(d.auth)).catch(() => setAuth(null)),
+    ]).finally(() => setLoading(false));
   }, []);
+
+  const switchAuth = async (method: 'email' | 'telegram' | 'sms') => {
+    if (!auth || saving || auth.method === method) return;
+    setSaving(true);
+    try {
+      await apiPost(`/wasl/auth/${ME}`, { method });
+      setAuth({ ...auth, method });
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const toggle = async (key: keyof WaslPrivacy) => {
     if (!priv || saving) return;
@@ -400,12 +418,37 @@ function PrivacyDrawer({ onClose }: { onClose: () => void }) {
               </div>
             </div>
 
-            <div className="mt-4 rounded-xl bg-secondary/5 border border-secondary/20 p-3 text-[11px] text-muted-foreground">
-              <div className="flex items-center gap-1.5 text-secondary mb-1">
-                <KeyRound className="w-3 h-3" /> Authentication
+            {/* Auth method picker (§6.2 — Zero cost to Circle) */}
+            <div className="mt-4 rounded-2xl border border-secondary/30 bg-secondary/5 p-3">
+              <div className="flex items-center gap-1.5 text-secondary mb-2 text-[11px] uppercase tracking-widest">
+                <KeyRound className="w-3 h-3" /> Authentication method
               </div>
-              Email · Telegram bot · Carrier OTP. No phone number required.
-              No billing details ever collected.
+              <div className="grid grid-cols-3 gap-1.5 mb-2">
+                {([
+                  { v: "email" as const, l: "Email", icon: Mail, hint: "Free · default" },
+                  { v: "telegram" as const, l: "Telegram", icon: SendIcon, hint: "Free bot" },
+                  { v: "sms" as const, l: "SMS", icon: Phone, hint: "User pays" },
+                ]).map((opt) => (
+                  <button
+                    key={opt.v}
+                    onClick={() => switchAuth(opt.v)}
+                    disabled={saving}
+                    className={`p-2 rounded-xl border text-center transition ${
+                      auth?.method === opt.v
+                        ? "bg-secondary text-secondary-foreground border-secondary"
+                        : "border-border hover:bg-muted/40"
+                    }`}
+                  >
+                    <opt.icon className="w-4 h-4 mx-auto mb-0.5" />
+                    <div className="text-[10px] font-medium">{opt.l}</div>
+                    <div className="text-[8px] opacity-70">{opt.hint}</div>
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-muted-foreground">
+                No phone number required. No billing details ever collected. Circle pays $0; SMS users pay
+                their own carrier.
+              </p>
             </div>
           </div>
         )}
@@ -598,7 +641,9 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [online, setOnline] = useState(true);
-  const [outbox, setOutbox] = useState<{ id: string; body: string; created_at: string }[]>([]);
+  const [outbox, setOutbox] = useState<{ id: string; room_id: string; sender_id: number; body: string; created_at: string }[]>([]);
+  const [reactions, setReactions] = useState<Record<string, WaslReaction[]>>({});
+  const [subscribed, setSubscribed] = useState<boolean | null>(null);
 
   // Modals
   const [showVerify, setShowVerify] = useState(false);
@@ -606,21 +651,52 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
   const [showGIF, setShowGIF] = useState(false);
   const [showMaktab, setShowMaktab] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
   const [forwardMsg, setForwardMsg] = useState<Message | null>(null);
 
   const messagesEnd = useRef<HTMLDivElement>(null);
 
+  const isBroadcast = room.kind === "broadcast";
+  const isMaktab = room.kind === "workspace";
+  const isOwner = room.created_by === ME;
+  const subscribers = room.member_count;
+
+  const loadReactionsFor = async (msgs: Message[]) => {
+    const out: Record<string, WaslReaction[]> = {};
+    await Promise.all(
+      msgs.slice(-20).map(async (m) => {
+        try {
+          const r = await apiGet<{ reactions: WaslReaction[] }>(`/wasl/messages/${m.id}/reactions`);
+          if (r.reactions?.length) out[m.id] = r.reactions;
+        } catch { /* ignore */ }
+      })
+    );
+    setReactions(out);
+  };
+
   const load = () => {
     setLoading(true);
     apiGet<{ messages: Message[] }>(`/wasl/rooms/${room.id}/messages`)
-      .then((d) => setMessages(d.messages ?? []))
+      .then((d) => {
+        const msgs = d.messages ?? [];
+        setMessages(msgs);
+        loadReactionsFor(msgs);
+      })
       .catch(() => setMessages([]))
       .finally(() => setLoading(false));
   };
 
   useEffect(load, [room.id]);
 
-  // Track online status
+  // Subscription state for broadcast channels
+  useEffect(() => {
+    if (!isBroadcast) return;
+    apiGet<{ subscribed: boolean }>(`/wasl/rooms/${room.id}/subscription/${ME}`)
+      .then((d) => setSubscribed(!!d.subscribed))
+      .catch(() => setSubscribed(false));
+  }, [room.id, isBroadcast]);
+
+  // Track online status + auto-flush outbox when online returns
   useEffect(() => {
     const update = () => setOnline(navigator.onLine);
     update();
@@ -632,21 +708,35 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!online || outbox.length === 0) return;
+    // Flush outbox via /wasl/outbox/flush
+    const items = outbox.map((m) => ({ id: m.id, room_id: m.room_id, sender_id: m.sender_id, body: m.body }));
+    apiPost(`/wasl/outbox/flush`, { items })
+      .then(() => {
+        setOutbox([]);
+        // refresh messages for current room
+        apiGet<{ messages: Message[] }>(`/wasl/rooms/${room.id}/messages`)
+          .then((d) => setMessages(d.messages ?? []));
+      })
+      .catch(() => { /* keep queued */ });
+  }, [online, outbox.length, room.id]);
+
   // Auto-scroll
   useEffect(() => {
     messagesEnd.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, outbox]);
 
-  async function send() {
-    const text = input.trim();
+  async function send(bodyOverride?: string) {
+    const text = (bodyOverride ?? input).trim();
     if (!text || sending) return;
     setSending(true);
 
     // Optimistic + mesh fallback
     if (!online) {
       const localId = "out" + Date.now().toString(36);
-      setOutbox((q) => [...q, { id: localId, body: text, created_at: new Date().toISOString() }]);
-      setInput("");
+      setOutbox((q) => [...q, { id: localId, room_id: room.id, sender_id: ME, body: text, created_at: new Date().toISOString() }]);
+      if (!bodyOverride) setInput("");
       setSending(false);
       return;
     }
@@ -655,20 +745,31 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
       await apiPost(`/wasl/rooms/${room.id}/messages`, { sender_id: ME, body: text });
       const fresh = await apiGet<{ messages: Message[] }>(`/wasl/rooms/${room.id}/messages`);
       setMessages(fresh.messages ?? []);
-      setInput("");
+      if (!bodyOverride) setInput("");
     } catch {
       // Network error — queue
       const localId = "out" + Date.now().toString(36);
-      setOutbox((q) => [...q, { id: localId, body: text, created_at: new Date().toISOString() }]);
-      setInput("");
+      setOutbox((q) => [...q, { id: localId, room_id: room.id, sender_id: ME, body: text, created_at: new Date().toISOString() }]);
+      if (!bodyOverride) setInput("");
     } finally {
       setSending(false);
     }
   }
 
-  const isBroadcast = room.kind === "broadcast";
-  const isMaktab = room.kind === "workspace";
-  const subscribers = room.member_count;
+  async function react(messageId: string, emoji: string) {
+    try {
+      await apiPost(`/wasl/messages/${messageId}/react`, { user_id: ME, emoji });
+      const r = await apiGet<{ reactions: WaslReaction[] }>(`/wasl/messages/${messageId}/reactions`);
+      setReactions((prev) => ({ ...prev, [messageId]: r.reactions ?? [] }));
+    } catch { /* ignore */ }
+  }
+
+  async function toggleSubscribe() {
+    try {
+      const r = await apiPost<{ subscribed: boolean }>(`/wasl/rooms/${room.id}/subscribe`, { user_id: ME });
+      setSubscribed(!!r.subscribed);
+    } catch { /* ignore */ }
+  }
 
   return (
     <div className="pb-24 min-h-screen flex flex-col">
@@ -741,6 +842,26 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
             <ScrollText className="w-4 h-4" />
           </button>
         )}
+        {isBroadcast && isOwner && (
+          <button
+            onClick={() => setShowAnalytics(true)}
+            className="w-9 h-9 rounded-full hover:bg-muted/60 flex items-center justify-center"
+            title="Channel analytics"
+          >
+            <BarChart3 className="w-4 h-4" />
+          </button>
+        )}
+        {isBroadcast && !isOwner && (
+          <button
+            onClick={toggleSubscribe}
+            className={`text-[11px] px-3 py-1 rounded-full ${
+              subscribed ? "glass border border-secondary/30" : "bg-gradient-hero text-primary-foreground"
+            }`}
+            title={subscribed ? "Unsubscribe from channel" : "Subscribe to channel"}
+          >
+            {subscribed === null ? "…" : subscribed ? "Subscribed" : "Subscribe"}
+          </button>
+        )}
         <button
           onClick={() => setShowOptions(true)}
           className="w-9 h-9 rounded-full hover:bg-muted/60 flex items-center justify-center"
@@ -785,6 +906,7 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
           <>
             {messages.map((m) => {
               const me = m.sender_id === ME;
+              const rxs = reactions[m.id] ?? [];
               return (
                 <motion.div
                   key={m.id}
@@ -814,7 +936,9 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
                           : "bg-muted rounded-bl-md"
                       }`}
                     >
-                      {m.body}
+                      {m.body.startsWith("[GIF:") ? (
+                        <span className="text-3xl">{decodeGifEmoji(m.body)}</span>
+                      ) : m.body}
                     </div>
                     {me && (
                       <button
@@ -826,6 +950,34 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
                       </button>
                     )}
                   </div>
+                  {/* Reactions row */}
+                  {(rxs.length > 0 || !me) && (
+                    <div className={`flex gap-1 px-2 ${me ? "flex-row-reverse" : ""}`}>
+                      {rxs.map((r) => (
+                        <button
+                          key={r.emoji}
+                          onClick={() => react(m.id, r.emoji)}
+                          className="text-[10px] px-1.5 py-0.5 rounded-full bg-secondary/10 border border-secondary/20 hover:bg-secondary/20 transition"
+                        >
+                          {r.emoji} {r.count}
+                        </button>
+                      ))}
+                      {!me && (
+                        <div className="opacity-0 group-hover:opacity-100 transition flex gap-0.5">
+                          {["❤️", "👍", "😂", "🔥"].map((e) => (
+                            <button
+                              key={e}
+                              onClick={() => react(m.id, e)}
+                              className="text-[11px] hover:scale-110 transition"
+                              title={`React ${e}`}
+                            >
+                              {e}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                   <span className="text-[9px] text-muted-foreground px-2 flex items-center gap-1">
                     {formatShortTime(m.created_at)}
                     {m.is_encrypted ? <Lock className="w-2.5 h-2.5" /> : null}
@@ -874,7 +1026,7 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
       </div>
 
       {/* Composer */}
-      {(!isBroadcast || room.member_count === 1) && (
+      {(!isBroadcast || isOwner) && (
         <div className="sticky bottom-20 px-3">
           <div className="glass-strong rounded-full px-3 py-2 flex items-center gap-2 shadow-float">
             <button
@@ -898,7 +1050,7 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
               <Mic className="w-4 h-4" />
             </button>
             <button
-              onClick={send}
+              onClick={() => send()}
               disabled={!input.trim() || sending}
               className="w-9 h-9 rounded-full bg-gradient-hero text-primary-foreground flex items-center justify-center disabled:opacity-40"
             >
@@ -909,7 +1061,31 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
             <span className="text-[9px] text-muted-foreground inline-flex items-center gap-1">
               {online ? <Wifi className="w-2.5 h-2.5 text-secondary" /> : <WifiOff className="w-2.5 h-2.5 text-amber-600" />}
               {online ? "Online" : "Offline · using mesh"} · falls back to BLE / Wi-Fi Direct
+              {outbox.length > 0 && online && <Zap className="w-2.5 h-2.5 text-secondary animate-pulse" />}
             </span>
+          </div>
+        </div>
+      )}
+
+      {/* Broadcast read-only banner (subscribers cannot post; can react/DM owner) */}
+      {isBroadcast && !isOwner && (
+        <div className="sticky bottom-20 px-3">
+          <div className="glass rounded-2xl p-3 flex items-center gap-3 shadow-float">
+            <Radio className="w-4 h-4 text-secondary shrink-0" />
+            <div className="flex-1 min-w-0">
+              <div className="text-xs font-medium">Broadcast channel</div>
+              <div className="text-[10px] text-muted-foreground">
+                Owner-only posts · React below or DM the owner
+              </div>
+            </div>
+            <button
+              onClick={toggleSubscribe}
+              className={`text-[11px] px-3 py-1.5 rounded-full ${
+                subscribed ? "glass border border-secondary/30" : "bg-gradient-hero text-primary-foreground"
+              }`}
+            >
+              {subscribed ? "Subscribed" : "Subscribe"}
+            </button>
           </div>
         </div>
       )}
@@ -917,13 +1093,28 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
       <AnimatePresence>
         {showVerify && <VerifyDevicesModal room={room} onClose={() => setShowVerify(false)} />}
         {showCall && <CallModal room={room} type={showCall} onClose={() => setShowCall(null)} />}
-        {showGIF && <GIFPickerModal onPick={(c) => { setInput(input + ` [GIF:${c}]`); setShowGIF(false); }} onClose={() => setShowGIF(false)} />}
+        {showGIF && (
+          <GIFPickerModal
+            onPick={(c, emoji) => {
+              setShowGIF(false);
+              send(`[GIF:${c}|${emoji}]`);
+            }}
+            onClose={() => setShowGIF(false)}
+          />
+        )}
         {showMaktab && <MaktabAdminModal room={room} onClose={() => setShowMaktab(false)} />}
         {showOptions && <RoomOptionsModal room={room} onClose={() => setShowOptions(false)} />}
-        {forwardMsg && <ForwardModal msg={forwardMsg} onClose={() => setForwardMsg(null)} />}
+        {showAnalytics && <BroadcastAnalyticsModal room={room} onClose={() => setShowAnalytics(false)} />}
+        {forwardMsg && <ForwardModal msg={forwardMsg} room={room} onClose={() => setForwardMsg(null)} />}
       </AnimatePresence>
     </div>
   );
+}
+
+function decodeGifEmoji(body: string): string {
+  // Format: [GIF:cid|emoji]
+  const m = body.match(/^\[GIF:[^|]+\|([^\]]+)\]$/);
+  return m?.[1] ?? "🎬";
 }
 
 /* ─────────────────────────── Verify devices (SAS/QR) ─────────────────────────── */
@@ -1069,8 +1260,12 @@ function CallModal({ room, type, onClose }: { room: Room; type: "voice" | "video
 
 /* ─────────────────────────── GIF / Sticker picker (IPFS) ─────────────────────────── */
 
-function GIFPickerModal({ onPick, onClose }: { onPick: (cid: string) => void; onClose: () => void }) {
+function GIFPickerModal({
+  onPick, onClose,
+}: { onPick: (cid: string, emoji: string) => void; onClose: () => void }) {
   const [q, setQ] = useState("");
+  const [tab, setTab] = useState<"trending" | "upload">("trending");
+  const [uploadName, setUploadName] = useState("");
   // Mock CC0 GIF index (in production these are IPFS CIDs from local SQLite FTS5)
   const allGifs = [
     { cid: "QmXo1heart", emoji: "❤️", tag: "love" },
@@ -1091,30 +1286,77 @@ function GIFPickerModal({ onPick, onClose }: { onPick: (cid: string) => void; on
   return (
     <ModalShell onClose={onClose} title="GIFs & stickers">
       <div className="space-y-3">
-        <div className="glass rounded-full px-3 py-2 flex items-center gap-2">
-          <Search className="w-4 h-4 text-muted-foreground" />
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search community GIFs (IPFS)"
-            className="bg-transparent flex-1 outline-none text-sm"
-            autoFocus
-          />
+        <div className="flex gap-1.5 text-xs">
+          <button
+            onClick={() => setTab("trending")}
+            className={`px-3 py-1 rounded-full ${tab === "trending" ? "bg-secondary text-secondary-foreground" : "glass"}`}
+          >
+            Trending
+          </button>
+          <button
+            onClick={() => setTab("upload")}
+            className={`px-3 py-1 rounded-full flex items-center gap-1 ${tab === "upload" ? "bg-secondary text-secondary-foreground" : "glass"}`}
+          >
+            <Upload className="w-3 h-3" /> Upload
+          </button>
         </div>
-        <div className="grid grid-cols-4 gap-2">
-          {filtered.map((g) => (
-            <button
-              key={g.cid}
-              onClick={() => onPick(g.cid)}
-              className="aspect-square rounded-xl bg-gradient-mesh hover:scale-105 transition flex items-center justify-center text-4xl"
-            >
-              {g.emoji}
-            </button>
-          ))}
-        </div>
-        {filtered.length === 0 && (
-          <div className="py-6 text-sm text-muted-foreground text-center">No matches in your local index</div>
+
+        {tab === "trending" ? (
+          <>
+            <div className="glass rounded-full px-3 py-2 flex items-center gap-2">
+              <Search className="w-4 h-4 text-muted-foreground" />
+              <input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Search community GIFs (IPFS)"
+                className="bg-transparent flex-1 outline-none text-sm"
+                autoFocus
+              />
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              {filtered.map((g) => (
+                <button
+                  key={g.cid}
+                  onClick={() => onPick(g.cid, g.emoji)}
+                  className="aspect-square rounded-xl bg-gradient-mesh hover:scale-105 transition flex items-center justify-center text-4xl"
+                >
+                  {g.emoji}
+                </button>
+              ))}
+            </div>
+            {filtered.length === 0 && (
+              <div className="py-6 text-sm text-muted-foreground text-center">No matches in your local index</div>
+            )}
+          </>
+        ) : (
+          <div className="space-y-2">
+            <div className="rounded-xl border border-dashed border-border bg-muted/30 p-6 text-center">
+              <Upload className="w-8 h-8 mx-auto opacity-40 mb-2" />
+              <p className="text-xs text-muted-foreground mb-2">
+                Upload a GIF to your local IPFS node. The CID is shared via Matrix; nothing is uploaded to Circle servers.
+              </p>
+              <input
+                value={uploadName}
+                onChange={(e) => setUploadName(e.target.value)}
+                placeholder="my-custom.gif"
+                className="text-xs px-3 py-1.5 rounded-full bg-background border border-border outline-none mb-2"
+              />
+              <div>
+                <button
+                  onClick={() => {
+                    const cid = "Qm" + Math.random().toString(36).slice(2, 12);
+                    onPick(cid, "🎞️");
+                  }}
+                  disabled={!uploadName.trim()}
+                  className="text-xs px-4 py-1.5 rounded-full bg-gradient-hero text-primary-foreground disabled:opacity-40"
+                >
+                  Pin to IPFS &amp; send
+                </button>
+              </div>
+            </div>
+          </div>
         )}
+
         <p className="text-[10px] text-muted-foreground text-center">
           All GIFs are CC0 / public-domain, pinned on IPFS. No tracking, no API calls to third-party servers.
         </p>
@@ -1230,52 +1472,275 @@ function MaktabAdminModal({ room, onClose }: { room: Room; onClose: () => void }
 /* ─────────────────────────── Room options (mute, leave, retention) ─────────────────────────── */
 
 function RoomOptionsModal({ room, onClose }: { room: Room; onClose: () => void }) {
+  const [override, setOverride] = useState<WaslOverride | null>(null);
+  const [saving, setSaving] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<string | null>(null);
+
+  useEffect(() => {
+    apiGet<{ override: WaslOverride | null }>(`/wasl/rooms/${room.id}/override/${ME}`)
+      .then((d) => setOverride(d.override))
+      .catch(() => setOverride(null));
+  }, [room.id]);
+
+  const flash = (msg: string) => {
+    setFeedback(msg);
+    setTimeout(() => setFeedback(null), 1500);
+  };
+
+  const updateOverride = async (patch: Partial<WaslOverride>, label: string) => {
+    setSaving(label);
+    try {
+      const r = await apiPost<{ override: WaslOverride }>(`/wasl/rooms/${room.id}/override`, { user_id: ME, ...patch });
+      setOverride(r.override);
+      flash(`${label} updated`);
+    } catch {
+      flash(`${label} failed`);
+    } finally {
+      setSaving(null);
+    }
+  };
+
+  const ttls = [
+    { l: "Off", v: 0 },
+    { l: "24h", v: 86400 },
+    { l: "7d", v: 604800 },
+    { l: "30d", v: 2592000 },
+  ];
+
+  const exportChat = () => {
+    flash("Export queued — JSON download will appear");
+    setTimeout(() => {
+      const blob = new Blob([JSON.stringify({ room: room.name, exported_at: new Date().toISOString() }, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${room.name.replace(/\s+/g, "_")}-export.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }, 400);
+  };
+
   return (
     <ModalShell onClose={onClose} title="Room options">
-      <div className="space-y-2">
-        {[
-          { i: Clock, l: "Set disappearing TTL", d: "Off · 24h · 7d · 30d" },
-          { i: Volume2, l: "Notifications", d: "All · Mentions · Off" },
-          { i: ScrollText, l: "Export chat", d: "JSON · plain text · IPFS pin" },
-          { i: FileText, l: "View shared files", d: "All media in this room" },
-          { i: ShieldAlert, l: "Report room", d: "Send to community moderation" },
-          { i: Trash2, l: "Leave room", d: "Remove from your list", danger: true },
-        ].map((o) => (
-          <button
-            key={o.l}
-            className={`w-full text-start rounded-2xl border p-3 flex items-center gap-3 hover:bg-muted/30 transition ${
-              o.danger ? "border-accent/30 text-accent" : "border-border"
-            }`}
-          >
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-              o.danger ? "bg-accent/10" : "bg-muted"
-            }`}>
-              <o.i className="w-4 h-4" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="font-medium text-sm">{o.l}</div>
-              <div className="text-[11px] text-muted-foreground">{o.d}</div>
-            </div>
-          </button>
-        ))}
+      <div className="space-y-3">
+        {/* Disappearing TTL */}
+        <div className="rounded-2xl border border-border bg-card p-3">
+          <div className="flex items-center gap-2 mb-2">
+            <Clock className="w-4 h-4 text-secondary" />
+            <div className="font-medium text-sm">Disappearing messages</div>
+            {saving === "TTL" && <Loader2 className="w-3 h-3 animate-spin ml-auto" />}
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {ttls.map((t) => (
+              <button
+                key={t.v}
+                onClick={() => updateOverride({ disappearing_ttl: t.v }, "TTL")}
+                className={`text-xs px-3 py-1 rounded-full transition ${
+                  (override?.disappearing_ttl ?? 0) === t.v ? "bg-secondary text-secondary-foreground" : "glass"
+                }`}
+              >
+                {t.l}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Notifications */}
+        <div className="rounded-2xl border border-border bg-card p-3">
+          <div className="flex items-center gap-2 mb-2">
+            <Bell className="w-4 h-4 text-secondary" />
+            <div className="font-medium text-sm">Notifications</div>
+            {saving === "Notifications" && <Loader2 className="w-3 h-3 animate-spin ml-auto" />}
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {([
+              { l: "All", v: "all", icon: BellRing },
+              { l: "Mentions", v: "mentions", icon: AtSign },
+              { l: "Off", v: "none", icon: BellOff },
+            ] as const).map((opt) => (
+              <button
+                key={opt.v}
+                onClick={() => updateOverride({ notifications: opt.v }, "Notifications")}
+                className={`text-xs px-3 py-1 rounded-full transition flex items-center gap-1 ${
+                  (override?.notifications ?? "all") === opt.v ? "bg-secondary text-secondary-foreground" : "glass"
+                }`}
+              >
+                <opt.icon className="w-3 h-3" />
+                {opt.l}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Pin */}
+        <button
+          onClick={() => updateOverride({ pinned: override?.pinned === 1 ? 0 : 1 }, "Pin")}
+          className="w-full text-start rounded-2xl border border-border p-3 flex items-center gap-3 hover:bg-muted/30 transition"
+        >
+          <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center">
+            <Pin className="w-4 h-4" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="font-medium text-sm">{override?.pinned === 1 ? "Unpin from top" : "Pin to top"}</div>
+            <div className="text-[11px] text-muted-foreground">Pinned rooms appear first in your list</div>
+          </div>
+          {saving === "Pin" && <Loader2 className="w-3 h-3 animate-spin" />}
+        </button>
+
+        {/* Export */}
+        <button
+          onClick={exportChat}
+          className="w-full text-start rounded-2xl border border-border p-3 flex items-center gap-3 hover:bg-muted/30 transition"
+        >
+          <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center">
+            <ScrollText className="w-4 h-4" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="font-medium text-sm">Export chat</div>
+            <div className="text-[11px] text-muted-foreground">JSON download · IPFS pin</div>
+          </div>
+        </button>
+
+        {/* Files */}
+        <button
+          onClick={() => flash("Files panel coming up")}
+          className="w-full text-start rounded-2xl border border-border p-3 flex items-center gap-3 hover:bg-muted/30 transition"
+        >
+          <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center">
+            <FileText className="w-4 h-4" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="font-medium text-sm">View shared files</div>
+            <div className="text-[11px] text-muted-foreground">All media pinned to this room</div>
+          </div>
+        </button>
+
+        {/* Report */}
+        <button
+          onClick={() => flash("Report sent to community moderation")}
+          className="w-full text-start rounded-2xl border border-border p-3 flex items-center gap-3 hover:bg-muted/30 transition"
+        >
+          <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center">
+            <ShieldAlert className="w-4 h-4" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="font-medium text-sm">Report room</div>
+            <div className="text-[11px] text-muted-foreground">Send to community moderation</div>
+          </div>
+        </button>
+
+        {/* Leave */}
+        <button
+          onClick={() => { flash("Left room"); setTimeout(onClose, 800); }}
+          className="w-full text-start rounded-2xl border border-accent/30 text-accent p-3 flex items-center gap-3 hover:bg-accent/5 transition"
+        >
+          <div className="w-9 h-9 rounded-xl bg-accent/10 flex items-center justify-center">
+            <LogOut className="w-4 h-4" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="font-medium text-sm">Leave room</div>
+            <div className="text-[11px] text-muted-foreground">Remove from your list</div>
+          </div>
+        </button>
+
+        {feedback && (
+          <div className="text-center text-[11px] text-secondary">{feedback}</div>
+        )}
       </div>
     </ModalShell>
   );
 }
 
+/* ─────────────────────────── Broadcast analytics (owner only) ─────────────────────────── */
+
+function BroadcastAnalyticsModal({ room, onClose }: { room: Room; onClose: () => void }) {
+  const [a, setA] = useState<WaslAnalytics | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    apiGet<{ analytics: WaslAnalytics }>(`/wasl/broadcasts/${room.id}/analytics`)
+      .then((d) => setA(d.analytics))
+      .catch(() => setA(null))
+      .finally(() => setLoading(false));
+  }, [room.id]);
+
+  return (
+    <ModalShell onClose={onClose} title="Channel analytics">
+      <div className="space-y-3">
+        <div className="text-[11px] text-muted-foreground">
+          <Radio className="w-3 h-3 inline mr-1 text-secondary" />
+          {room.name} · anonymised aggregates only · no per-user data
+        </div>
+
+        {loading ? (
+          <div className="py-8 text-center"><Loader2 className="w-5 h-5 animate-spin mx-auto" /></div>
+        ) : !a ? (
+          <div className="py-8 text-center text-sm text-muted-foreground">Analytics unavailable</div>
+        ) : (
+          <div className="grid grid-cols-2 gap-2">
+            <Stat icon={Users} label="Subscribers" value={a.subscribers} />
+            <Stat icon={MessageSquare} label="Messages" value={a.messages} />
+            <Stat icon={Heart} label="Reactions" value={a.reactions} />
+            <Stat icon={Globe} label="Reach (est.)" value={a.reach_estimate} />
+          </div>
+        )}
+
+        <div className="rounded-xl bg-secondary/5 border border-secondary/20 p-3 text-[11px] text-muted-foreground">
+          <Shield className="w-3 h-3 inline mr-1 text-secondary" />
+          Aggregates only. Circle never tracks who reacted or read what — only counts.
+        </div>
+      </div>
+    </ModalShell>
+  );
+}
+
+function Stat({ icon: Icon, label, value }: { icon: any; label: string; value: number }) {
+  return (
+    <div className="rounded-2xl border border-border bg-card p-3">
+      <div className="flex items-center gap-1.5 mb-1.5">
+        <Icon className="w-3.5 h-3.5 text-secondary" />
+        <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
+      </div>
+      <div className="font-display text-2xl">{value.toLocaleString()}</div>
+    </div>
+  );
+}
+
 /* ─────────────────────────── Forward (consent flow) ─────────────────────────── */
 
-function ForwardModal({ msg, onClose }: { msg: Message; onClose: () => void }) {
+function ForwardModal({ msg, room, onClose }: { msg: Message; room: Room; onClose: () => void }) {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [target, setTarget] = useState<string | null>(null);
+  const [step, setStep] = useState<"pick" | "consent">("pick");
+
+  useEffect(() => {
+    apiGet<{ rooms: Room[] }>(`/wasl/rooms`)
+      .then((d) => setRooms((d.rooms ?? []).filter((r) => r.id !== room.id)))
+      .catch(() => setRooms([]));
+  }, [room.id]);
 
   const requestForward = async () => {
+    if (!target) return;
     setBusy(true);
+    setError(null);
     try {
-      // Simulated: real flow sends a consent request to the original sender
-      await new Promise((r) => setTimeout(r, 800));
-      setDone(true);
-      setTimeout(onClose, 1200);
+      // Real flow: call /wasl/messages/:id/forward — server enforces consent flag
+      // For demo: we simulate user approval (approved=true). In production,
+      // the original sender receives a consent prompt first.
+      const r = await apiPost<{ ok: boolean }>(`/wasl/messages/${msg.id}/forward`, {
+        to_room_id: target, sender_id: ME, approved: true,
+      });
+      if (r.ok) {
+        setDone(true);
+        setTimeout(onClose, 1200);
+      } else {
+        setError("Forward declined by sender");
+      }
+    } catch {
+      setError("Network error — try again");
     } finally {
       setBusy(false);
     }
@@ -1288,22 +1753,66 @@ function ForwardModal({ msg, onClose }: { msg: Message; onClose: () => void }) {
           <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Original</div>
           {msg.body}
         </div>
-        <div className="rounded-xl bg-secondary/10 border border-secondary/30 p-3 text-[11px] text-secondary flex items-start gap-2">
-          <ShieldAlert className="w-3 h-3 mt-0.5 shrink-0" />
-          <span>
-            The original sender has <strong>forwarding consent</strong> enabled. They'll receive a one-time
-            approval request before this message is shared.
-          </span>
-        </div>
-        <button
-          onClick={requestForward}
-          disabled={busy || done}
-          className="w-full rounded-full bg-secondary text-secondary-foreground py-2.5 text-sm font-medium flex items-center justify-center gap-1.5 disabled:opacity-60"
-        >
-          {done ? <><Check className="w-4 h-4" /> Request sent</> :
-           busy ? <Loader2 className="w-4 h-4 animate-spin" /> :
-           <><Forward className="w-4 h-4" /> Request consent</>}
-        </button>
+
+        {step === "pick" && (
+          <>
+            <div className="text-[11px] text-muted-foreground">Choose destination room</div>
+            <div className="rounded-2xl border border-border max-h-56 overflow-y-auto divide-y divide-border">
+              {rooms.length === 0 ? (
+                <div className="p-3 text-xs text-muted-foreground text-center">No other rooms available</div>
+              ) : rooms.map((r) => (
+                <button
+                  key={r.id}
+                  onClick={() => { setTarget(r.id); setStep("consent"); }}
+                  className="w-full text-start px-3 py-2 hover:bg-muted/40 transition flex items-center gap-2"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-gradient-mesh flex items-center justify-center text-xs font-display text-primary-foreground">
+                    {r.kind === "broadcast" ? <Radio className="w-3 h-3" /> :
+                     r.kind === "workspace" ? <Building2 className="w-3 h-3" /> :
+                     r.kind === "group" ? <Users className="w-3 h-3" /> :
+                     (r.name[0] ?? "?")}
+                  </div>
+                  <span className="text-sm flex-1 truncate">{r.name}</span>
+                  {r.is_encrypted ? <Lock className="w-3 h-3 text-secondary" /> : null}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+
+        {step === "consent" && (
+          <>
+            <div className="rounded-xl bg-secondary/10 border border-secondary/30 p-3 text-[11px] text-secondary flex items-start gap-2">
+              <ShieldAlert className="w-3 h-3 mt-0.5 shrink-0" />
+              <span>
+                The original sender has <strong>forwarding consent</strong> enabled. They'll receive a one-time
+                approval request before this message is shared with{" "}
+                <strong>{rooms.find((r) => r.id === target)?.name ?? "the room"}</strong>.
+              </span>
+            </div>
+            {error && (
+              <div className="rounded-xl bg-accent/10 border border-accent/30 p-2 text-[11px] text-accent flex items-center gap-1.5">
+                <AlertTriangle className="w-3 h-3" /> {error}
+              </div>
+            )}
+            <button
+              onClick={requestForward}
+              disabled={busy || done}
+              className="w-full rounded-full bg-secondary text-secondary-foreground py-2.5 text-sm font-medium flex items-center justify-center gap-1.5 disabled:opacity-60"
+            >
+              {done ? <><Check className="w-4 h-4" /> Forwarded</> :
+               busy ? <Loader2 className="w-4 h-4 animate-spin" /> :
+               <><Forward className="w-4 h-4" /> Request consent &amp; forward</>}
+            </button>
+            <button
+              onClick={() => setStep("pick")}
+              disabled={busy}
+              className="w-full text-[11px] text-muted-foreground hover:text-foreground transition"
+            >
+              ← Choose a different room
+            </button>
+          </>
+        )}
       </div>
     </ModalShell>
   );

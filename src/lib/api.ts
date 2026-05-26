@@ -81,3 +81,26 @@ export interface MaktabAudit {
   created_at: string;
   actor_name?: string;
 }
+export interface WaslReaction { emoji: string; count: number; }
+export interface WaslOverride {
+  room_id: string;
+  user_id: number;
+  disappearing_ttl?: number | null;
+  notifications?: 'all' | 'mentions' | 'none';
+  pinned?: number;
+  muted_until?: string | null;
+}
+export interface WaslAnalytics {
+  subscribers: number;
+  messages: number;
+  reactions: number;
+  reach_estimate: number;
+  created_at?: string | null;
+}
+export interface WaslAuthMethod {
+  user_id: number;
+  method: 'email' | 'telegram' | 'sms';
+  identifier?: string | null;
+  verified: number;
+  updated_at: string;
+}
