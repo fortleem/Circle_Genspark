@@ -3,7 +3,7 @@ import { Sun, Moon, Bell, Search, Globe2 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useApp } from "@/providers/AppProvider";
 import { CircleMark } from "@/components/brand/CircleMark";
-import { NAV_ITEMS } from "@/lib/tabs";
+import { NAV_ITEMS, findNavMatch } from "@/lib/tabs";
 import { useState } from "react";
 import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent,
@@ -18,21 +18,20 @@ export function TopBar() {
   const loc = useLocation();
   const [q, setQ] = useState("");
 
-  // Resolve current screen's display title
-  const current = NAV_ITEMS.find(n =>
-    n.path === loc.pathname || (n.path !== "/" && loc.pathname.startsWith(n.path))
-  );
+  // Resolve current screen's display title + hint.
+  // Pick the most-specific matching tab so nested paths resolve correctly.
+  const current = NAV_ITEMS
+    .filter(n =>
+      n.path === loc.pathname ||
+      (n.path !== "/" && loc.pathname.startsWith(n.path + "/"))
+    )
+    .sort((a, b) => b.path.length - a.path.length)[0];
   const title = current ? current.label(names) : names.brand_name;
+  const subtitle = current?.hint ?? names.tagline.slice(0, 40);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    const t = q.trim().toLowerCase();
-    if (!t) return;
-    const match = NAV_ITEMS.find(n =>
-      n.label(names).toLowerCase().includes(t) ||
-      n.id.includes(t) ||
-      n.sections.includes(t)
-    );
+    const match = findNavMatch(q, (item) => item.label(names));
     if (match) {
       nav(match.path);
       setQ("");
@@ -47,7 +46,7 @@ export function TopBar() {
           <div className="leading-none min-w-0">
             <div className="font-display text-base sm:text-lg truncate">{title}</div>
             <div className="text-[10px] text-muted-foreground tracking-widest uppercase truncate">
-              {current?.sections || names.tagline.slice(0, 40)}
+              {subtitle}
             </div>
           </div>
         </div>
@@ -56,7 +55,7 @@ export function TopBar() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/70" />
             <input
               value={q} onChange={(e) => setQ(e.target.value)}
-              placeholder="Go to module… e.g. , mesh, mashahd"
+              placeholder="Go to module… e.g. wasl, mesh, mashahd"
               className="w-full bg-muted/30 rounded-full pl-9 pr-3 py-1.5 text-xs outline-none focus:bg-muted/60 transition"
             />
           </div>
@@ -114,7 +113,11 @@ export function TopBar() {
         <button onClick={toggleTheme} className="w-9 h-9 rounded-full hover:bg-muted/60 flex items-center justify-center transition" aria-label="Theme">
           {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </button>
-        <button className="w-9 h-9 rounded-full bg-gradient-gold flex items-center justify-center text-brand-charcoal relative" aria-label="Notifications">
+        <button
+          onClick={() => nav('/profile')}
+          className="w-9 h-9 rounded-full bg-gradient-gold flex items-center justify-center text-brand-charcoal relative"
+          aria-label="Notifications"
+        >
           <Bell className="w-4 h-4" />
           <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-accent" />
         </button>

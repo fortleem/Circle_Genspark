@@ -10,6 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useApp } from "@/providers/AppProvider";
 import { ui } from "@/lib/uiStrings";
 import { useApi } from "@/hooks/useApi";
+import { findNavMatch } from "@/lib/tabs";
 import type { CityEvent, MidanPost, Channel } from "@/lib/api";
 
 export function HomeScreen() {
@@ -49,13 +50,9 @@ export function HomeScreen() {
             placeholder={t.ask}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                const q = (e.target as HTMLInputElement).value.toLowerCase();
-                if (q.includes("wasl") || q.includes("chat") || q.includes("message")) navigate("/wasl");
-                else if (q.includes("video") || q.includes("mashahd")) navigate("/mashahd");
-                else if (q.includes("travel") || q.includes("rihla")) navigate("/rihla");
-                else if (q.includes("pay") || q.includes("wallet")) navigate("/pay");
-                else if (q.includes("translate")) navigate("/translate");
-                else if (q.includes("event")) navigate("/midan");
+                const q = (e.target as HTMLInputElement).value;
+                const match = findNavMatch(q, (item) => item.label(names));
+                if (match) navigate(match.path);
               }
             }}
           />

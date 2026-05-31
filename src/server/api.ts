@@ -472,8 +472,13 @@ api.post('/wasl/outbox/flush', async (c) => {
 
 // ─── MASHAHD (Video) ─────────────────────────────────────────────────────
 api.get('/mashahd/videos', async (c) => {
+  const fmt = c.req.query('format')
+  const where = fmt ? `WHERE v.format = '${fmt.replace(/[^a-z]/g, '')}'` : ''
   const videos = await all(c.env.DB,
-    'SELECT v.*, u.handle, u.display_name, u.verified FROM videos v JOIN users u ON u.id=v.uploader_id ORDER BY v.published_at DESC LIMIT 50')
+    `SELECT v.*, u.handle, u.display_name, u.verified
+     FROM videos v JOIN users u ON u.id=v.uploader_id
+     ${where}
+     ORDER BY v.is_live DESC, v.published_at DESC LIMIT 50`)
   return c.json({ videos })
 })
 
@@ -487,31 +492,325 @@ api.post('/mashahd/videos/:id/like', async (c) => {
   return c.json({ ok: true })
 })
 
-api.post('/mashahd/tip', async (c) => {
-  // Tipping algorithm — non-custodial: we just record the intent
-  const body = await c.req.json<{ from_user: number; video_id: string; amount: number; currency: string; widget: string }>()
+// §7.1 Bullet (danmaku) + regular comments
+api.get('/mashahd/videos/:id/comments', async (c) => {
+  const id = c.req.param('id')
+  const bullet = c.req.query('bullet') === '1'
+  const rows = await all(c.env.DB, `
+    SELECT vc.*, u.handle, u.display_name, u.verified
+    FROM video_comments vc
+    JOIN users u ON u.id = vc.user_id
+    WHERE vc.video_id = ? AND vc.is_bullet = ?
+    ORDER BY vc.time_offset ASC, vc.created_at DESC
+    LIMIT 100
+  `, id, bullet ? 1 : 0)
+  return c.json({ comments: rows })
+})
+
+api.post('/mashahd/videos/:id/comments', async (c) => {
+  const id = c.req.param('id')
+  const body = await c.req.json<{ user_id: number; body: string; is_bullet?: boolean; time_offset?: number }>()
+  if (!body.body) return c.json({ error: 'empty' }, 400)
+  const cid = 'vc' + Date.now().toString(36)
+  await run(c.env.DB, `
+    INSERT INTO video_comments (id, video_id, user_id, body, is_bullet, time_offset)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `, cid, id, body.user_id, body.body, body.is_bullet ? 1 : 0, body.time_offset ?? 0)
+  return c.json({ ok: true, id: cid })
+})
+
+// §7.4 Tip recommendation (lightweight decision tree, runs server-side for demo)
+api.get('/mashahd/tip/suggest', async (c) => {
+  const country = c.req.query('country') || 'EG'
+  const time_watched = parseInt(c.req.query('time_watched') ?? '0', 10)
+  const chat_count = parseInt(c.req.query('chat_count') ?? '0', 10)
+
+  // Widget selection
+  const widgetByCountry: Record<string, string> = {
+    EG: 'paymob', SA: 'paymob', AE: 'paymob',
+    US: 'moonpay', GB: 'moonpay', FR: 'moonpay', DE: 'moonpay',
+    IN: 'transak', NG: 'transak', KE: 'transak',
+    CN: 'wechange', HK: 'wechange',
+  }
+  const widget = widgetByCountry[country] || 'ramp'
+
+  // Currency
+  const currencyByCountry: Record<string, string> = {
+    EG: 'EGP', SA: 'SAR', AE: 'AED', US: 'USD', GB: 'GBP',
+    FR: 'EUR', DE: 'EUR', IN: 'INR', NG: 'NGN', KE: 'KES', CN: 'CNY', HK: 'HKD',
+  }
+  const currency = currencyByCountry[country] || 'USD'
+
+  // Base disposable income proxy (very rough)
+  const baseByCountry: Record<string, number> = {
+    EG: 5, SA: 20, AE: 25, US: 5, GB: 5, FR: 5, DE: 5, IN: 50, NG: 200, KE: 100, CN: 20, HK: 20,
+  }
+  const base = baseByCountry[country] ?? 5
+
+  // Engagement multiplier
+  let mult = 1.0
+  if (time_watched > 600) mult *= 1.5
+  if (chat_count > 5) mult *= 1.2
+
+  const amounts = [
+    Math.max(1, Math.round((base * mult) / 5) * 5),
+    Math.max(5, Math.round((base * mult * 2) / 10) * 10),
+    Math.max(25, Math.round((base * mult * 5) / 25) * 25),
+  ]
+
+  const gifts = [
+    { name: 'Rose', emoji: '🌹', amount: amounts[0] },
+    { name: 'Heart', emoji: '💖', amount: amounts[1] },
+    { name: 'Star', emoji: '⭐', amount: amounts[1] },
+    { name: 'Lion', emoji: '🦁', amount: amounts[2] },
+    { name: 'Falcon', emoji: '🦅', amount: amounts[2] * 2 },
+  ]
+
   return c.json({
-    ok: true, recorded: true,
-    widget: body.widget,
-    settlement: 'non-custodial — opens user wallet directly',
-    fee_to_circle: 0,
-    chain_or_method: body.widget
+    suggestion: {
+      widget, currency, amounts, gifts,
+      country, age_restricted: false,
+      blocked: false,
+      disclaimer: 'Non-custodial: Circle never sees payment details. Widget handles KYC/AML.',
+    }
   })
+})
+
+// §7.4.5 Tip flow (record intent — actual payment by widget)
+api.post('/mashahd/tip', async (c) => {
+  const body = await c.req.json<{
+    from_user: number; to_user: number; video_id?: string;
+    amount: number; currency: string; widget: string;
+  }>()
+  if (!body.amount || !body.widget) return c.json({ error: 'invalid' }, 400)
+  const id = 'tip' + Date.now().toString(36) + Math.floor(Math.random() * 1000)
+  await run(c.env.DB, `
+    INSERT INTO tip_transactions (id, from_user, to_user, video_id, amount, currency, widget, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')
+  `, id, body.from_user, body.to_user, body.video_id ?? null, body.amount, body.currency, body.widget)
+  return c.json({
+    ok: true, id,
+    widget_url: `https://widget.${body.widget}.com/embed?ref=circle&id=${id}`,
+    settlement: 'non-custodial — Circle never holds funds',
+    circle_fee_bp: 150,
+    legal: 'KYC/AML handled by widget provider; Circle is not a money transmitter',
+  })
+})
+
+// §7.4.5 Webhook from widget provider (confirms tip)
+api.post('/mashahd/tip/webhook', async (c) => {
+  const body = await c.req.json<{ id: string; webhook_ref: string; status: 'confirmed' | 'failed' }>()
+  await run(c.env.DB, `
+    UPDATE tip_transactions SET status = ?, webhook_ref = ?, confirmed_at = CURRENT_TIMESTAMP WHERE id = ?
+  `, body.status, body.webhook_ref, body.id)
+  // Bump creator analytics
+  if (body.status === 'confirmed') {
+    const tip = await first<any>(c.env.DB, 'SELECT to_user, amount FROM tip_transactions WHERE id = ?', body.id)
+    if (tip) {
+      await run(c.env.DB, `
+        INSERT INTO creator_analytics (user_id, total_tips_minor) VALUES (?, ?)
+        ON CONFLICT(user_id) DO UPDATE SET total_tips_minor = total_tips_minor + excluded.total_tips_minor,
+                                            updated_at = CURRENT_TIMESTAMP
+      `, tip.to_user, tip.amount)
+    }
+  }
+  return c.json({ ok: true })
+})
+
+// §7.3.5 Sponsored hashtags by city
+api.get('/mashahd/sponsored', async (c) => {
+  const city = c.req.query('city')
+  const where = city ? `WHERE city = '${city.replace(/[^a-zA-Z]/g, '')}' OR city IS NULL` : ''
+  const rows = await all(c.env.DB, `
+    SELECT * FROM sponsored_hashtags
+    ${where}
+    ORDER BY budget DESC LIMIT 5
+  `)
+  return c.json({ sponsored: rows })
+})
+
+// §7 Creator analytics
+api.get('/mashahd/creator/:user_id/analytics', async (c) => {
+  const uid = c.req.param('user_id')
+  let row = await first<any>(c.env.DB, 'SELECT * FROM creator_analytics WHERE user_id = ?', uid)
+  if (!row) {
+    await run(c.env.DB, 'INSERT OR IGNORE INTO creator_analytics (user_id) VALUES (?)', uid)
+    row = await first<any>(c.env.DB, 'SELECT * FROM creator_analytics WHERE user_id = ?', uid)
+  }
+  // Live aggregates
+  const tips = await first<{ n: number }>(c.env.DB,
+    'SELECT COALESCE(SUM(amount),0) AS n FROM tip_transactions WHERE to_user = ? AND status = "confirmed"', uid)
+  const members = await first<{ n: number }>(c.env.DB,
+    'SELECT COUNT(*) AS n FROM channel_memberships WHERE channel_id = ? AND status = "active"', String(uid))
+  return c.json({ analytics: { ...row, total_tips_minor: tips?.n ?? 0, members: members?.n ?? 0 } })
+})
+
+// §7.3.9 Channel memberships
+api.post('/mashahd/membership', async (c) => {
+  const body = await c.req.json<{
+    channel_id: string; member_id: number; tier?: string; monthly_amt: number; processor: string;
+  }>()
+  await run(c.env.DB, `
+    INSERT INTO channel_memberships (channel_id, member_id, tier, monthly_amt, processor)
+    VALUES (?, ?, ?, ?, ?)
+  `, body.channel_id, body.member_id, body.tier ?? 'standard', body.monthly_amt, body.processor)
+  return c.json({ ok: true })
+})
+
+// §7.1 Live viewer count update (for live streams)
+api.post('/mashahd/videos/:id/live-tick', async (c) => {
+  const id = c.req.param('id')
+  const body = await c.req.json<{ delta: number }>()
+  await run(c.env.DB,
+    'UPDATE videos SET live_viewer_count = MAX(0, live_viewer_count + ?) WHERE id = ?',
+    body.delta, id)
+  const row = await first<any>(c.env.DB,
+    'SELECT live_viewer_count FROM videos WHERE id = ?', id)
+  return c.json({ ok: true, viewers: row?.live_viewer_count ?? 0 })
 })
 
 // ─── LAMAHAT (Photos) ────────────────────────────────────────────────────
 api.get('/lamahat/photos', async (c) => {
   const city = c.req.query('city')
-  const sql = city
-    ? 'SELECT p.*, u.handle, u.display_name FROM photos p JOIN users u ON u.id=p.uploader_id WHERE p.city=? ORDER BY p.published_at DESC LIMIT 60'
-    : 'SELECT p.*, u.handle, u.display_name FROM photos p JOIN users u ON u.id=p.uploader_id ORDER BY p.published_at DESC LIMIT 60'
-  const photos = city ? await all(c.env.DB, sql, city) : await all(c.env.DB, sql)
-  return c.json({ photos, city: city ?? null })
+  const tab = c.req.query('tab') // stories | feed | anon
+  const filters: string[] = []
+  const params: any[] = []
+  if (city) { filters.push('p.city = ?'); params.push(city) }
+  if (tab === 'stories') filters.push('p.is_story = 1 AND (p.expires_at IS NULL OR p.expires_at > CURRENT_TIMESTAMP)')
+  else if (tab === 'anon') filters.push('p.is_anonymous = 1')
+  else if (tab === 'feed') filters.push('p.is_story = 0')
+  const where = filters.length ? 'WHERE ' + filters.join(' AND ') : ''
+  const sql = `SELECT p.*,
+      CASE WHEN p.is_anonymous = 1 THEN 'anonymous' ELSE u.handle END AS handle,
+      CASE WHEN p.is_anonymous = 1 THEN 'Anonymous' ELSE u.display_name END AS display_name
+    FROM photos p JOIN users u ON u.id=p.uploader_id
+    ${where}
+    ORDER BY p.published_at DESC LIMIT 60`
+  const photos = await all(c.env.DB, sql, ...params)
+  return c.json({ photos, city: city ?? null, tab: tab ?? 'feed' })
 })
 
 api.post('/lamahat/photos/:id/like', async (c) => {
   await run(c.env.DB, 'UPDATE photos SET likes = likes + 1 WHERE id = ?', c.req.param('id'))
   return c.json({ ok: true })
+})
+
+// §8.4 Anonymous / story photo post
+api.post('/lamahat/photos', async (c) => {
+  const body = await c.req.json<{
+    uploader_id: number; caption?: string; cid: string; city?: string;
+    is_anonymous?: boolean; is_story?: boolean;
+  }>()
+  if (!body.uploader_id || !body.cid) return c.json({ error: 'invalid' }, 400)
+  const id = 'ph' + Date.now().toString(36)
+  const expires = body.is_story ? "datetime('now', '+24 hours')" : 'NULL'
+  await run(c.env.DB, `
+    INSERT INTO photos (id, uploader_id, caption, cid, city, is_anonymous, is_story, expires_at, likes, comments_count)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ${expires}, 0, 0)
+  `,
+    id, body.uploader_id, body.caption ?? null, body.cid, body.city ?? null,
+    body.is_anonymous ? 1 : 0, body.is_story ? 1 : 0)
+  return c.json({ ok: true, id })
+})
+
+// §8 Photo comments
+api.get('/lamahat/photos/:id/comments', async (c) => {
+  const rows = await all(c.env.DB, `
+    SELECT pc.*, u.handle, u.display_name
+    FROM photo_comments pc JOIN users u ON u.id = pc.user_id
+    WHERE pc.photo_id = ? ORDER BY pc.created_at DESC LIMIT 50
+  `, c.req.param('id'))
+  return c.json({ comments: rows })
+})
+
+api.post('/lamahat/photos/:id/comments', async (c) => {
+  const id = c.req.param('id')
+  const body = await c.req.json<{ user_id: number; body: string }>()
+  if (!body.body) return c.json({ error: 'empty' }, 400)
+  const cid = 'pc' + Date.now().toString(36)
+  await run(c.env.DB, `
+    INSERT INTO photo_comments (id, photo_id, user_id, body) VALUES (?, ?, ?, ?)
+  `, cid, id, body.user_id, body.body)
+  await run(c.env.DB, 'UPDATE photos SET comments_count = comments_count + 1 WHERE id = ?', id)
+  return c.json({ ok: true, id: cid })
+})
+
+// §8.3 CLIP visual search — for demo we tag-search by caption keywords
+api.get('/lamahat/visual-search', async (c) => {
+  const q = (c.req.query('q') ?? '').toLowerCase()
+  if (!q) return c.json({ photos: [] })
+  // Demo: simple LIKE on caption (production would use CLIP vec ANN search)
+  const photos = await all(c.env.DB, `
+    SELECT p.*, u.handle, u.display_name
+    FROM photos p JOIN users u ON u.id = p.uploader_id
+    WHERE LOWER(p.caption) LIKE ?
+    ORDER BY p.likes DESC LIMIT 30
+  `, `%${q}%`)
+  return c.json({ photos, q, model: 'CLIP ViT-B/32 (on-device demo: LIKE fallback)' })
+})
+
+// §9 Midan ActivityPub federation marker
+api.post('/midan/posts/:id/federate', async (c) => {
+  const id = c.req.param('id')
+  const body = await c.req.json<{ ap_actor: string }>()
+  await run(c.env.DB, `
+    UPDATE posts SET federated_at = CURRENT_TIMESTAMP, ap_actor = ? WHERE id = ?
+  `, body.ap_actor, id)
+  return c.json({ ok: true, federated_to: body.ap_actor })
+})
+
+// §9 Midan repost
+api.post('/midan/posts/:id/repost', async (c) => {
+  await run(c.env.DB, 'UPDATE posts SET reposts = reposts + 1 WHERE id = ?', c.req.param('id'))
+  return c.json({ ok: true })
+})
+
+// §9 Midan replies
+api.get('/midan/posts/:id/replies', async (c) => {
+  const rows = await all(c.env.DB, `
+    SELECT pr.*, u.handle, u.display_name
+    FROM post_replies pr JOIN users u ON u.id = pr.author_id
+    WHERE pr.post_id = ? ORDER BY pr.created_at DESC LIMIT 50
+  `, c.req.param('id'))
+  return c.json({ replies: rows })
+})
+
+api.post('/midan/posts/:id/replies', async (c) => {
+  const id = c.req.param('id')
+  const body = await c.req.json<{ user_id: number; body: string }>()
+  if (!body.body) return c.json({ error: 'empty' }, 400)
+  const rid = 'pr' + Date.now().toString(36)
+  await run(c.env.DB, `
+    INSERT INTO post_replies (id, post_id, author_id, content) VALUES (?, ?, ?, ?)
+  `, rid, id, body.user_id, body.body)
+  await run(c.env.DB, 'UPDATE posts SET replies_count = replies_count + 1 WHERE id = ?', id)
+  return c.json({ ok: true, id: rid })
+})
+
+// Generic follow / unfollow (used by §13 §14)
+api.post('/follows/:user_id', async (c) => {
+  const target = c.req.param('user_id')
+  const body = await c.req.json<{ follower_id: number }>()
+  const existing = await first<any>(c.env.DB,
+    'SELECT 1 AS x FROM follows WHERE follower_id = ? AND followed_id = ?',
+    body.follower_id, target)
+  if (existing) {
+    await run(c.env.DB,
+      'DELETE FROM follows WHERE follower_id = ? AND followed_id = ?',
+      body.follower_id, target)
+    return c.json({ ok: true, following: false })
+  }
+  await run(c.env.DB,
+    'INSERT INTO follows (follower_id, followed_id) VALUES (?, ?)',
+    body.follower_id, target)
+  return c.json({ ok: true, following: true })
+})
+
+api.get('/follows/:user_id/status/:viewer_id', async (c) => {
+  const row = await first<any>(c.env.DB,
+    'SELECT 1 AS x FROM follows WHERE follower_id = ? AND followed_id = ?',
+    c.req.param('viewer_id'), c.req.param('user_id'))
+  return c.json({ following: !!row })
 })
 
 // ─── CIRCLES (Groups) ───────────────────────────────────────────────────

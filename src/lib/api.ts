@@ -104,3 +104,47 @@ export interface WaslAuthMethod {
   verified: number;
   updated_at: string;
 }
+export interface VideoComment {
+  id: string;
+  video_id: string;
+  user_id: number;
+  body: string;
+  is_bullet: number;
+  time_offset?: number;
+  created_at: string;
+  handle?: string;
+  display_name?: string;
+  verified?: number;
+}
+export interface PhotoComment {
+  id: string; photo_id: string; user_id: number; body: string; created_at: string;
+  handle?: string; display_name?: string;
+}
+export interface PostReply {
+  id: string; post_id: string; author_id: number; content: string; created_at: string;
+  handle?: string; display_name?: string;
+}
+export interface TipSuggestion {
+  widget: string;
+  currency: string;
+  amounts: number[];
+  gifts: { name: string; emoji: string; amount: number }[];
+  country: string;
+  age_restricted: boolean;
+  blocked: boolean;
+  disclaimer: string;
+}
+export interface SponsoredHashtag {
+  id: number; hashtag: string; city?: string; advertiser?: string;
+  starts_at: string; ends_at?: string; budget: number;
+}
+export interface CreatorAnalytics {
+  user_id: number;
+  total_views: number;
+  total_likes: number;
+  total_subscribers: number;
+  total_tips_minor: number;
+  avg_watch_secs: number;
+  members?: number;
+  updated_at: string;
+}
