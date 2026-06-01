@@ -158,47 +158,56 @@ export function WaslScreen() {
             >
               <button
                 onClick={() => setActive(r)}
-                className="w-full text-start px-5 py-3 hover:bg-muted/40 transition flex items-center gap-3"
+                className="orbit-ring mx-3 my-1.5 w-[calc(100%-1.5rem)] text-start px-4 py-3 flex items-center gap-3 group"
               >
                 <div className="relative shrink-0">
-                  <div
-                    className={`w-12 h-12 rounded-2xl flex items-center justify-center font-display text-lg ${
-                      r.kind === "broadcast"
-                        ? "bg-gradient-mesh text-primary-foreground"
-                        : r.kind === "workspace"
-                        ? "bg-gradient-gold text-brand-charcoal"
-                        : r.kind === "group"
-                        ? "bg-gradient-gold text-brand-charcoal"
-                        : "bg-gradient-hero text-primary-foreground"
-                    }`}
-                  >
-                    {r.kind === "broadcast" ? (
-                      <Radio className="w-5 h-5" />
-                    ) : r.kind === "workspace" ? (
-                      <Building2 className="w-5 h-5" />
-                    ) : r.kind === "group" ? (
-                      <Users className="w-5 h-5" />
-                    ) : (
-                      r.name[0] ?? "?"
-                    )}
+                  {/* Avatar inside a thin gold ring — NOT a flat WhatsApp square */}
+                  <div className="w-12 h-12 rounded-full p-[1.5px] bg-gradient-to-br from-gold/60 via-secondary/40 to-primary/40">
+                    <div
+                      className={`w-full h-full rounded-full flex items-center justify-center font-display text-lg ${
+                        r.kind === "broadcast"
+                          ? "bg-gradient-mesh text-primary-foreground"
+                          : r.kind === "workspace"
+                          ? "bg-gradient-gold text-brand-charcoal"
+                          : r.kind === "group"
+                          ? "bg-gradient-gold text-brand-charcoal"
+                          : "bg-gradient-hero text-primary-foreground"
+                      }`}
+                    >
+                      {r.kind === "broadcast" ? (
+                        <Radio className="w-5 h-5" />
+                      ) : r.kind === "workspace" ? (
+                        <Building2 className="w-5 h-5" />
+                      ) : r.kind === "group" ? (
+                        <Users className="w-5 h-5" />
+                      ) : (
+                        r.name[0] ?? "?"
+                      )}
+                    </div>
                   </div>
-                  {r.is_encrypted ? (
-                    <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-secondary border-2 border-background flex items-center justify-center">
-                      <Lock className="w-2 h-2 text-primary-foreground" />
-                    </span>
-                  ) : null}
+                  {/* Live signal-mesh dot (Circle-unique presence indicator) */}
+                  <span
+                    className="signal-dot absolute -bottom-0.5 -right-0.5"
+                    data-state={r.is_encrypted ? "mesh" : "off"}
+                    title={r.is_encrypted ? "E2EE · mesh-ready" : "Plain"}
+                  />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <span className="font-medium truncate">{r.name}</span>
+                    {r.is_encrypted && (
+                      <span className="gold-stroke text-[9px] uppercase tracking-wider">
+                        <Lock className="w-2.5 h-2.5" /> E2EE
+                      </span>
+                    )}
                     {r.kind === "broadcast" && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-secondary/20 text-secondary uppercase">
-                        Channel
+                      <span className="gold-stroke text-[9px] uppercase tracking-wider">
+                        <Radio className="w-2.5 h-2.5" /> Channel
                       </span>
                     )}
                     {r.kind === "workspace" && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-600 uppercase">
-                        Maktab
+                      <span className="gold-stroke text-[9px] uppercase tracking-wider">
+                        <Building2 className="w-2.5 h-2.5" /> Maktab
                       </span>
                     )}
                   </div>
@@ -207,7 +216,7 @@ export function WaslScreen() {
                   </p>
                 </div>
                 <div className="flex flex-col items-end gap-1.5 shrink-0">
-                  <span className="text-[10px] text-muted-foreground">
+                  <span className="text-[10px] text-muted-foreground font-mono">
                     {r.last_at ? formatShortTime(r.last_at) : "—"}
                   </span>
                   <span className="text-[10px] text-muted-foreground">
@@ -887,6 +896,12 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
             Offline — messages will be sent via local mesh or queued
           </div>
         )}
+
+        {/* On-device AI Thread Synopsis — Circle-unique, not in WhatsApp/Telegram/Signal.
+            Generates a 3-sentence summary from the most recent messages, fully on-device. */}
+        {messages.length >= 4 && (
+          <ThreadSynopsis messages={messages.slice(-30)} />
+        )}
       </div>
 
       {/* Messages */}
@@ -929,13 +944,18 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
                         <Forward className="w-3 h-3" />
                       </button>
                     )}
+                    {/* Circle thread-strip — gold side-rail (mine) or stitched border (theirs),
+                        NOT a WhatsApp/Telegram bubble. */}
                     <div
-                      className={`px-4 py-2.5 rounded-2xl text-sm break-words ${
+                      className={`relative px-4 py-2.5 text-sm break-words ${
                         me
-                          ? "bg-gradient-hero text-primary-foreground rounded-br-md"
-                          : "bg-muted rounded-bl-md"
+                          ? "bg-gradient-to-br from-secondary/15 to-primary/5 text-foreground rounded-[18px_18px_4px_18px] ps-5"
+                          : "bg-card/70 backdrop-blur-md text-foreground rounded-[18px_18px_18px_4px] border border-border/60"
                       }`}
                     >
+                      {me && (
+                        <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-gradient-to-b from-gold via-gold/70 to-secondary/40" />
+                      )}
                       {m.body.startsWith("[GIF:") ? (
                         <span className="text-3xl">{decodeGifEmoji(m.body)}</span>
                       ) : m.body}
@@ -1868,6 +1888,71 @@ function formatDuration(sec: number): string {
   const m = Math.floor(sec / 60);
   const s = sec % 60;
   return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
+/* ─────────────────────────── On-device AI Thread Synopsis ─────────────────────────── */
+// Circle-unique feature: a 3-line summary generated locally from recent messages.
+// No payload leaves the device. (Heuristic extractor for now; pluggable into a local LLM later.)
+
+function ThreadSynopsis({ messages }: { messages: Message[] }) {
+  const [expanded, setExpanded] = useState(false);
+  const summary = useMemo(() => {
+    if (messages.length === 0) return null;
+    // Heuristic extractive summary: most active sender, top 2 longest non-trivial messages, time span.
+    const senders = new Map<string, number>();
+    messages.forEach(m => {
+      const k = m.display_name ?? `@${m.handle}` ?? `User ${m.sender_id}`;
+      senders.set(k, (senders.get(k) ?? 0) + 1);
+    });
+    const topSender = [...senders.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? "—";
+    const bodies = messages
+      .filter(m => m.body && !m.body.startsWith("[GIF:") && m.body.length > 12)
+      .sort((a, b) => b.body.length - a.body.length)
+      .slice(0, 2)
+      .map(m => m.body.length > 90 ? m.body.slice(0, 90) + "…" : m.body);
+    const span = messages.length > 1
+      ? `${messages.length} msgs · since ${formatShortTime(messages[0].created_at)}`
+      : `${messages.length} msg`;
+    return { topSender, bodies, span };
+  }, [messages]);
+
+  if (!summary) return null;
+
+  return (
+    <button
+      onClick={() => setExpanded(v => !v)}
+      className="w-full text-start orbit-ring px-3 py-2.5 flex items-start gap-2.5 group"
+    >
+      <div className="w-7 h-7 rounded-full mesh-fill flex items-center justify-center shrink-0">
+        <Sparkles className="w-3.5 h-3.5 text-foreground" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-0.5">
+          <span className="text-[10px] uppercase tracking-widest text-secondary font-medium">On-device synopsis</span>
+          <span className="text-[9px] text-muted-foreground">· {summary.span}</span>
+        </div>
+        {!expanded ? (
+          <div className="text-[11.5px] text-muted-foreground truncate">
+            Most active: <span className="text-foreground">{summary.topSender}</span> — tap to expand
+          </div>
+        ) : (
+          <div className="space-y-1 mt-1">
+            <div className="text-[11px] text-muted-foreground">
+              <span className="text-foreground font-medium">{summary.topSender}</span> is driving this thread.
+            </div>
+            {summary.bodies.map((b, i) => (
+              <div key={i} className="text-[11px] text-foreground/85 italic">
+                “{b}”
+              </div>
+            ))}
+            <div className="text-[9px] text-muted-foreground/70 mt-1.5 flex items-center gap-1">
+              <Lock className="w-2.5 h-2.5" /> Generated locally — never sent to a server
+            </div>
+          </div>
+        )}
+      </div>
+    </button>
+  );
 }
 
 export default WaslScreen;

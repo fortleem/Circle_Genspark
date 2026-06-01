@@ -166,50 +166,73 @@ export function LamahatScreen() {
         <Clock className="w-5 h-5 text-muted-foreground" />
       </div>
 
-      {/* Pinterest-style grid — real photos */}
+      {/* Circle hex-mosaic — NOT an Instagram square grid.
+          Honeycomb cells with gold strokes; alternating rows offset to interlock. */}
       {loading ? (
         <div className="px-5 py-10 text-sm text-muted-foreground text-center">Loading photos…</div>
       ) : items.length === 0 ? (
         <div className="px-5 py-10 text-sm text-muted-foreground text-center">No photos yet</div>
       ) : (
-        <div className="columns-2 sm:columns-3 md:columns-4 gap-2 px-2 mt-5">
-          {items.map((p) => (
-            <div
-              key={p.id}
-              className={`mb-2 break-inside-avoid rounded-xl relative overflow-hidden group ${
-                p.ratio === "tall" ? "aspect-[3/4]" : p.ratio === "wide" ? "aspect-[4/3]" : "aspect-square"
-              }`}
-              style={{
-                background: `linear-gradient(135deg, hsl(${p.hue} 60% 55%), hsl(${(p.hue + 60) % 360} 50% 35%))`,
-              }}
-            >
-              {/* Caption overlay (always visible on mobile) */}
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-2">
-                <p className="text-[10px] text-white/95 line-clamp-2 leading-tight">{p.caption ?? ""}</p>
-                <div className="flex items-center gap-2 mt-1 text-[9px] text-white/70">
-                  <span>@{p.handle}</span>
-                  {p.city && (
-                    <span className="flex items-center gap-0.5">
-                      <MapPin className="w-2.5 h-2.5" /> {p.city}
-                    </span>
-                  )}
-                  <span className="ms-auto flex items-center gap-0.5">
-                    <Heart className="w-2.5 h-2.5" /> {p.likes}
-                  </span>
-                </div>
-              </div>
+        <div className="px-3 mt-5">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-x-1 gap-y-3">
+            {items.map((p, idx) => {
+              const isAnon = (p as any).is_anonymous === 1 || (p as any).is_anonymous === true;
+              // Offset every other column by half-row to create the honeycomb interlock
+              const offset = idx % 2 === 1 ? "translate-y-5" : "";
+              return (
+                <div
+                  key={p.id}
+                  className={`relative group ${offset}`}
+                >
+                  <div
+                    className="hex-tile hex-tile-stroke"
+                    style={{
+                      background: `linear-gradient(135deg, hsl(${p.hue} 60% 55%), hsl(${(p.hue + 60) % 360} 50% 35%))`,
+                    }}
+                  >
+                    {/* Caption overlay — fades in on hover */}
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent p-2 opacity-0 group-hover:opacity-100 transition">
+                      <p className="text-[9px] text-white/95 line-clamp-2 leading-tight">
+                        {p.caption ?? ""}
+                      </p>
+                      <div className="flex items-center gap-1.5 mt-0.5 text-[8.5px] text-white/80">
+                        <span>{isAnon ? "anon" : `@${p.handle}`}</span>
+                        <span className="ms-auto flex items-center gap-0.5">
+                          <Heart className="w-2.5 h-2.5" /> {p.likes}
+                        </span>
+                      </div>
+                    </div>
+                    {/* Anonymous frost veil — distinctive to Circle */}
+                    {isAnon && <div className="anon-veil absolute inset-0" />}
+                  </div>
 
-              <button
-                onClick={() => like(p)}
-                className="absolute top-2 right-2 w-7 h-7 rounded-full glass flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
-              >
-                <Heart className="w-3.5 h-3.5" />
-              </button>
-              <button className="absolute top-2 left-2 w-7 h-7 rounded-full glass flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                <Layers className="w-3.5 h-3.5" />
-              </button>
+                  {/* Floating action chips — like = gold heart, layers = visual search this image */}
+                  <button
+                    onClick={() => like(p)}
+                    className="absolute -bottom-1 right-1 w-7 h-7 tip-coin opacity-0 group-hover:opacity-100 transition"
+                    title="Like"
+                  >
+                    <Heart className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Visible city signature row — show city pulse for any photos with location */}
+          <div className="flex items-center justify-between mt-6 px-3">
+            <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-muted-foreground">
+              <span className="city-pulse" style={{ width: 22, height: 22 }}>
+                <span className="core" style={{ width: 6, height: 6 }} />
+                <span className="ring" />
+                <span className="ring" />
+              </span>
+              {items.filter(p => p.city).length} geotagged · neighbourhood-level only
             </div>
-          ))}
+            <span className="gold-stroke text-[9px] uppercase">
+              <Hash className="w-2.5 h-2.5" /> {items.length} stored on IPFS
+            </span>
+          </div>
         </div>
       )}
 

@@ -92,17 +92,19 @@ export function MashahdScreen() {
         </div>
       </div>
 
-      {/* Filters */}
+      {/* Filters — gold-stroked chips (NOT YouTube's plain pills) */}
       <div className="flex gap-2 px-5 mt-4 overflow-x-auto scrollbar-hide">
         {(["For you", "Shorts", "Live", "Channels", "Music", "Local"] as Filter[]).map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`text-xs px-3 py-1.5 rounded-full whitespace-nowrap transition flex items-center gap-1 ${
-              filter === f ? "bg-primary text-primary-foreground" : "glass"
+            className={`gold-stroke whitespace-nowrap text-xs transition ${
+              filter === f
+                ? "bg-gradient-to-br from-secondary/30 to-primary/15 text-foreground ring-1 ring-secondary/60"
+                : "hover:bg-card/60"
             }`}
           >
-            {f === "Live" && <Radio className="w-3 h-3 animate-pulse" />}
+            {f === "Live" && <Radio className="w-3 h-3 animate-pulse text-accent" />}
             {f}
           </button>
         ))}
@@ -203,8 +205,8 @@ function VideoCard({
     <motion.div
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: i * 0.05 }}
-      className="relative rounded-3xl overflow-hidden aspect-[9/14] sm:aspect-[16/9] shadow-float"
+      transition={{ delay: Math.min(i, 6) * 0.05 }}
+      className="stage-frame relative aspect-[9/14] sm:aspect-[16/9]"
     >
       <div className="absolute inset-0 bg-gradient-mesh" />
       <div
@@ -617,9 +619,16 @@ function Stat({ icon: Icon, label, value, suffix }: { icon: any; label: string; 
 function ActionPill({ icon: Icon, label, onClick, accent }: { icon: any; label: string; onClick?: () => void; accent?: boolean }) {
   return (
     <button onClick={onClick} className="flex flex-col items-center gap-1">
-      <span className={`w-10 h-10 rounded-full flex items-center justify-center ${accent ? "bg-gradient-gold text-brand-charcoal" : "glass-strong"}`}>
-        <Icon className="w-5 h-5" />
-      </span>
+      {accent ? (
+        // Tip-coin — Circle's gold-coin tip button, NOT YouTube's $ pill
+        <span className="tip-coin">
+          <Icon className="w-5 h-5" />
+        </span>
+      ) : (
+        <span className="w-10 h-10 rounded-full flex items-center justify-center glass-strong">
+          <Icon className="w-5 h-5" />
+        </span>
+      )}
       <span className="text-[10px]">{label}</span>
     </button>
   );
