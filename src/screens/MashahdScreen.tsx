@@ -17,6 +17,7 @@ import {
   type Video, type VideoComment, type TipSuggestion, type SponsoredHashtag,
   type CreatorAnalytics,
 } from "@/lib/api";
+import { fireShare } from "@/components/shell/ShareSheet";
 
 const ME = 1;
 const VIEWER_COUNTRY = "EG"; // derived from IP server-side in production
@@ -268,7 +269,7 @@ function VideoCard({
       <div className="absolute bottom-4 right-3 flex flex-col items-center gap-3 z-10" style={{ color: "hsl(var(--cream))" }}>
         <ActionPill icon={Heart} label={kn(v.likes)} onClick={onLike} />
         <ActionPill icon={MessageCircle} label={kn(bullets.length)} onClick={onComments} />
-        <ActionPill icon={Share2} label="Share" />
+        <ActionPill icon={Share2} label="Share" onClick={() => fireShare({ pillar: 'mashahd', id: String(v.id), title: v.title })} />
         <ActionPill icon={Gift} label="Tip" onClick={onTip} accent />
       </div>
     </motion.div>

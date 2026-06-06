@@ -6,8 +6,11 @@ import {
   Mail as MailIcon, Inbox, Send as SendIcon, Archive, Star,
   Search, ShieldCheck, Sparkles, PenSquare, Trash2,
 } from "lucide-react";
-import { apiGet, type Mail } from "@/lib/api";
+import { apiGet, apiPost, type Mail } from "@/lib/api";
 import { ProtoHeader, ProtoFooter } from "@/components/shell/ProtoHeader";
+import { motion as motionAlias, AnimatePresence } from "framer-motion";
+import { X, Send as SendArrow, Lock, EyeOff } from "lucide-react";
+import { toast } from "sonner";
 
 const ME = 1;
 
@@ -34,6 +37,7 @@ export function MailScreen() {
   const [messages, setMessages] = useState<Mail[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
+  const [composeOpen, setComposeOpen] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -64,11 +68,21 @@ export function MailScreen() {
         section=""
         tagline="PGP-default · federated · on-device AI summaries"
         right={
-          <button className="w-10 h-10 rounded-full bg-gradient-hero text-primary-foreground flex items-center justify-center">
+          <button
+            onClick={() => setComposeOpen(true)}
+            className="w-10 h-10 rounded-full bg-gradient-hero text-primary-foreground flex items-center justify-center hover:scale-105 transition"
+            title="Compose new message"
+          >
             <PenSquare className="w-4 h-4" />
           </button>
         }
       />
+      <MailComposeModal open={composeOpen} onClose={() => setComposeOpen(false)} onSent={() => {
+        setComposeOpen(false);
+        apiGet<{ folder: string; messages: Mail[] }>(`/mail/${ME}?folder=${folder}`)
+          .then((d) => setMessages(d.messages ?? []))
+          .catch(() => {});
+      }} />
 
       {/* Folder tabs */}
       <div className="flex gap-2 px-5 overflow-x-auto scrollbar-hide">
@@ -198,3 +212,84 @@ export function MailScreen() {
 }
 
 export default MailScreen;
+
+// ── MailComposeModal — wired to /mail/send with PGP toggle + anonymous-from option
+function MailComposeModal({ open, onClose, onSent }: { open: boolean; onClose: () => void; onSent: () => void }) {
+  const [to, setTo] = useState("");
+  const [subject, setSubject] = useState("");
+  const [body, setBody] = useState("");
+  const [encrypted, setEncrypted] = useState(true);
+  const [anon, setAnon] = useState(false);
+  const [sending, setSending] = useState(false);
+
+  const send = async () => {
+    if (!to.trim() || !subject.trim()) return;
+    setSending(true);
+    try {
+      const r = await apiPost<{ ok: boolean }>('/mail/send', {
+        from_user: ME, to_addr: to, subject, body,
+        is_encrypted: encrypted ? 1 : 0,
+        is_anonymous: anon ? 1 : 0,
+      });
+      if (r.ok) {
+        toast.success("Mail sent", { description: encrypted ? "PGP-sealed" : "delivered" });
+        setTo(""); setSubject(""); setBody("");
+        onSent();
+      }
+    } catch (e: any) {
+      toast.error("Send failed", { description: e?.message });
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <motionAlias.div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motionAlias.div className="absolute inset-0 bg-background/70 backdrop-blur-md" onClick={onClose} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
+          <motionAlias.div
+            className="relative w-full sm:max-w-lg orbit-ring mx-2 sm:mx-0 mb-2 sm:mb-0 bg-card/95 backdrop-blur-xl rounded-2xl overflow-hidden"
+            initial={{ y: 60, opacity: 0, scale: 0.96 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ y: 60, opacity: 0, scale: 0.96 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 22 }}
+          >
+            <div className="px-4 py-3 flex items-center justify-between border-b border-border/40">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-gradient-hero grid place-items-center">
+                  <SendArrow className="w-4 h-4 text-primary-foreground" />
+                </div>
+                <div>
+                  <div className="text-sm font-semibold tracking-tight">New message</div>
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider">PGP-default · federated</div>
+                </div>
+              </div>
+              <button onClick={onClose} className="p-1.5 rounded-md hover:bg-muted"><X className="w-4 h-4" /></button>
+            </div>
+
+            <div className="p-4 space-y-3">
+              <input value={to} onChange={e => setTo(e.target.value)} placeholder="To: someone@circle.network" className="w-full bg-muted/40 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary" />
+              <input value={subject} onChange={e => setSubject(e.target.value)} placeholder="Subject" className="w-full bg-muted/40 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary" />
+              <textarea value={body} onChange={e => setBody(e.target.value)} placeholder="Write your message…" rows={6} className="w-full bg-muted/40 rounded-lg p-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none" />
+              <div className="flex items-center gap-2 flex-wrap">
+                <button onClick={() => setEncrypted(v => !v)} className={`gold-stroke text-[10px] px-2.5 py-1 rounded-full ${encrypted ? 'bg-primary/15 font-semibold text-foreground' : 'text-muted-foreground'}`}>
+                  <Lock className="w-3 h-3" /> {encrypted ? 'PGP encrypted' : 'Plaintext'}
+                </button>
+                <button onClick={() => setAnon(v => !v)} className={`gold-stroke text-[10px] px-2.5 py-1 rounded-full ${anon ? 'bg-secondary/15 font-semibold text-foreground' : 'text-muted-foreground'}`}>
+                  <EyeOff className="w-3 h-3" /> {anon ? 'Anon-from' : 'Sign with @me'}
+                </button>
+              </div>
+            </div>
+
+            <div className="p-3 border-t border-border/40 flex gap-2">
+              <button onClick={onClose} className="px-3 py-2 text-sm rounded-lg hover:bg-muted">Cancel</button>
+              <button onClick={send} disabled={sending || !to.trim() || !subject.trim()} className="flex-1 px-3 py-2 text-sm rounded-lg gold-stroke bg-primary/15 hover:bg-primary/25 disabled:opacity-40 flex items-center justify-center gap-2 font-semibold">
+                {sending ? <Sparkles className="w-4 h-4 animate-spin" /> : <SendArrow className="w-4 h-4" />}
+                {sending ? 'Sending…' : 'Send'}
+              </button>
+            </div>
+          </motionAlias.div>
+        </motionAlias.div>
+      )}
+    </AnimatePresence>
+  );
+}

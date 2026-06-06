@@ -1,5 +1,6 @@
 import { trips } from "@/lib/mock";
 import { MapPin, Plane, Hotel, Languages, DollarSign, Sparkles, Calendar } from "lucide-react";
+import { CulturalInterpreter } from "@/components/futuristic/CulturalInterpreter";
 
 const cover: Record<string, string> = {
   teal: "from-primary to-brand-steel",
@@ -13,6 +14,11 @@ export function RihlaScreen() {
       <div className="px-5 pt-2">
         <h1 className="font-display text-4xl">Rihla</h1>
         <p className="text-sm text-muted-foreground mt-1">Three trips planned · 1 active</p>
+      </div>
+
+      {/* Circle-unique Cultural Interpreter — local norms, tipping, taboos */}
+      <div className="px-5 mt-4">
+        <CulturalInterpreter defaultCity="Cairo" />
       </div>
 
       {/* Map dashboard */}

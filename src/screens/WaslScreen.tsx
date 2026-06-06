@@ -17,6 +17,8 @@ import {
   type Room, type Message, type WaslPrivacy,
   type WaslReaction, type WaslOverride, type WaslAnalytics, type WaslAuthMethod,
 } from "@/lib/api";
+import { EchoPlayback } from "@/components/futuristic/EchoPlayback";
+import { fireShare } from "@/components/shell/ShareSheet";
 
 const ME = 1;
 
@@ -903,6 +905,9 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
           <ThreadSynopsis messages={messages.slice(-30)} />
         )}
       </div>
+
+      {/* Echo Playback — temporal AI summary spans (Circle-unique F7) */}
+      <EchoPlayback roomId={room.id} />
 
       {/* Messages */}
       <div className="flex-1 px-4 py-4 space-y-3 overflow-y-auto">

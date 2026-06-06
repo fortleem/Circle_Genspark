@@ -1,10 +1,14 @@
 // Circle — App shell layout: ambient bg + TopBar + main router outlet + Dock + AI Orb
+// + Universal Command Palette (⌘K) + Notifications Inbox.
 import { AnimatePresence, motion } from "framer-motion";
 import { Outlet, useLocation } from "react-router-dom";
 import { TopBar } from "@/components/shell/TopBar";
 import { Dock } from "@/components/shell/Dock";
 import { AIOrb } from "@/components/shell/AIOrb";
 import { Sidebar } from "@/components/shell/Sidebar";
+import { CommandPalette } from "@/components/shell/CommandPalette";
+import { ShareSheet } from "@/components/shell/ShareSheet";
+import { PulseRibbon } from "@/components/shell/PulseRibbon";
 
 export function Layout() {
   const loc = useLocation();
@@ -22,6 +26,7 @@ export function Layout() {
         <div className="flex-1 min-w-0">
           <div className="max-w-2xl mx-auto md:max-w-3xl lg:max-w-4xl xl:max-w-5xl relative">
             <TopBar />
+            <PulseRibbon />
             <AnimatePresence mode="wait">
               <motion.main
                 key={loc.pathname}
@@ -40,6 +45,9 @@ export function Layout() {
 
       <AIOrb />
       <Dock />
+      {/* Circle-distinctive globals — mount once */}
+      <CommandPalette />
+      <ShareSheet />
     </div>
   );
 }

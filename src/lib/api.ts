@@ -148,3 +148,77 @@ export interface CreatorAnalytics {
   members?: number;
   updated_at: string;
 }
+
+// ─── Notifications, Mail, Shares, Command palette ─────────────────────
+export interface Notification {
+  id: number;
+  kind: 'wasl' | 'mashahd' | 'midan' | 'pay' | 'mesh' | 'verify' | 'gov' | 'system';
+  title: string;
+  body?: string;
+  link?: string;
+  unread: number;
+  priority: number;
+  created_at: string;
+}
+export interface NotificationCounts { total: number; unread: number; high: number }
+
+export interface MailOutboxItem {
+  id: number;
+  to_addr: string;
+  subject: string;
+  body: string;
+  is_encrypted: number;
+  is_anonymous: number;
+  state: 'queued' | 'sent' | 'failed';
+  created_at: string;
+  sent_at?: string;
+}
+
+export interface CommandResult {
+  kind: 'room' | 'channel' | 'video' | 'post' | 'user';
+  id: number | string;
+  title: string;
+  hint: string;
+  route: string;
+}
+
+// ── Futuristic types (F2–F8) ────────────────────────────────────
+export interface PresenceUser {
+  user_id: number; state: 'online'|'mesh'|'away'|'invisible';
+  region?: string; mesh_node?: string; encrypted_channels: number;
+  device?: string; last_seen: string;
+  handle?: string; display_name?: string; avatar_url?: string;
+}
+export interface PresenceTotals { online: number; mesh: number; away: number; encrypted_channels: number; regions: string[] }
+
+export interface PulseEvent { pillar: string; kind: string; weight: number; city?: string; created_at: string }
+export interface PulseSummary { events: PulseEvent[]; byPillar: Record<string,number>; byCity: Record<string,number>; total: number }
+
+export interface TimeCapsule {
+  id: number; author_id: number; pillar: string; payload: string;
+  anchor_hash: string; sealed_at: string; unseal_at: string;
+  unsealed: number; visibility: 'public'|'recipients'|'self';
+  handle?: string; display_name?: string; avatar_url?: string;
+}
+
+export interface Whisper {
+  id: number; from_user: number; to_user?: number; body: string;
+  ttl_seconds: number; view_count: number; max_views: number;
+  burned: number; first_viewed_at?: string; expires_at?: string;
+  created_at: string; handle?: string; display_name?: string;
+}
+
+export interface LensPin {
+  id: number; photo_id?: number; user_id: number; lat: number; lng: number;
+  bearing?: number; altitude?: number; city?: string; caption?: string;
+  created_at: string; handle?: string; display_name?: string;
+}
+
+export interface Echo {
+  id: number; span_start?: number; span_end?: number;
+  summary: string; sentiment: 'positive'|'neutral'|'tense'|'celebratory';
+  key_actors: string; created_at: string;
+}
+
+export interface ConstellationNode { id: number; handle: string; display_name: string; avatar_url?: string; weight: number }
+export interface Constellation { center: number; orbits: { ring: 'inner'|'middle'|'outer'; nodes: ConstellationNode[] }[]; total: number }

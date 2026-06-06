@@ -4,9 +4,10 @@
 import { useEffect, useState, useMemo } from "react";
 import {
   Sparkles, Layers, Heart, MapPin, Search, Shield, Camera, Eye, EyeOff,
-  Clock, ImagePlus, Hash, BadgeCheck
+  Clock, ImagePlus, Hash, BadgeCheck, Share2
 } from "lucide-react";
 import { apiGet, apiPost, type Photo } from "@/lib/api";
+import { fireShare } from "@/components/shell/ShareSheet";
 
 type Tab = "Following" | "Nearby" | "Trending" | "Memories";
 
@@ -206,13 +207,20 @@ export function LamahatScreen() {
                     {isAnon && <div className="anon-veil absolute inset-0" />}
                   </div>
 
-                  {/* Floating action chips — like = gold heart, layers = visual search this image */}
+                  {/* Floating action chips — like = gold heart, share = cross-pillar */}
                   <button
                     onClick={() => like(p)}
                     className="absolute -bottom-1 right-1 w-7 h-7 tip-coin opacity-0 group-hover:opacity-100 transition"
                     title="Like"
                   >
                     <Heart className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => fireShare({ pillar: 'lamahat', id: String(p.id), title: p.caption ?? p.city ?? 'Photo' })}
+                    className="absolute -bottom-1 right-9 w-7 h-7 rounded-full bg-card/80 backdrop-blur grid place-items-center gold-stroke opacity-0 group-hover:opacity-100 transition"
+                    title="Share across Circle"
+                  >
+                    <Share2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
               );

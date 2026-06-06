@@ -1,5 +1,8 @@
 import { BadgeCheck, ShieldCheck, Sparkles, Languages, Palette, Lock, Database, Globe, ChevronRight } from "lucide-react";
 import { useApp } from "@/providers/AppProvider";
+import { Constellation } from "@/components/futuristic/Constellation";
+
+const ME = 1;
 
 export function ProfileScreen() {
   const { theme, toggleTheme, locale, toggleLocale } = useApp();
@@ -39,6 +42,11 @@ export function ProfileScreen() {
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground mt-1">{s.l}</div>
           </div>
         ))}
+      </div>
+
+      {/* Circle-unique Constellation viz — your gravitational system */}
+      <div className="px-4 mt-5">
+        <Constellation userId={ME} />
       </div>
 
       {/* Sections */}

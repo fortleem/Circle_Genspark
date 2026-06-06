@@ -8,6 +8,11 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { apiGet, apiPost, type MidanPost } from "@/lib/api";
+import { fireShare } from "@/components/shell/ShareSheet";
+import { CapsuleComposer } from "@/components/futuristic/CapsuleComposer";
+import { WhisperComposer } from "@/components/futuristic/WhisperComposer";
+import { SmartRouter } from "@/components/futuristic/SmartRouter";
+import { Hourglass, Flame } from "lucide-react";
 
 type Feed = "for_you" | "following" | "local" | "global";
 
@@ -29,6 +34,8 @@ export function MidanScreen() {
   const [composer, setComposer] = useState("");
   const [anonymous, setAnonymous] = useState(false);
   const [posting, setPosting] = useState(false);
+  const [showCapsule, setShowCapsule] = useState(false);
+  const [showWhisper, setShowWhisper] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -161,7 +168,46 @@ export function MidanScreen() {
             <Send className="w-4 h-4" />
           </button>
         </div>
+        {/* Smart Post Router — suggests better pillar if appropriate (Circle-unique F9) */}
+        <SmartRouter text={composer} />
       </div>
+
+      {/* Circle-unique futuristic actions — Time Capsule + Whisper */}
+      <div className="mx-5 mt-3 flex gap-2">
+        <button
+          onClick={() => { setShowCapsule(s => !s); setShowWhisper(false); }}
+          className={`flex-1 px-3 py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition orbit-ring ${
+            showCapsule ? 'bg-primary/15 font-semibold' : 'bg-card/50 hover:bg-card/80'
+          }`}
+          title="Write a post sealed until a future date"
+        >
+          <Hourglass className="w-3.5 h-3.5 text-primary" />
+          <span>Time Capsule</span>
+          <span className="text-[9px] uppercase tracking-wider text-muted-foreground hidden sm:inline">future-release</span>
+        </button>
+        <button
+          onClick={() => { setShowWhisper(s => !s); setShowCapsule(false); }}
+          className={`flex-1 px-3 py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition orbit-ring ${
+            showWhisper ? 'bg-rose-500/15 font-semibold' : 'bg-card/50 hover:bg-card/80'
+          }`}
+          title="Send a self-destruct whisper"
+        >
+          <Flame className="w-3.5 h-3.5 text-rose-500" />
+          <span>Whisper</span>
+          <span className="text-[9px] uppercase tracking-wider text-muted-foreground hidden sm:inline">self-destruct</span>
+        </button>
+      </div>
+
+      {showCapsule && (
+        <div className="mx-5 mt-3">
+          <CapsuleComposer onClose={() => setShowCapsule(false)} />
+        </div>
+      )}
+      {showWhisper && (
+        <div className="mx-5 mt-3">
+          <WhisperComposer onClose={() => setShowWhisper(false)} />
+        </div>
+      )}
 
       {/* Federation chip — mesh-fill (no incumbent shows this) */}
       <div className="mx-5 mt-3 rounded-2xl p-[1px] mesh-fill">
@@ -260,7 +306,11 @@ export function MidanScreen() {
                       <button className="flex items-center gap-1.5 hover:text-primary transition">
                         <Repeat2 className="w-4 h-4" />{p.reposts}
                       </button>
-                      <button className="flex items-center gap-1.5 hover:text-foreground transition">
+                      <button
+                        onClick={() => fireShare({ pillar: 'midan', id: String(p.id), title: (p.content ?? '').slice(0, 80) })}
+                        className="flex items-center gap-1.5 hover:text-foreground transition"
+                        title="Share across Circle"
+                      >
                         <Share2 className="w-4 h-4" />
                       </button>
                       <button className="flex items-center gap-1.5 hover:text-foreground ms-auto transition" title="Report">

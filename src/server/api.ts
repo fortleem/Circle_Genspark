@@ -597,24 +597,40 @@ api.post('/mashahd/tip', async (c) => {
   })
 })
 
-// §7.4.5 Webhook from widget provider (confirms tip)
+// §7.4.5 Webhook from widget provider (confirms tip) — hardened against missing tip / bad payloads
 api.post('/mashahd/tip/webhook', async (c) => {
-  const body = await c.req.json<{ id: string; webhook_ref: string; status: 'confirmed' | 'failed' }>()
-  await run(c.env.DB, `
-    UPDATE tip_transactions SET status = ?, webhook_ref = ?, confirmed_at = CURRENT_TIMESTAMP WHERE id = ?
-  `, body.status, body.webhook_ref, body.id)
-  // Bump creator analytics
-  if (body.status === 'confirmed') {
+  try {
+    const body = await c.req.json<{ id?: string; webhook_ref?: string; status?: 'confirmed' | 'failed' }>().catch(() => ({}))
+    if (!body || !body.id || !body.status) return c.json({ ok: false, error: 'invalid_payload' }, 400)
+
+    // Verify tip exists first
     const tip = await first<any>(c.env.DB, 'SELECT to_user, amount FROM tip_transactions WHERE id = ?', body.id)
-    if (tip) {
-      await run(c.env.DB, `
-        INSERT INTO creator_analytics (user_id, total_tips_minor) VALUES (?, ?)
-        ON CONFLICT(user_id) DO UPDATE SET total_tips_minor = total_tips_minor + excluded.total_tips_minor,
-                                            updated_at = CURRENT_TIMESTAMP
-      `, tip.to_user, tip.amount)
+    if (!tip) return c.json({ ok: false, error: 'tip_not_found', id: body.id }, 404)
+
+    await run(c.env.DB, `
+      UPDATE tip_transactions SET status = ?, webhook_ref = ?, confirmed_at = CURRENT_TIMESTAMP WHERE id = ?
+    `, body.status, body.webhook_ref ?? '', body.id)
+
+    // Bump creator analytics (best-effort)
+    if (body.status === 'confirmed') {
+      try {
+        await run(c.env.DB, `
+          INSERT INTO creator_analytics (user_id, total_tips_minor) VALUES (?, ?)
+          ON CONFLICT(user_id) DO UPDATE SET total_tips_minor = total_tips_minor + excluded.total_tips_minor,
+                                              updated_at = CURRENT_TIMESTAMP
+        `, tip.to_user, tip.amount)
+      } catch { /* non-fatal */ }
+      // Drop a notification for the creator
+      try {
+        await run(c.env.DB, `INSERT INTO notifications (user_id, kind, title, body, link, priority)
+          VALUES (?, 'pay', 'Tip received', ?, '/mashahd', 50)`,
+          tip.to_user, `+${tip.amount} from a viewer`)
+      } catch { /* non-fatal */ }
     }
+    return c.json({ ok: true, id: body.id, status: body.status })
+  } catch (e: any) {
+    return c.json({ ok: false, error: 'webhook_failed', detail: e?.message }, 500)
   }
-  return c.json({ ok: true })
 })
 
 // §7.3.5 Sponsored hashtags by city
@@ -1049,4 +1065,404 @@ api.get('/selfhost/nodes', async (c) => {
 api.get('/roadmap', async (c) => {
   const phases = await all<any>(c.env.DB, 'SELECT * FROM roadmap_phases ORDER BY phase_no')
   return c.json({ phases: phases.map((p) => ({ ...p, deliverables: p.deliverables ? JSON.parse(p.deliverables) : [] })) })
+})
+
+// ════════════════════════════════════════════════════════════════════════
+//   NOTIFICATIONS — universal inbox (Circle-unique cross-pillar feed)
+// ════════════════════════════════════════════════════════════════════════
+
+api.get('/notifications/:user_id', async (c) => {
+  const userId = Number(c.req.param('user_id'))
+  const unreadOnly = c.req.query('unread') === '1'
+  const where = unreadOnly ? 'AND unread = 1' : ''
+  const items = await all(c.env.DB, `
+    SELECT id, kind, title, body, link, unread, priority, created_at
+    FROM notifications
+    WHERE user_id = ? ${where}
+    ORDER BY priority DESC, created_at DESC
+    LIMIT 100
+  `, userId)
+  const counts = await first<{ total: number; unread: number; high: number }>(c.env.DB, `
+    SELECT
+      COUNT(*) AS total,
+      SUM(CASE WHEN unread = 1 THEN 1 ELSE 0 END) AS unread,
+      SUM(CASE WHEN priority >= 50 AND unread = 1 THEN 1 ELSE 0 END) AS high
+    FROM notifications WHERE user_id = ?
+  `, userId)
+  return c.json({ notifications: items, counts: counts ?? { total: 0, unread: 0, high: 0 } })
+})
+
+api.post('/notifications/:user_id/read', async (c) => {
+  const userId = Number(c.req.param('user_id'))
+  const body = await c.req.json<{ id?: number; all?: boolean }>()
+  if (body.all) {
+    await run(c.env.DB, 'UPDATE notifications SET unread = 0 WHERE user_id = ?', userId)
+  } else if (body.id) {
+    await run(c.env.DB, 'UPDATE notifications SET unread = 0 WHERE id = ? AND user_id = ?', body.id, userId)
+  }
+  return c.json({ ok: true })
+})
+
+api.post('/notifications', async (c) => {
+  const body = await c.req.json<{
+    user_id: number; kind: string; title: string; body?: string; link?: string; priority?: number
+  }>()
+  const r = await run(c.env.DB, `
+    INSERT INTO notifications (user_id, kind, title, body, link, priority)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `, body.user_id, body.kind, body.title, body.body ?? null, body.link ?? null, body.priority ?? 0)
+  return c.json({ ok: true, id: r.meta?.last_row_id })
+})
+
+// ════════════════════════════════════════════════════════════════════════
+//   MAIL — compose / send / drafts
+// ════════════════════════════════════════════════════════════════════════
+
+api.get('/mail/outbox/:user_id', async (c) => {
+  const userId = Number(c.req.param('user_id'))
+  const items = await all(c.env.DB, `
+    SELECT id, to_addr, subject, body, is_encrypted, is_anonymous, state, created_at, sent_at
+    FROM mail_outbox WHERE from_user = ?
+    ORDER BY created_at DESC LIMIT 50
+  `, userId)
+  return c.json({ outbox: items })
+})
+
+api.post('/mail/send', async (c) => {
+  const body = await c.req.json<{
+    from_user: number; to_addr: string; subject: string; body: string;
+    is_encrypted?: number; is_anonymous?: number
+  }>()
+  if (!body.to_addr || !body.subject) {
+    return c.json({ ok: false, error: 'to_addr and subject required' }, 400)
+  }
+  const r = await run(c.env.DB, `
+    INSERT INTO mail_outbox (from_user, to_addr, subject, body, is_encrypted, is_anonymous, state, sent_at)
+    VALUES (?, ?, ?, ?, ?, ?, 'sent', CURRENT_TIMESTAMP)
+  `, body.from_user, body.to_addr, body.subject, body.body, body.is_encrypted ?? 1, body.is_anonymous ?? 0)
+  // Also drop a notification receipt
+  await run(c.env.DB, `
+    INSERT INTO notifications (user_id, kind, title, body, link)
+    VALUES (?, 'system', ?, ?, '/mail')
+  `, body.from_user, 'Mail sent', `To ${body.to_addr}: ${body.subject}`)
+  return c.json({ ok: true, id: r.meta?.last_row_id })
+})
+
+// ════════════════════════════════════════════════════════════════════════
+//   SHARES — cross-pillar Share-To handoff
+// ════════════════════════════════════════════════════════════════════════
+
+api.post('/shares', async (c) => {
+  const b = await c.req.json<{
+    from_user: number; source_pillar: string; source_id: string;
+    to_pillar: string; to_target?: string; caption?: string
+  }>()
+  const r = await run(c.env.DB, `
+    INSERT INTO shares (from_user, source_pillar, source_id, to_pillar, to_target, caption)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `, b.from_user, b.source_pillar, b.source_id, b.to_pillar, b.to_target ?? null, b.caption ?? null)
+
+  // Wire it through to the destination pillar (best-effort — share always records)
+  let fanout: 'ok' | 'skipped' | 'failed' = 'skipped'
+  try {
+    if (b.to_pillar === 'midan') {
+      await run(c.env.DB, `
+        INSERT INTO posts (author_id, content, city)
+        VALUES (?, ?, 'Cairo')
+      `, b.from_user, `${b.caption ?? 'Shared'} — from ${b.source_pillar}/${b.source_id}`)
+      fanout = 'ok'
+    } else if (b.to_pillar === 'wasl' && b.to_target) {
+      // verify room exists first to avoid FK constraint
+      const room = await first(c.env.DB, `SELECT id FROM rooms WHERE id = ? LIMIT 1`, b.to_target)
+      if (room) {
+        await run(c.env.DB, `
+          INSERT INTO messages (room_id, sender_id, body)
+          VALUES (?, ?, ?)
+        `, b.to_target, b.from_user, `${b.caption ?? 'Shared'} — ${b.source_pillar}://${b.source_id}`)
+        fanout = 'ok'
+      }
+    } else if (b.to_pillar === 'mail' && b.to_target) {
+      await run(c.env.DB, `
+        INSERT INTO mail_outbox (from_user, to_addr, subject, body, state, sent_at)
+        VALUES (?, ?, ?, ?, 'sent', CURRENT_TIMESTAMP)
+      `, b.from_user, b.to_target, b.caption ?? `Shared from ${b.source_pillar}`,
+         `Shared from ${b.source_pillar}://${b.source_id}\n\n${b.caption ?? ''}`)
+      fanout = 'ok'
+    }
+  } catch (e) {
+    fanout = 'failed'
+  }
+
+  // Drop a notification receipt for the sharer
+  try {
+    await run(c.env.DB, `
+      INSERT INTO notifications (user_id, kind, title, body, link, priority)
+      VALUES (?, 'system', ?, ?, ?, 0)
+    `, b.from_user, `Shared to ${b.to_pillar}`,
+       `${b.source_pillar}/${b.source_id} → ${b.to_pillar}${b.to_target ? '/' + b.to_target : ''}`,
+       b.to_pillar === 'midan' ? '/midan' : b.to_pillar === 'wasl' ? '/wasl' : '/mail')
+  } catch { /* non-fatal */ }
+
+  return c.json({ ok: true, id: r.meta?.last_row_id, fanout })
+})
+
+// ════════════════════════════════════════════════════════════════════════
+//   COMMAND PALETTE — server-side fuzzy search across content (Circle-unique)
+//   Returns top-N hits across rooms, channels, videos, photos, posts, users
+// ════════════════════════════════════════════════════════════════════════
+
+api.get('/command/search', async (c) => {
+  const q = (c.req.query('q') ?? '').trim()
+  if (q.length < 2) return c.json({ results: [] })
+  const like = `%${q}%`
+  const [rooms, channels, videos, posts, users] = await Promise.all([
+    all(c.env.DB, `SELECT id, name, topic FROM rooms WHERE name LIKE ? OR topic LIKE ? LIMIT 5`, like, like),
+    all(c.env.DB, `SELECT id, slug, name, description FROM channels WHERE name LIKE ? OR description LIKE ? LIMIT 5`, like, like),
+    all(c.env.DB, `SELECT id, title, description FROM videos WHERE title LIKE ? OR description LIKE ? LIMIT 5`, like, like),
+    all(c.env.DB, `SELECT id, content FROM posts WHERE content LIKE ? ORDER BY created_at DESC LIMIT 5`, like),
+    all(c.env.DB, `SELECT id, handle, display_name FROM users WHERE handle LIKE ? OR display_name LIKE ? LIMIT 5`, like, like),
+  ])
+  return c.json({
+    results: [
+      ...rooms.map((r: any) => ({ kind: 'room', id: r.id, title: r.name, hint: r.topic ?? '', route: '/wasl' })),
+      ...channels.map((r: any) => ({ kind: 'channel', id: r.id, title: r.name, hint: r.description ?? '', route: '/channels' })),
+      ...videos.map((r: any) => ({ kind: 'video', id: r.id, title: r.title, hint: r.description ?? '', route: '/mashahd' })),
+      ...posts.map((r: any) => ({ kind: 'post', id: r.id, title: (r.content ?? '').slice(0, 80), hint: '', route: '/midan' })),
+      ...users.map((r: any) => ({ kind: 'user', id: r.id, title: r.display_name ?? r.handle, hint: `@${r.handle}`, route: '/profile' })),
+    ]
+  })
+})
+
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  CIRCLE-UNIQUE FUTURISTIC ENDPOINTS                              ║
+// ║  Capabilities NO competitor (WhatsApp/IG/X/YT) has:              ║
+// ║   F2 presence     /presence/mesh                                 ║
+// ║   F3 pulse        /pulse, /pulse/event                           ║
+// ║   F4 capsules     /capsules, POST /capsules, /capsules/feed      ║
+// ║   F5 whispers     /whispers/:user, POST /whispers, /whispers/burn│
+// ║   F6 reality_lens /lens/:city                                    │
+// ║   F7 echoes       /echoes/:room                                  │
+// ║   F8 constellation/constellation/:user                            │
+// ╚══════════════════════════════════════════════════════════════════╝
+
+// ── F2 Presence Mesh ───────────────────────────────────────────────
+api.get('/presence/mesh', async (c) => {
+  const rows = await all(c.env.DB, `
+    SELECT p.user_id, p.state, p.region, p.mesh_node, p.encrypted_channels, p.device, p.last_seen,
+           u.handle, u.display_name, u.avatar_cid as avatar_url
+    FROM presence p
+    LEFT JOIN users u ON u.id = p.user_id
+    ORDER BY CASE p.state WHEN 'online' THEN 0 WHEN 'mesh' THEN 1 WHEN 'away' THEN 2 ELSE 3 END
+  `)
+  const totals = {
+    online: rows.filter((r: any) => r.state === 'online').length,
+    mesh:   rows.filter((r: any) => r.state === 'mesh').length,
+    away:   rows.filter((r: any) => r.state === 'away').length,
+    encrypted_channels: rows.reduce((s: number, r: any) => s + (r.encrypted_channels ?? 0), 0),
+    regions: Array.from(new Set(rows.map((r: any) => r.region).filter(Boolean))),
+  }
+  return c.json({ presence: rows, totals })
+})
+
+api.post('/presence/:user_id', async (c) => {
+  const uid = Number(c.req.param('user_id'))
+  const b = await c.req.json<{ state?: string; region?: string; mesh_node?: string; encrypted_channels?: number; device?: string }>()
+  await run(c.env.DB, `
+    INSERT INTO presence (user_id, state, region, mesh_node, encrypted_channels, device, last_seen)
+    VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+    ON CONFLICT(user_id) DO UPDATE SET
+      state = COALESCE(excluded.state, presence.state),
+      region = COALESCE(excluded.region, presence.region),
+      mesh_node = COALESCE(excluded.mesh_node, presence.mesh_node),
+      encrypted_channels = COALESCE(excluded.encrypted_channels, presence.encrypted_channels),
+      device = COALESCE(excluded.device, presence.device),
+      last_seen = CURRENT_TIMESTAMP
+  `, uid, b.state ?? null, b.region ?? null, b.mesh_node ?? null, b.encrypted_channels ?? null, b.device ?? null)
+  return c.json({ ok: true })
+})
+
+// ── F3 Pulse — real-time per-pillar activity heat ──────────────────
+api.get('/pulse', async (c) => {
+  // last 60 minutes, bucketed by pillar
+  const events = await all(c.env.DB, `
+    SELECT pillar, kind, weight, city, created_at
+    FROM pulse_events
+    WHERE created_at >= datetime('now', '-60 minutes')
+    ORDER BY created_at DESC
+    LIMIT 200
+  `)
+  const byPillar: Record<string, number> = {}
+  const byCity: Record<string, number> = {}
+  for (const e of events as any[]) {
+    byPillar[e.pillar] = (byPillar[e.pillar] ?? 0) + (e.weight ?? 1)
+    if (e.city) byCity[e.city] = (byCity[e.city] ?? 0) + (e.weight ?? 1)
+  }
+  return c.json({ events, byPillar, byCity, total: events.length })
+})
+
+api.post('/pulse/event', async (c) => {
+  const b = await c.req.json<{ pillar: string; kind: string; weight?: number; city?: string }>()
+  await run(c.env.DB, `INSERT INTO pulse_events (pillar, kind, weight, city) VALUES (?, ?, ?, ?)`,
+    b.pillar, b.kind, b.weight ?? 1, b.city ?? null)
+  return c.json({ ok: true })
+})
+
+// ── F4 Time Capsules — sealed posts released at unseal_at ──────────
+api.get('/capsules/feed', async (c) => {
+  // public capsules already unsealed (or due to be)
+  const rows = await all(c.env.DB, `
+    SELECT c.*, u.handle, u.display_name, u.avatar_cid as avatar_url
+    FROM time_capsules c
+    LEFT JOIN users u ON u.id = c.author_id
+    WHERE c.visibility = 'public' AND c.unseal_at <= datetime('now')
+    ORDER BY c.unseal_at DESC LIMIT 50
+  `)
+  // mark as unsealed if not yet
+  await run(c.env.DB, `UPDATE time_capsules SET unsealed = 1 WHERE visibility='public' AND unseal_at <= datetime('now') AND unsealed = 0`)
+  return c.json({ capsules: rows })
+})
+
+api.get('/capsules/:user_id', async (c) => {
+  const uid = Number(c.req.param('user_id'))
+  const rows = await all(c.env.DB, `
+    SELECT id, pillar, payload, anchor_hash, sealed_at, unseal_at, unsealed, visibility
+    FROM time_capsules WHERE author_id = ? ORDER BY sealed_at DESC LIMIT 50
+  `, uid)
+  // Hide payload for capsules that are still sealed AND not their own author? They're the author here, so OK to show.
+  return c.json({ capsules: rows })
+})
+
+api.post('/capsules', async (c) => {
+  const b = await c.req.json<{ author_id: number; pillar: string; payload: string; unseal_at: string; visibility?: string; target_id?: string }>()
+  // Compute a SHA-256 anchor hash of payload + seal timestamp using Web Crypto
+  const enc = new TextEncoder()
+  const data = enc.encode(b.payload + '|' + Date.now())
+  const buf = await crypto.subtle.digest('SHA-256', data)
+  const hash = 'sha256:' + Array.from(new Uint8Array(buf)).map(x => x.toString(16).padStart(2, '0')).join('').slice(0, 32)
+  const r = await run(c.env.DB, `
+    INSERT INTO time_capsules (author_id, pillar, target_id, payload, anchor_hash, unseal_at, visibility)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `, b.author_id, b.pillar, b.target_id ?? null, b.payload, hash, b.unseal_at, b.visibility ?? 'public')
+  // Notify author
+  try {
+    await run(c.env.DB, `INSERT INTO notifications (user_id, kind, title, body, link, priority)
+      VALUES (?, 'system', 'Time-capsule sealed', ?, '/midan', 0)`,
+      b.author_id, `Will unseal on ${b.unseal_at}`)
+  } catch {}
+  return c.json({ ok: true, id: r.meta?.last_row_id, anchor_hash: hash })
+})
+
+// ── F5 Whispers — self-destruct messages ───────────────────────────
+api.get('/whispers/:user_id', async (c) => {
+  const uid = Number(c.req.param('user_id'))
+  // auto-burn expired ones
+  await run(c.env.DB, `UPDATE whispers SET burned = 1, body = '[burned]' WHERE burned = 0 AND expires_at IS NOT NULL AND expires_at <= datetime('now')`)
+  const rows = await all(c.env.DB, `
+    SELECT w.id, w.from_user, w.to_user, w.body, w.ttl_seconds, w.view_count, w.max_views, w.burned, w.first_viewed_at, w.expires_at, w.created_at,
+           u.handle, u.display_name, u.avatar_cid as avatar_url
+    FROM whispers w
+    LEFT JOIN users u ON u.id = w.from_user
+    WHERE w.to_user = ? ORDER BY w.created_at DESC LIMIT 40
+  `, uid)
+  return c.json({ whispers: rows })
+})
+
+api.post('/whispers', async (c) => {
+  const b = await c.req.json<{ from_user: number; to_user?: number; room_id?: string; body: string; ttl_seconds?: number; max_views?: number }>()
+  const ttl = b.ttl_seconds ?? 60
+  const r = await run(c.env.DB, `
+    INSERT INTO whispers (from_user, to_user, room_id, body, ttl_seconds, max_views)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `, b.from_user, b.to_user ?? null, b.room_id ?? null, b.body, ttl, b.max_views ?? 1)
+  // Notify recipient
+  if (b.to_user) {
+    try {
+      await run(c.env.DB, `INSERT INTO notifications (user_id, kind, title, body, link, priority)
+        VALUES (?, 'wasl', 'New whisper', ?, '/wasl', 50)`,
+        b.to_user, `Self-destructs in ${ttl}s after open`)
+    } catch {}
+  }
+  return c.json({ ok: true, id: r.meta?.last_row_id })
+})
+
+api.post('/whispers/:id/view', async (c) => {
+  const id = Number(c.req.param('id'))
+  const w: any = await first(c.env.DB, `SELECT * FROM whispers WHERE id = ?`, id)
+  if (!w) return c.json({ error: 'not_found' }, 404)
+  if (w.burned) return c.json({ burned: true })
+  const newCount = (w.view_count ?? 0) + 1
+  const shouldBurn = newCount >= (w.max_views ?? 1)
+  const firstViewed = w.first_viewed_at ?? new Date().toISOString().slice(0, 19).replace('T', ' ')
+  const expires = w.expires_at ?? new Date(Date.now() + (w.ttl_seconds ?? 60) * 1000).toISOString().slice(0, 19).replace('T', ' ')
+  if (shouldBurn) {
+    await run(c.env.DB, `UPDATE whispers SET view_count = ?, burned = 1, body = '[burned]', first_viewed_at = ?, expires_at = ? WHERE id = ?`,
+      newCount, firstViewed, expires, id)
+  } else {
+    await run(c.env.DB, `UPDATE whispers SET view_count = ?, first_viewed_at = ?, expires_at = ? WHERE id = ?`,
+      newCount, firstViewed, expires, id)
+  }
+  return c.json({ ok: true, body: w.body, expires_at: expires, burned: shouldBurn })
+})
+
+// ── F6 Reality Lens — geo-anchored photos ──────────────────────────
+api.get('/lens/:city', async (c) => {
+  const city = c.req.param('city')
+  const rows = await all(c.env.DB, `
+    SELECT l.*, u.handle, u.display_name
+    FROM reality_lens l
+    LEFT JOIN users u ON u.id = l.user_id
+    WHERE l.city = ? OR ? = '*'
+    ORDER BY l.created_at DESC LIMIT 100
+  `, city, city)
+  return c.json({ pins: rows })
+})
+
+api.post('/lens', async (c) => {
+  const b = await c.req.json<{ user_id: number; lat: number; lng: number; bearing?: number; altitude?: number; city?: string; caption?: string; photo_id?: number }>()
+  const r = await run(c.env.DB, `
+    INSERT INTO reality_lens (photo_id, user_id, lat, lng, bearing, altitude, city, caption)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `, b.photo_id ?? null, b.user_id, b.lat, b.lng, b.bearing ?? null, b.altitude ?? null, b.city ?? null, b.caption ?? null)
+  return c.json({ ok: true, id: r.meta?.last_row_id })
+})
+
+// ── F7 Echoes — AI-summarized conversation playback ────────────────
+api.get('/echoes/:room_id', async (c) => {
+  const rid = c.req.param('room_id')
+  const rows = await all(c.env.DB, `
+    SELECT id, span_start, span_end, summary, sentiment, key_actors, created_at
+    FROM echoes WHERE room_id = ? ORDER BY created_at DESC LIMIT 40
+  `, rid)
+  return c.json({ echoes: rows })
+})
+
+api.post('/echoes', async (c) => {
+  const b = await c.req.json<{ room_id: string; span_start?: number; span_end?: number; summary: string; sentiment?: string; key_actors?: number[] }>()
+  const r = await run(c.env.DB, `
+    INSERT INTO echoes (room_id, span_start, span_end, summary, sentiment, key_actors)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `, b.room_id, b.span_start ?? null, b.span_end ?? null, b.summary, b.sentiment ?? 'neutral', JSON.stringify(b.key_actors ?? []))
+  return c.json({ ok: true, id: r.meta?.last_row_id })
+})
+
+// ── F8 Constellation — orbital connection graph ────────────────────
+api.get('/constellation/:user_id', async (c) => {
+  const uid = Number(c.req.param('user_id'))
+  // Derive connections from: messages exchanged (wasl), follows/relations, shared rooms
+  const messageBuddies = await all(c.env.DB, `
+    SELECT u.id, u.handle, u.display_name, u.avatar_cid as avatar_url, COUNT(*) as weight
+    FROM messages m
+    JOIN rooms r ON r.id = m.room_id
+    JOIN users u ON u.id = m.sender_id
+    WHERE m.room_id IN (SELECT room_id FROM messages WHERE sender_id = ?)
+      AND u.id != ?
+    GROUP BY u.id ORDER BY weight DESC LIMIT 12
+  `, uid, uid)
+  // Synthesize 3 orbit rings by weight
+  const orbits = [
+    { ring: 'inner',  nodes: (messageBuddies as any[]).slice(0, 3) },
+    { ring: 'middle', nodes: (messageBuddies as any[]).slice(3, 7) },
+    { ring: 'outer',  nodes: (messageBuddies as any[]).slice(7, 12) },
+  ]
+  return c.json({ center: uid, orbits, total: messageBuddies.length })
 })
