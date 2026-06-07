@@ -1466,3 +1466,165 @@ api.get('/constellation/:user_id', async (c) => {
   ]
   return c.json({ center: uid, orbits, total: messageBuddies.length })
 })
+
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  CIRCLE-UNIQUE WAVE 2 — Vault / Tickets / Privacy Sim / Consents ║
+// ╚══════════════════════════════════════════════════════════════════╝
+
+// ── F10 Family Vault ───────────────────────────────────────────────
+api.get('/vaults/:user_id', async (c) => {
+  const uid = Number(c.req.param('user_id'))
+  const vaults = await all(c.env.DB, `
+    SELECT v.*, (SELECT COUNT(*) FROM family_vault_shares s WHERE s.vault_id = v.id) as share_count,
+           (SELECT COUNT(*) FROM family_vault_shares s WHERE s.vault_id = v.id AND s.consented = 1) as consented_count
+    FROM family_vaults v WHERE v.owner_id = ? ORDER BY v.created_at DESC
+  `, uid)
+  // For each vault, attach shares with holder info
+  const enriched = await Promise.all((vaults as any[]).map(async (v) => {
+    const shares = await all(c.env.DB, `
+      SELECT s.id, s.holder_id, s.share_hash, s.consented, s.used_in_recovery,
+             u.handle, u.display_name
+      FROM family_vault_shares s LEFT JOIN users u ON u.id = s.holder_id
+      WHERE s.vault_id = ? ORDER BY s.id
+    `, v.id)
+    return { ...v, shares }
+  }))
+  return c.json({ vaults: enriched })
+})
+
+api.post('/vaults', async (c) => {
+  const b = await c.req.json<{ owner_id: number; name: string; description?: string; threshold_m: number; total_n: number; payload?: string; holders: number[] }>()
+  // Compute anchor hash
+  const enc = new TextEncoder()
+  const data = enc.encode((b.payload ?? '') + '|' + Date.now())
+  const buf = await crypto.subtle.digest('SHA-256', data)
+  const hash = 'sha256:' + Array.from(new Uint8Array(buf)).map(x => x.toString(16).padStart(2, '0')).join('').slice(0, 32)
+  const r = await run(c.env.DB, `
+    INSERT INTO family_vaults (owner_id, name, description, threshold_m, total_n, vault_hash, payload)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `, b.owner_id, b.name, b.description ?? null, b.threshold_m, b.total_n, hash, b.payload ?? null)
+  const vaultId = Number(r.meta?.last_row_id)
+  // Issue shares to holders
+  for (const h of (b.holders ?? []).slice(0, b.total_n)) {
+    const shareHash = 'sha256:share-' + vaultId + '-' + h + '-' + Math.random().toString(36).slice(2, 6)
+    await run(c.env.DB, `INSERT INTO family_vault_shares (vault_id, holder_id, share_hash, consented) VALUES (?, ?, ?, 0)`, vaultId, h, shareHash)
+    // Notify holder
+    try {
+      await run(c.env.DB, `INSERT INTO notifications (user_id, kind, title, body, link, priority)
+        VALUES (?, 'system', 'You were named a vault custodian', ?, '/backup', 50)`,
+        h, `Owner needs your share if recovery is ever triggered for "${b.name}"`)
+    } catch { /* non-fatal */ }
+  }
+  return c.json({ ok: true, id: vaultId, vault_hash: hash })
+})
+
+api.post('/vaults/:id/consent', async (c) => {
+  const id = Number(c.req.param('id'))
+  const b = await c.req.json<{ holder_id: number; consented: 0 | 1 }>()
+  await run(c.env.DB, `UPDATE family_vault_shares SET consented = ? WHERE vault_id = ? AND holder_id = ?`,
+    b.consented, id, b.holder_id)
+  return c.json({ ok: true })
+})
+
+// ── F12 Tickets ────────────────────────────────────────────────────
+api.get('/tickets/:user_id', async (c) => {
+  const uid = Number(c.req.param('user_id'))
+  const tickets = await all(c.env.DB, `
+    SELECT * FROM event_tickets WHERE holder_id = ?
+    ORDER BY CASE state WHEN 'issued' THEN 0 WHEN 'validated' THEN 1 ELSE 2 END, event_at
+  `, uid)
+  return c.json({ tickets })
+})
+
+api.post('/tickets', async (c) => {
+  const b = await c.req.json<{ event_title: string; event_city?: string; event_at?: string; issuer_id: number; holder_id: number; tier?: string; event_id?: number }>()
+  const nonce = Math.random().toString(36).slice(2, 10)
+  const enc = new TextEncoder()
+  const buf = await crypto.subtle.digest('SHA-256', enc.encode(`${b.event_id ?? ''}|${b.holder_id}|${b.tier ?? 'general'}|${nonce}`))
+  const anchor = 'sha256:' + Array.from(new Uint8Array(buf)).map(x => x.toString(16).padStart(2, '0')).join('').slice(0, 24)
+  const qr = `CIRCLE-PASS-${(b.event_title || 'EVENT').replace(/\s+/g, '-').slice(0, 12).toUpperCase()}-${nonce}`
+  const r = await run(c.env.DB, `
+    INSERT INTO event_tickets (event_id, event_title, event_city, event_at, issuer_id, holder_id, tier, qr_payload, anchor_hash)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `, b.event_id ?? null, b.event_title, b.event_city ?? null, b.event_at ?? null, b.issuer_id, b.holder_id, b.tier ?? 'general', qr, anchor)
+  // Notify holder
+  try {
+    await run(c.env.DB, `INSERT INTO notifications (user_id, kind, title, body, link, priority)
+      VALUES (?, 'system', 'New ticket received', ?, '/profile', 0)`,
+      b.holder_id, `${b.event_title}${b.event_city ? ' · ' + b.event_city : ''} · tier ${b.tier ?? 'general'}`)
+  } catch { /* non-fatal */ }
+  return c.json({ ok: true, id: r.meta?.last_row_id, qr_payload: qr, anchor_hash: anchor })
+})
+
+api.post('/tickets/:id/validate', async (c) => {
+  const id = Number(c.req.param('id'))
+  await run(c.env.DB, `UPDATE event_tickets SET state = 'validated', validated_at = CURRENT_TIMESTAMP WHERE id = ? AND state = 'issued'`, id)
+  return c.json({ ok: true })
+})
+
+api.post('/tickets/:id/transfer', async (c) => {
+  const id = Number(c.req.param('id'))
+  const b = await c.req.json<{ from_user: number; to_user: number }>()
+  const t = await first<any>(c.env.DB, `SELECT holder_id, state FROM event_tickets WHERE id = ?`, id)
+  if (!t) return c.json({ error: 'not_found' }, 404)
+  if (t.holder_id !== b.from_user) return c.json({ error: 'not_owner' }, 403)
+  if (t.state !== 'issued' && t.state !== 'validated') return c.json({ error: 'not_transferable' }, 409)
+  await run(c.env.DB, `UPDATE event_tickets SET holder_id = ?, transferred_from = ?, state = 'transferred' WHERE id = ?`,
+    b.to_user, b.from_user, id)
+  return c.json({ ok: true })
+})
+
+// ── F15 Privacy Sim ────────────────────────────────────────────────
+api.get('/privacy/sim/:user_id', async (c) => {
+  const uid = Number(c.req.param('user_id'))
+  const runs = await all(c.env.DB, `SELECT * FROM privacy_sim_runs WHERE user_id = ? ORDER BY created_at DESC LIMIT 20`, uid)
+  // Best/worst scores
+  const scores = (runs as any[]).map(r => r.visible_score)
+  const summary = {
+    runs_count: runs.length,
+    avg_visible: scores.length ? Math.round(scores.reduce((a,b)=>a+b,0) / scores.length) : 0,
+    most_private: Math.min(...(scores.length ? scores : [0])),
+    least_private: Math.max(...(scores.length ? scores : [0])),
+  }
+  return c.json({ runs, summary })
+})
+
+api.post('/privacy/sim', async (c) => {
+  const b = await c.req.json<{ user_id: number; viewer_kind: string }>()
+  // Heuristic: simulate the visible surface for the given viewer kind
+  const profiles: Record<string, { fields: string[]; score: number; recs: string[] }> = {
+    stranger:    { fields: ['@handle','display_name','city'], score: 18, recs: ['Hide city from public profile','Enable Ghost mode in Wasl'] },
+    friend:      { fields: ['@handle','display_name','city','posts','photos','stories'], score: 62, recs: ['Restrict stories to inner circle'] },
+    employer:    { fields: ['@handle','display_name','pro_profile','public_posts'], score: 34, recs: ['Separate professional persona via Dual Identity'] },
+    advertiser:  { fields: ['city_level_geohash5'], score: 4,  recs: ['Already opted out of ad targeting · zero tracking'] },
+    state:       { fields: ['@handle','display_name','city','public_posts','kyc_hash'], score: 28, recs: ['DRE compliance is read-only · no further mitigation needed'] },
+  }
+  const p = profiles[b.viewer_kind] ?? profiles.stranger
+  const r = await run(c.env.DB, `
+    INSERT INTO privacy_sim_runs (user_id, viewer_kind, visible_score, visible_fields, recommendations)
+    VALUES (?, ?, ?, ?, ?)
+  `, b.user_id, b.viewer_kind, p.score, JSON.stringify(p.fields), JSON.stringify(p.recs))
+  return c.json({ ok: true, id: r.meta?.last_row_id, viewer_kind: b.viewer_kind, score: p.score, fields: p.fields, recommendations: p.recs })
+})
+
+// ── F16 AI Consents ────────────────────────────────────────────────
+api.get('/ai/consents/:user_id', async (c) => {
+  const uid = Number(c.req.param('user_id'))
+  const consents = await all(c.env.DB, `SELECT pillar, on_device, federated, cloud, updated_at FROM ai_consents WHERE user_id = ?`, uid)
+  return c.json({ consents })
+})
+
+api.post('/ai/consents/:user_id', async (c) => {
+  const uid = Number(c.req.param('user_id'))
+  const b = await c.req.json<{ pillar: string; on_device?: number; federated?: number; cloud?: number }>()
+  await run(c.env.DB, `
+    INSERT INTO ai_consents (user_id, pillar, on_device, federated, cloud, updated_at)
+    VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+    ON CONFLICT(user_id, pillar) DO UPDATE SET
+      on_device = COALESCE(excluded.on_device, ai_consents.on_device),
+      federated = COALESCE(excluded.federated, ai_consents.federated),
+      cloud = COALESCE(excluded.cloud, ai_consents.cloud),
+      updated_at = CURRENT_TIMESTAMP
+  `, uid, b.pillar, b.on_device ?? null, b.federated ?? null, b.cloud ?? null)
+  return c.json({ ok: true })
+})

@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { apiGet, apiPost } from "@/lib/api";
 import { ProtoHeader, ProtoFooter } from "@/components/shell/ProtoHeader";
+import { AIConsents } from "@/components/futuristic/AIConsents";
 
 export function AICoreScreen() {
   const [training, setTraining] = useState<any>(null);
@@ -192,6 +193,11 @@ export function AICoreScreen() {
             Next round opens in ~6h · only ON-device users with charging + Wi-Fi participate.
           </p>
         </div>
+      </div>
+
+      {/* Circle-unique AI Consent Matrix — per-pillar, per-tier granular control */}
+      <div className="mx-4 mt-6 p-4 rounded-2xl glass border border-border/40">
+        <AIConsents />
       </div>
 
       <ProtoFooter section="" title="AI that serves you, not advertisers">

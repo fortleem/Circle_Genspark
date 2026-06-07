@@ -190,23 +190,27 @@ These are features NO competitor (WhatsApp / IG / X / YouTube / Telegram / TikTo
 | F3 | PulseRibbon (cross-pillar heat) | ✅ | Real-time activity heart-rate across entire super-app |
 | F4 | Time-Capsule posts | ✅ | SHA-256 anchored future-release with proof-of-time |
 | F5 | Whisper (self-destruct messages) | ✅ | Snapchat-class ephemerality + cryptographic audit trail |
-| F6 | Reality Lens (geo-AR overlay) | 🟡 | Photos pinned to geo+compass bearing for AR view |
-| F7 | Echo Threads (AI playback) | 🟡 | Scrub-back through summarized conversation history |
-| F8 | Constellation profile | 🟡 | Orbital ring viz of connection strength |
-| F9 | Smart Post Router | ⏳ | AI suggests Wasl/Midan/Mail at compose time |
-| F10 | Family Vault | ⏳ | Multi-key M-of-N inheritance vault |
-| F11 | Cultural Interpreter | ⏳ | Etiquette/tipping/customs by destination city |
-| F12 | Decentralized Tickets | ⏳ | NFT-style event passes, gas-free |
+| F6 | Reality Lens (geo-AR overlay) | ✅ | Photos pinned to geo+compass bearing for AR view — wired in MapsScreen |
+| F7 | Echo Threads (AI playback) | ✅ | Scrub-back through summarized conversation history |
+| F8 | Constellation profile | ✅ | Orbital ring viz of connection strength |
+| F9 | Smart Post Router | ✅ | AI suggests Wasl/Midan/Mail at compose time |
+| F10 | Family Vault | ✅ | M-of-N Shamir social-recovery vault — SHA-256 anchored · wired in BackupScreen |
+| F11 | Cultural Interpreter | ✅ | Etiquette/tipping/customs by destination city |
+| F12 | Decentralized Tickets | ✅ | Cryptographically-anchored event passes · QR + transfer · wired in ProfileScreen |
 | F13 | Universal ⌘K Palette | ✅ | Server-side fuzzy across rooms+channels+videos+posts+users |
 | F14 | Notifications Inbox w/ priority bands | ✅ | Cross-pillar inbox with kind colors + signal-dot |
+| F15 | Privacy Simulator ("What Can X See?") | ✅ | Viewer-kind picker · 0-100 visibility score · prescriptive recs · wired in PrivacyScreen |
+| F16 | AI Consent Matrix (per-pillar × tier) | ✅ | On-device / federated / cloud toggles per pillar · privacy-by-default · wired in AICoreScreen |
 
 ---
 
 ## Critical Production Tasks
 
-- ✅ Migrations 0001–0007 applied locally
-- 🟡 **Tip webhook 500 error** — open since session start, needs investigation
+- ✅ Migrations 0001–0008 applied locally (8 migrations · 48+ tables)
+- ✅ **Tip webhook 500 error** — RESOLVED · returns graceful 404 if tip not found
 - ⏳ Production D1 instance creation (`wrangler d1 create circle-production`)
 - ⏳ Deploy to Cloudflare Pages
 - ⏳ Custom domain bind
-- ✅ TS clean / build clean / 28 routes 200 OK
+- ✅ TS clean / build clean / Playwright clean on 8 screens
+- ✅ All 16 Circle-unique futuristic features implemented (UI + backend + DB)
+- ✅ §35 User Journeys narrative — 7 personas (Layla / Ahmed / Zhang Wei / Karim / Yousef / Anaïs / Tariq)

@@ -222,3 +222,31 @@ export interface Echo {
 
 export interface ConstellationNode { id: number; handle: string; display_name: string; avatar_url?: string; weight: number }
 export interface Constellation { center: number; orbits: { ring: 'inner'|'middle'|'outer'; nodes: ConstellationNode[] }[]; total: number }
+
+// ── Wave 2 types (F10, F12, F15, F16) ────────────────────────────
+export interface VaultShare { id: number; holder_id: number; share_hash: string; consented: number; used_in_recovery: number; handle?: string; display_name?: string }
+export interface FamilyVault {
+  id: number; owner_id: number; name: string; description?: string;
+  threshold_m: number; total_n: number; vault_hash: string;
+  status: 'active' | 'recovering' | 'recovered' | 'archived';
+  share_count: number; consented_count: number;
+  shares: VaultShare[];
+  created_at: string;
+}
+
+export interface EventTicket {
+  id: number; event_id?: number; event_title: string; event_city?: string; event_at?: string;
+  issuer_id: number; holder_id: number; tier: 'general'|'vip'|'press'|'free';
+  qr_payload: string; anchor_hash: string;
+  state: 'issued'|'validated'|'used'|'revoked'|'transferred';
+  validated_at?: string; used_at?: string; created_at: string;
+}
+
+export interface PrivacySimRun {
+  id: number; user_id: number; viewer_kind: string;
+  visible_score: number; visible_fields: string; recommendations: string;
+  created_at: string;
+}
+export interface PrivacySimSummary { runs_count: number; avg_visible: number; most_private: number; least_private: number }
+
+export interface AIConsent { pillar: string; on_device: number; federated: number; cloud: number; updated_at: string }

@@ -3,6 +3,7 @@ import { PageShell, GlassCard, SectionHeader, StatTile, EmptyState } from "@/com
 import { Lock } from "lucide-react";
 import { useApi } from "@/hooks/useApi";
 import { useApp } from "@/providers/AppProvider";
+import { PrivacySimulator } from "@/components/futuristic/PrivacySimulator";
 
 export function PrivacyScreen() {
   const { names } = useApp();
@@ -22,6 +23,12 @@ export function PrivacyScreen() {
         <StatTile label="Data on server" value="12 MB" hint="encrypted" />
         <StatTile label="Trackers" value="0" hint="zero policy" />
         <StatTile label="Export" value="JSON+IPFS" hint="anytime" />
+      </div>
+
+      {/* Circle-unique Privacy Simulator — see what each viewer kind sees */}
+      <SectionHeader title="What can they see?" hint="Circle-unique · viewer simulation" />
+      <div className="mb-8">
+        <PrivacySimulator />
       </div>
 
       <SectionHeader title="Active consents" />

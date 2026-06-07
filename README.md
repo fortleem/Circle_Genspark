@@ -28,9 +28,13 @@
 | F7 | **Echo Playback** (`/api/echoes/:room`) | ✅ | AI-summarized scrub-back through conversations |
 | F8 | **Constellation profile** (`/api/constellation/:user`) | ✅ | Orbital ring viz of connection strength |
 | F9 | **Smart Post Router** | ✅ | AI suggests Wasl/Mail/Channel as you type |
+| F10 | **Family Vault** (`/api/vaults`) | ✅ | M-of-N Shamir social-recovery vault · SHA-256 anchored |
+| F11 | **Cultural Interpreter** | ✅ | Tipping/etiquette/taboos by destination city |
+| F12 | **Ticket Wallet** (`/api/tickets`) | ✅ | Cryptographically-anchored event passes · QR + transfer chain-of-custody |
 | F13 | **Universal ⌘K Palette** | ✅ | Server-side fuzzy across rooms/channels/videos/posts/users |
 | F14 | **Notifications Inbox** (`/api/notifications/:user`) | ✅ | Cross-pillar inbox w/ priority bands + kind colors |
-| F11 | **Cultural Interpreter** | ✅ | Tipping/etiquette/taboos by destination city |
+| F15 | **Privacy Simulator** (`/api/privacy/sim`) | ✅ | "What Can X See?" — viewer-kind picker · 0-100 visibility score · prescriptive recs |
+| F16 | **AI Consent Matrix** (`/api/ai/consents`) | ✅ | Per-pillar × per-tier (on-device / federated / cloud) consent toggles · privacy-by-default |
 
 ## API Endpoints
 
@@ -58,6 +62,13 @@
 - `GET /api/capsules/feed` · `GET /api/capsules/:user_id` · `POST /api/capsules`
 - `GET /api/whispers/:user_id` · `POST /api/whispers` · `POST /api/whispers/:id/view`
 - `GET /api/lens/:city` · `POST /api/lens`
+- `GET /api/echoes/:room_id` · `GET /api/constellation/:user_id`
+
+### Wave 2 (F10/F12/F15/F16 · Vault / Tickets / Privacy / AI Consent)
+- `GET /api/vaults/:user_id` · `POST /api/vaults` · `POST /api/vaults/:id/consent`
+- `GET /api/tickets/:user_id` · `POST /api/tickets` · `POST /api/tickets/:id/validate` · `POST /api/tickets/:id/transfer`
+- `GET /api/privacy/sim/:user_id` · `POST /api/privacy/sim`
+- `GET /api/ai/consents/:user_id` · `POST /api/ai/consents/:user_id`
 - `GET /api/echoes/:room_id` · `POST /api/echoes`
 - `GET /api/constellation/:user_id`
 

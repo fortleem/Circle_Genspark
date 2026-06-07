@@ -4,6 +4,7 @@ import { Map as MapIcon, Download } from "lucide-react";
 import { useApi } from "@/hooks/useApi";
 import type { MapRegion } from "@/lib/api";
 import { useApp } from "@/providers/AppProvider";
+import { RealityLens } from "@/components/futuristic/RealityLens";
 
 export function MapsScreen() {
   const { names } = useApp();
@@ -24,6 +25,12 @@ export function MapsScreen() {
         <StatTile label="Total size" value={`${totalMB.toLocaleString()} MB`} />
         <StatTile label="Source" value="OSM" hint="open data" />
         <StatTile label="Routing" value="On-device" hint="no cloud" />
+      </div>
+
+      {/* Circle-unique Reality Lens — geo-anchored AR memory layer */}
+      <SectionHeader title="Reality Lens" hint="Circle-unique · geo-anchored memory" />
+      <div className="mb-8">
+        <RealityLens />
       </div>
 
       <SectionHeader title="Available regions" hint="Pinned via IPFS" />

@@ -3,6 +3,7 @@ import { PageShell, GlassCard, SectionHeader, StatTile, EmptyState } from "@/com
 import { ArchiveRestore, Server, Cloud, HardDrive } from "lucide-react";
 import { useApi } from "@/hooks/useApi";
 import { useApp } from "@/providers/AppProvider";
+import { FamilyVaultPanel } from "@/components/futuristic/FamilyVault";
 
 export function BackupScreen() {
   const { names } = useApp();
@@ -37,6 +38,12 @@ export function BackupScreen() {
             <p className="text-xs text-muted-foreground mt-1">{d.d}</p>
           </GlassCard>
         ))}
+      </div>
+
+      {/* Circle-unique: Family Vault — Shamir M-of-N social recovery */}
+      <SectionHeader title="Family Vault" hint="Circle-unique · M-of-N recovery" />
+      <div className="mb-8">
+        <FamilyVaultPanel />
       </div>
 
       <SectionHeader title="Backup history" hint={`${backups.length} snapshots`} />

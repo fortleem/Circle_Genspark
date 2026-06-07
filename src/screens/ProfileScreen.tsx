@@ -1,6 +1,7 @@
 import { BadgeCheck, ShieldCheck, Sparkles, Languages, Palette, Lock, Database, Globe, ChevronRight } from "lucide-react";
 import { useApp } from "@/providers/AppProvider";
 import { Constellation } from "@/components/futuristic/Constellation";
+import { TicketWallet } from "@/components/futuristic/TicketWallet";
 
 const ME = 1;
 
@@ -47,6 +48,11 @@ export function ProfileScreen() {
       {/* Circle-unique Constellation viz — your gravitational system */}
       <div className="px-4 mt-5">
         <Constellation userId={ME} />
+      </div>
+
+      {/* Circle-unique Ticket Wallet — cryptographically-anchored event passes */}
+      <div className="px-4 mt-5">
+        <TicketWallet />
       </div>
 
       {/* Sections */}
