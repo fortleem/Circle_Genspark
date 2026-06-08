@@ -12,7 +12,11 @@ import { fireShare } from "@/components/shell/ShareSheet";
 import { CapsuleComposer } from "@/components/futuristic/CapsuleComposer";
 import { WhisperComposer } from "@/components/futuristic/WhisperComposer";
 import { SmartRouter } from "@/components/futuristic/SmartRouter";
-import { Hourglass, Flame } from "lucide-react";
+import {
+  SignalMeter, AntiRageGate, ConversationGraph, CrossPillarQuote, computeSignal,
+} from "@/components/futuristic/MidanSignal";
+import { AnimatePresence } from "framer-motion";
+import { Hourglass, Flame, Quote as QuoteIcon } from "lucide-react";
 
 type Feed = "for_you" | "following" | "local" | "global";
 
@@ -36,6 +40,9 @@ export function MidanScreen() {
   const [posting, setPosting] = useState(false);
   const [showCapsule, setShowCapsule] = useState(false);
   const [showWhisper, setShowWhisper] = useState(false);
+  const [showQuote, setShowQuote] = useState(false);
+  const [rageOverride, setRageOverride] = useState(false);
+  const [rageDismissed, setRageDismissed] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -62,6 +69,12 @@ export function MidanScreen() {
   async function submit() {
     const text = composer.trim();
     if (!text || posting) return;
+    // Anti-rage gate: block until override (10s breather inside <AntiRageGate/>)
+    const sig = computeSignal(text);
+    if ((sig.rage >= 0.4 || sig.score < 25) && !rageOverride && !rageDismissed) {
+      // Gate displays itself; user must press "Post anyway" or rephrase
+      return;
+    }
     setPosting(true);
     try {
       await apiPost("/midan/posts", {
@@ -74,6 +87,8 @@ export function MidanScreen() {
       const fresh = await apiGet<{ posts: MidanPost[] }>(`/midan/posts?feed=${feed}`);
       setPosts(fresh.posts ?? []);
       setComposer("");
+      setRageOverride(false);
+      setRageDismissed(false);
     } catch { /* silent */ }
     finally { setPosting(false); }
   }
@@ -170,31 +185,50 @@ export function MidanScreen() {
         </div>
         {/* Smart Post Router — suggests better pillar if appropriate (Circle-unique F9) */}
         <SmartRouter text={composer} />
+
+        {/* Circle-unique: real-time signal-vs-noise scoring */}
+        <SignalMeter text={composer} />
+
+        {/* Anti-rage gate: 10s breather + rephrase suggestion when rage signals high */}
+        {!rageOverride && !rageDismissed && (
+          <AntiRageGate
+            text={composer}
+            onProceed={() => { setRageOverride(true); }}
+            onRephrase={(s) => { setComposer(s); setRageOverride(false); setRageDismissed(false); }}
+            onDismiss={() => setRageDismissed(true)}
+          />
+        )}
       </div>
 
-      {/* Circle-unique futuristic actions — Time Capsule + Whisper */}
-      <div className="mx-5 mt-3 flex gap-2">
+      {/* Circle-unique futuristic actions — Time Capsule + Whisper + Cross-pillar Quote */}
+      <div className="mx-5 mt-3 grid grid-cols-3 gap-2">
         <button
           onClick={() => { setShowCapsule(s => !s); setShowWhisper(false); }}
-          className={`flex-1 px-3 py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition orbit-ring ${
+          className={`px-3 py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition orbit-ring ${
             showCapsule ? 'bg-primary/15 font-semibold' : 'bg-card/50 hover:bg-card/80'
           }`}
           title="Write a post sealed until a future date"
         >
           <Hourglass className="w-3.5 h-3.5 text-primary" />
-          <span>Time Capsule</span>
-          <span className="text-[9px] uppercase tracking-wider text-muted-foreground hidden sm:inline">future-release</span>
+          <span>Capsule</span>
         </button>
         <button
           onClick={() => { setShowWhisper(s => !s); setShowCapsule(false); }}
-          className={`flex-1 px-3 py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition orbit-ring ${
+          className={`px-3 py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition orbit-ring ${
             showWhisper ? 'bg-rose-500/15 font-semibold' : 'bg-card/50 hover:bg-card/80'
           }`}
           title="Send a self-destruct whisper"
         >
           <Flame className="w-3.5 h-3.5 text-rose-500" />
           <span>Whisper</span>
-          <span className="text-[9px] uppercase tracking-wider text-muted-foreground hidden sm:inline">self-destruct</span>
+        </button>
+        <button
+          onClick={() => setShowQuote(true)}
+          className="px-3 py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition orbit-ring bg-card/50 hover:bg-card/80"
+          title="Quote a Mashahd video, Lamahat photo, or Wasl message"
+        >
+          <QuoteIcon className="w-3.5 h-3.5 text-secondary" />
+          <span>Quote</span>
         </button>
       </div>
 
@@ -296,6 +330,9 @@ export function MidanScreen() {
                       </span>
                     </div>
 
+                    {/* Circle-unique: signal-vs-noise conversation graph for this post */}
+                    <ConversationGraph postId={p.id} replies={p.replies_count} />
+
                     <div className="mt-3 flex items-center gap-6 text-xs text-muted-foreground">
                       <button onClick={() => like(p)} className="flex items-center gap-1.5 hover:text-accent transition">
                         <Heart className="w-4 h-4" />{p.likes}
@@ -327,6 +364,19 @@ export function MidanScreen() {
           })}
         </ul>
       )}
+
+      {/* Cross-pillar Quote drawer */}
+      <AnimatePresence>
+        {showQuote && (
+          <CrossPillarQuote
+            onClose={() => setShowQuote(false)}
+            onPick={(q) => {
+              const embed = `\n\n↪ ${q.pillar}/${q.id} · "${q.title}"`;
+              setComposer((c) => (c + embed).slice(0, 600));
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       {/* + footer */}
       <div className="mx-5 mt-8 rounded-2xl border border-secondary/30 bg-gradient-to-br from-secondary/10 to-transparent p-4 relative overflow-hidden">

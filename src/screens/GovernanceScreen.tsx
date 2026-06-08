@@ -4,6 +4,7 @@ import { Vote } from "lucide-react";
 import { useApi } from "@/hooks/useApi";
 import { apiPost, type Proposal } from "@/lib/api";
 import { useApp } from "@/providers/AppProvider";
+import { ReputationLedger } from "@/components/futuristic/ReputationLedger";
 
 export function GovernanceScreen() {
   const { names } = useApp();
@@ -22,6 +23,12 @@ export function GovernanceScreen() {
       tagline="Bylaws, town halls, and proposals — every user holds a vote"
       intro="Circle is a community-governed platform. Any user can submit a proposal; passing votes trigger a 30-day implementation window. All votes are pseudonymous yet verifiable on-chain."
     >
+      {/* Circle-unique Reputation Ledger — quadratic voting power viz */}
+      <SectionHeader title="Your governance weight" hint="Circle-unique · quadratic voting" />
+      <div className="mb-8">
+        <ReputationLedger />
+      </div>
+
       <SectionHeader title="Active proposals" hint={`${proposals.length} open`} />
       {loading ? <EmptyState message="Loading proposals..." /> : proposals.length === 0 ? <EmptyState /> : (
         <div className="space-y-3">

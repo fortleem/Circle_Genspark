@@ -1628,3 +1628,76 @@ api.post('/ai/consents/:user_id', async (c) => {
   `, uid, b.pillar, b.on_device ?? null, b.federated ?? null, b.cloud ?? null)
   return c.json({ ok: true })
 })
+
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  Community Jury — appeals with real DB ops (§16)                 ║
+// ╚══════════════════════════════════════════════════════════════════╝
+
+// List open appeals (moderation_actions where appealed=1)
+api.get('/jury/appeals', async (c) => {
+  const appeals = await all(c.env.DB, `
+    SELECT m.*,
+      (SELECT COUNT(*) FROM jury_votes v WHERE v.action_id = m.id AND v.vote='overturn') as overturn_count,
+      (SELECT COUNT(*) FROM jury_votes v WHERE v.action_id = m.id AND v.vote='uphold') as uphold_count,
+      (SELECT COUNT(*) FROM jury_votes v WHERE v.action_id = m.id AND v.vote='abstain') as abstain_count
+    FROM moderation_actions m
+    WHERE m.appealed = 1
+    ORDER BY (m.appeal_status='pending') DESC, m.created_at DESC
+    LIMIT 30
+  `)
+  return c.json({ appeals })
+})
+
+// Detail with votes
+api.get('/jury/appeals/:id', async (c) => {
+  const id = Number(c.req.param('id'))
+  const action = await first<any>(c.env.DB, `SELECT * FROM moderation_actions WHERE id = ?`, id)
+  if (!action) return c.json({ error: 'not_found' }, 404)
+  const votes = await all(c.env.DB, `
+    SELECT v.*, u.handle, u.display_name
+    FROM jury_votes v LEFT JOIN users u ON u.id = v.juror_id
+    WHERE v.action_id = ? ORDER BY v.created_at DESC
+  `, id)
+  return c.json({ action, votes })
+})
+
+// Cast a juror vote
+api.post('/jury/appeals/:id/vote', async (c) => {
+  const id = Number(c.req.param('id'))
+  const b = await c.req.json<{ juror_id: number; vote: 'overturn'|'uphold'|'abstain'; rationale?: string; reputation_at_vote?: number }>()
+  // Validate juror is on active panel
+  const panel = await first<any>(c.env.DB, `SELECT id FROM jury_panels WHERE juror_id = ? AND status='active'`, b.juror_id)
+  if (!panel) return c.json({ error: 'not_empanelled' }, 403)
+  try {
+    await run(c.env.DB, `
+      INSERT INTO jury_votes (action_id, juror_id, vote, rationale, reputation_at_vote)
+      VALUES (?, ?, ?, ?, ?)
+      ON CONFLICT(action_id, juror_id) DO UPDATE SET vote=excluded.vote, rationale=excluded.rationale, created_at=CURRENT_TIMESTAMP
+    `, id, b.juror_id, b.vote, b.rationale ?? null, b.reputation_at_vote ?? 0)
+  } catch (e: any) { return c.json({ error: 'vote_failed', detail: e?.message }, 500) }
+  // Increment cases_heard
+  try { await run(c.env.DB, `UPDATE jury_panels SET cases_heard = cases_heard + 1 WHERE juror_id = ?`, b.juror_id) } catch {}
+  // Tally — if a majority threshold reached, finalise
+  const tally = await first<any>(c.env.DB, `
+    SELECT
+      SUM(CASE WHEN vote='overturn' THEN 1 ELSE 0 END) as o,
+      SUM(CASE WHEN vote='uphold' THEN 1 ELSE 0 END) as u,
+      COUNT(*) as t
+    FROM jury_votes WHERE action_id = ?
+  `, id)
+  if (tally && tally.t >= 5) {
+    const decision = tally.o > tally.u ? 'overturned' : 'upheld'
+    await run(c.env.DB, `UPDATE moderation_actions SET appeal_status = ? WHERE id = ?`, decision, id)
+  }
+  return c.json({ ok: true, tally })
+})
+
+// Roster of active jurors
+api.get('/jury/panel', async (c) => {
+  const jurors = await all(c.env.DB, `
+    SELECT p.*, u.handle, u.display_name
+    FROM jury_panels p LEFT JOIN users u ON u.id = p.juror_id
+    WHERE p.status = 'active' ORDER BY p.cases_heard DESC
+  `)
+  return c.json({ jurors })
+})

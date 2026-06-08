@@ -12,7 +12,7 @@
 ## URLs
 
 - **Local Dev**: http://localhost:3000
-- **Sandbox (live)**: https://3000-it5nz74mq9tqimweqqnml-00000000.sandbox.novita.ai
+- **Sandbox (live)**: https://3000-it5nz74mq9tqimweqqnml-c81df28e.sandbox.novita.ai
 - **Production**: (deploy pending — see PRODUCTION_CHECKLIST.md)
 
 ## Circle-Unique Futuristic Features (no incumbent has these)
@@ -35,6 +35,26 @@
 | F14 | **Notifications Inbox** (`/api/notifications/:user`) | ✅ | Cross-pillar inbox w/ priority bands + kind colors |
 | F15 | **Privacy Simulator** (`/api/privacy/sim`) | ✅ | "What Can X See?" — viewer-kind picker · 0-100 visibility score · prescriptive recs |
 | F16 | **AI Consent Matrix** (`/api/ai/consents`) | ✅ | Per-pillar × per-tier (on-device / federated / cloud) consent toggles · privacy-by-default |
+
+## Pillar Screens — World-Class Upgrades (Wave 3)
+
+Each pillar now beats its global benchmark on parity AND adds Circle uniques:
+
+### Mashahd 🎬 (beats YouTube)
+**Full-screen TheaterPlayer** with YouTube parity (quality picker, captions multi-lang, smart speed 0.5-3×, PiP, keyboard shortcuts) + Circle uniques:
+AI-chaptered timeline · Anchor-share (URL pinned to seconds) · Knowledge graph (people/places/sources) · Live scene poll · Fact-check note · Watch-party invite · Tip-while-watching · Reactions burst · Danmaku bullet comments.
+
+### Wasl 💬 (beats WhatsApp)
+**WaslComposerPro** with WhatsApp parity + Circle uniques:
+On-device voice transcript (Web Speech API · never uploaded) · Scheduled send (local queue) · Inline translate preview (EN/AR/FR/ES/ZH) · Vanish timer (10s→7d) · Slash-command palette (/poll /location /payment /event /quote /ai) · Smart-reply chips · Privacy halo.
+
+### Lamahat 📷 (beats Instagram)
+**StoryCraftStudio** with IG parity + Circle uniques:
+8 CSS filter presets (Saffron/Souq/Nile Dawn/Marble/Ramadan/Noir/Cyan/Original) · Music-sync with BPM auto-suggested by mood · AI auto-tags (offline) · Geo-anchor (None/Hood/City — never precise GPS) · Collaborative albums · On-device NSFW preview · Schedule post.
+
+### Midan 🟢 (beats X/Twitter)
+**MidanSignal** suite with X parity + Circle uniques:
+SignalMeter real-time 0-100 score (rage/noise/signal detection) · AntiRageGate (10s breather + auto-rephrase when rage ≥ 0.4) · ConversationGraph per-post signal:noise:dispute breakdown · CrossPillarQuote (embed Mashahd video / Lamahat photo / Wasl message).
 
 ## API Endpoints
 

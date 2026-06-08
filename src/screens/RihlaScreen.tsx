@@ -1,6 +1,7 @@
 import { trips } from "@/lib/mock";
-import { MapPin, Plane, Hotel, Languages, DollarSign, Sparkles, Calendar } from "lucide-react";
+import { MapPin, Plane, Hotel, Languages, DollarSign, Calendar } from "lucide-react";
 import { CulturalInterpreter } from "@/components/futuristic/CulturalInterpreter";
+import { ItineraryBuilder } from "@/components/futuristic/ItineraryBuilder";
 
 const cover: Record<string, string> = {
   teal: "from-primary to-brand-steel",
@@ -57,13 +58,12 @@ export function RihlaScreen() {
         ))}
       </div>
 
-      {/* AI itinerary */}
-      <div className="mx-5 mt-5 rounded-2xl border border-secondary/30 bg-gradient-to-br from-secondary/15 to-transparent p-4 relative overflow-hidden">
-        <div className="absolute -top-10 -right-10 w-32 h-32 bg-secondary/30 rounded-full blur-3xl" />
-        <div className="text-[10px] uppercase tracking-widest text-secondary flex items-center gap-1"><Sparkles className="w-3 h-3" /> AI Itinerary</div>
-        <h3 className="font-display text-2xl mt-1">5 days in Istanbul</h3>
-        <p className="text-sm text-muted-foreground mt-1">Tailored to your love of architecture and food markets.</p>
-        <button className="mt-3 px-4 py-2 rounded-full bg-primary text-primary-foreground text-xs">Build with AI</button>
+      {/* AI itinerary — on-device heuristic generator */}
+      <div className="mx-5 mt-5 rounded-2xl border border-secondary/30 bg-gradient-to-br from-secondary/10 to-transparent p-4 relative overflow-hidden">
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-secondary/30 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative">
+          <ItineraryBuilder />
+        </div>
       </div>
 
       {/* Trips */}

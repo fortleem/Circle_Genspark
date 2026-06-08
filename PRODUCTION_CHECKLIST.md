@@ -48,7 +48,7 @@ Legend: ✅ done · 🟡 partial · ⏳ pending · 🆕 futuristic-unique (no in
 - ✅ Bullet comments stub (`bullets.length` in card)
 - ✅ Non-custodial tipping (TipModal with widget URL)
 - 🆕 Share-To button now fires cross-pillar ShareSheet
-- ⏳ Tip webhook 500 error (open — needs investigation)
+- ✅ Tip webhook hardened (returns graceful 404 instead of 500 when tip not found)
 
 ## §8 Lamahat (Photos)
 - ✅ Honeycomb mosaic with `hex-tile`
@@ -102,12 +102,12 @@ Legend: ✅ done · 🟡 partial · ⏳ pending · 🆕 futuristic-unique (no in
 
 ## §18 Self-Learning AI Core
 - ✅ AICoreScreen with on-device tone
-- 🆕 **Echo Threads** — backend done (echoes table), UI playback control pending
+- ✅ **Echo Threads** — backend + UI playback control (`EchoPlayback`) wired in WaslScreen
 
 ## §19 Circle Payments
 - ✅ PayScreen with wallet, txns, QR strings
-- 🟡 CBDC / stablecoin — labels only
-- ⏳ Tip webhook 500 — still open
+- 🟡 CBDC / stablecoin — labels only (out-of-scope: requires bank integration)
+- ✅ Tip webhook hardened (resolved this session)
 
 ## §20 Circle Mail
 - ✅ MailScreen with folders, on-device summary heuristic, PGP chip
@@ -148,10 +148,13 @@ Legend: ✅ done · 🟡 partial · ⏳ pending · 🆕 futuristic-unique (no in
 
 ## §27 Data Backup & Recovery
 - ✅ BackupScreen with M-of-N flow
-- 🟡 Shamir's Secret Sharing — UI mock only
+- ✅ **Shamir's Secret Sharing** — full `FamilyVaultPanel` UI + 11 endpoints + SHA-256 anchor (F10)
+- ✅ Per-share consent tracking with audit hashes
 
 ## §28 Privacy, Consent & Identity
 - ✅ PrivacyScreen with Privacy Score, "What Can X See?"
+- ✅ **Privacy Simulator** wired — 5 viewer kinds, 0-100 score, prescriptive recs (F15)
+- ✅ **AI Consent Matrix** in AICoreScreen — per-pillar × per-tier (F16)
 - 🆕 **Dual identity badge** — pro + private (visible on profile)
 
 ## §29 Community Governance
@@ -175,7 +178,8 @@ Legend: ✅ done · 🟡 partial · ⏳ pending · 🆕 futuristic-unique (no in
 - ✅ RoadmapScreen with 9 phases
 
 ## §35 User Journey Examples
-- ⏳ JourneysScreen exists — needs Layla/Ahmed/Zhang Wei/Karim narrative walk-throughs (added below)
+- ✅ JourneysScreen — 7 personas with pillar-tagged beats and feature anchor chips:
+  Layla (Cairo activist) · Ahmed (Riyadh entrepreneur) · Zhang Wei (Shanghai designer) · Karim (Marrakech imam) · Yousef (Riyadh tech worker) · Anaïs (Paris doctoral) · Tariq (Cairo emergency responder)
 
 ---
 
@@ -206,11 +210,77 @@ These are features NO competitor (WhatsApp / IG / X / YouTube / Telegram / TikTo
 
 ## Critical Production Tasks
 
-- ✅ Migrations 0001–0008 applied locally (8 migrations · 48+ tables)
+- ✅ Migrations 0001–0009 applied locally (9 migrations · 50+ tables)
 - ✅ **Tip webhook 500 error** — RESOLVED · returns graceful 404 if tip not found
 - ⏳ Production D1 instance creation (`wrangler d1 create circle-production`)
 - ⏳ Deploy to Cloudflare Pages
 - ⏳ Custom domain bind
-- ✅ TS clean / build clean / Playwright clean on 8 screens
+- ✅ TS clean / build clean / Playwright clean on 8+ screens
 - ✅ All 16 Circle-unique futuristic features implemented (UI + backend + DB)
 - ✅ §35 User Journeys narrative — 7 personas (Layla / Ahmed / Zhang Wei / Karim / Yousef / Anaïs / Tariq)
+
+---
+
+## Wave 3 — World-Class Pillar Upgrades (✨ "best of its kind, worldwide")
+
+Goal: each of the 4 pillar screens beats its global benchmark (YouTube / WhatsApp / Instagram / X)
+on parity AND adds Circle uniques the incumbent cannot match.
+
+### Mashahd — beats YouTube
+- ✅ **TheaterPlayer** full-screen player (`src/components/futuristic/TheaterPlayer.tsx`)
+- ✅ YouTube parity: play/pause, seek, volume/mute, quality picker (auto/1080p/720p/480p/240p),
+     captions (auto/en/ar/fr/es/zh), smart speed 0.5×–3×, PiP, autoplay, loop, fullscreen
+- ✅ Keyboard shortcuts: Space, ← / →, M, T, C, Esc, ? (full overlay)
+- ✅ Circle-unique: **AI-chaptered timeline** with chapter markers + tag chips
+- ✅ Circle-unique: **Anchor-share** — copies URL pinned to `?t=<seconds>` + chapter title
+- ✅ Circle-unique: **Knowledge graph sidebar** — people / places / sources cited
+- ✅ Circle-unique: **Live scene poll** with 4 vote tiers
+- ✅ Circle-unique: **Fact-check note panel**
+- ✅ Circle-unique: **Watch-party invite** (mesh-coordinated 6-char code)
+- ✅ Circle-unique: **Tip-while-watching** coin button → opens TipModal
+- ✅ Circle-unique: **Reactions burst** overlay (❤️🔥🎉😮👏)
+- ✅ Circle-unique: **Danmaku lane** (bullet comments) — pre-seeded
+- ✅ Wired into MashahdScreen.tsx via card-click → `setTheater(v)`
+
+### Wasl — beats WhatsApp
+- ✅ **WaslComposerPro** (`src/components/futuristic/WaslComposerPro.tsx`)
+- ✅ WhatsApp parity: text, emoji, attach, send, online/offline mesh fallback
+- ✅ Circle-unique: **Voice notes with on-device transcript** (Web Speech API · never uploaded)
+- ✅ Circle-unique: **Scheduled send** with local queue + auto-flush (preset chips: +10m / +1h / Tomorrow 9am)
+- ✅ Circle-unique: **Inline message translation preview** (EN/AR/FR/ES/ZH) via `/translate/text`
+- ✅ Circle-unique: **Vanish timer picker** (10s / 1m / 5m / 1h / 24h / 7d) — sticky per chat
+- ✅ Circle-unique: **Slash-command palette** (/poll · /location · /payment · /event · /quote · /ai)
+- ✅ Circle-unique: **Smart-reply chips** (offline heuristic — Q? → Yes/No/Let me check, etc.)
+- ✅ Circle-unique: **Privacy halo** in composer — E2EE + mesh status visible inline
+
+### Lamahat — beats Instagram
+- ✅ **StoryCraftStudio** (`src/components/futuristic/StoryCraftStudio.tsx`)
+- ✅ Instagram parity: photo picker, 8 filter presets (CSS · Saffron/Souq/Nile Dawn/Marble/Ramadan/Noir/Cyan),
+     caption, audience selector (Followers/Circle/Public)
+- ✅ Circle-unique: **Music-sync picker** — 6 royalty-free moods with BPM, auto-suggested by filter
+- ✅ Circle-unique: **AI auto-tags** (offline heuristic — coffee → #cafe #morning etc.)
+- ✅ Circle-unique: **Geo-anchor** (None / Hood / City — never precise GPS)
+- ✅ Circle-unique: **Collaborative albums** — invite collaborators by @handle
+- ✅ Circle-unique: **On-device NSFW preview** (Falconsai stub · auto-blur ≥ 0.7)
+- ✅ Circle-unique: **Schedule post** with datetime picker
+- ✅ Wired into LamahatScreen.tsx via "New" button → `setStudio(true)`
+
+### Midan — beats X (Twitter)
+- ✅ **MidanSignal** suite (`src/components/futuristic/MidanSignal.tsx`)
+- ✅ X parity: feed tabs, anonymous posting, trending, federation, post actions
+- ✅ Circle-unique: **SignalMeter** — real-time signal:noise score 0-100 on composer
+     (rage / noise / signal-hint detection · live as user types)
+- ✅ Circle-unique: **AntiRageGate** — when rage ≥ 0.4, blocks post with 10s breather +
+     auto-generated calmer rephrase suggestion (user can always override)
+- ✅ Circle-unique: **ConversationGraph** per-post signal:noise:dispute breakdown bar
+- ✅ Circle-unique: **CrossPillarQuote** — quote a Mashahd video / Lamahat photo / Wasl message
+     into a Midan post as labelled embed
+- ✅ Existing: Time Capsule + Whisper + anonymous-mode + SmartRouter retained
+
+### Wave 3 Quality Gates
+- ✅ TS check clean (`npx tsc --noEmit --skipLibCheck`)
+- ✅ Vite build clean (633kB / 160.54kB gzip in 12.43s)
+- ✅ Playwright sweep clean on /mashahd, /wasl, /lamahat, /midan, /aisafety (0 console errors)
+- ✅ Jury endpoints live: GET /api/jury/appeals · GET /api/jury/panel · POST /api/jury/appeals/:id/vote
+- ✅ Migrations 0009 applied (jury_votes + jury_panels · 5 jurors empanelled)
+- ✅ All pillar smoke tests 200: mashahd/lamahat/midan/wasl rooms

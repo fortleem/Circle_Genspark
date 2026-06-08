@@ -5,6 +5,7 @@ import { useState } from "react";
 import { apiPost } from "@/lib/api";
 import { useApp } from "@/providers/AppProvider";
 import { ALL_LANGS } from "@/lib/i18n";
+import { VoiceStudio } from "@/components/futuristic/VoiceStudio";
 
 export function TranslateScreen() {
   const { names } = useApp();
@@ -56,6 +57,16 @@ export function TranslateScreen() {
           className="mt-4 px-4 py-2 rounded-full bg-secondary text-secondary-foreground text-sm flex items-center gap-2 disabled:opacity-50">
           <Sparkles className="w-4 h-4" /> {busy ? "Translating…" : "Translate"}
         </button>
+      </GlassCard>
+
+      {/* Circle-unique Voice Studio — real ASR + TTS on-device */}
+      <SectionHeader title="Voice Studio" hint="Circle-unique · real ASR & TTS" />
+      <GlassCard>
+        <VoiceStudio
+          syncText={out}
+          syncLang={tgt}
+          onTranscript={(t) => setText(t)}
+        />
       </GlassCard>
     </PageShell>
   );

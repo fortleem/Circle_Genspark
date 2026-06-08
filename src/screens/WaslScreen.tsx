@@ -19,6 +19,7 @@ import {
 } from "@/lib/api";
 import { EchoPlayback } from "@/components/futuristic/EchoPlayback";
 import { fireShare } from "@/components/shell/ShareSheet";
+import WaslComposerPro from "@/components/futuristic/WaslComposerPro";
 
 const ME = 1;
 
@@ -1050,45 +1051,23 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
         <div ref={messagesEnd} />
       </div>
 
-      {/* Composer */}
-      {(!isBroadcast || isOwner) && (
-        <div className="sticky bottom-20 px-3">
-          <div className="glass-strong rounded-full px-3 py-2 flex items-center gap-2 shadow-float">
-            <button
-              onClick={() => setShowGIF(true)}
-              className="w-9 h-9 rounded-full hover:bg-muted/60 flex items-center justify-center"
-              title="GIFs & stickers (IPFS)"
-            >
-              <Smile className="w-4 h-4" />
-            </button>
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") send(); }}
-              className="flex-1 bg-transparent outline-none text-sm py-1.5"
-              placeholder={isBroadcast ? "Broadcast a message…" : "Message"}
-            />
-            <button className="w-9 h-9 rounded-full hover:bg-muted/60 flex items-center justify-center" title="Attach file (IPFS)">
-              <Paperclip className="w-4 h-4" />
-            </button>
-            <button className="w-9 h-9 rounded-full hover:bg-muted/60 flex items-center justify-center" title="Voice note">
-              <Mic className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => send()}
-              disabled={!input.trim() || sending}
-              className="w-9 h-9 rounded-full bg-gradient-hero text-primary-foreground flex items-center justify-center disabled:opacity-40"
-            >
-              {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-            </button>
-          </div>
-          <div className="text-center mt-1.5">
-            <span className="text-[9px] text-muted-foreground inline-flex items-center gap-1">
-              {online ? <Wifi className="w-2.5 h-2.5 text-secondary" /> : <WifiOff className="w-2.5 h-2.5 text-amber-600" />}
-              {online ? "Online" : "Offline · using mesh"} · falls back to BLE / Wi-Fi Direct
-              {outbox.length > 0 && online && <Zap className="w-2.5 h-2.5 text-secondary animate-pulse" />}
-            </span>
-          </div>
+      {/* Composer — World-class WaslComposerPro: voice, schedule, translate, vanish, slash, smart replies */}
+      <WaslComposerPro
+        online={online}
+        outboxCount={outbox.length}
+        isBroadcast={isBroadcast}
+        isOwner={!!isOwner}
+        lastIncomingBody={[...messages].reverse().find((m) => m.sender_id !== ME)?.body}
+        onSend={async (body, opts) => {
+          const suffix = opts?.vanishSec ? ` ⏳[${opts.vanishSec}s]` : "";
+          await send(body + suffix);
+        }}
+        onOpenGIF={() => setShowGIF(true)}
+      />
+      {/* Legacy direct-input fallback (kept hidden — Pro composer owns the UX) */}
+      {false && (!isBroadcast || isOwner) && (
+        <div className="hidden">
+          <input value={input} onChange={(e) => setInput(e.target.value)} />
         </div>
       )}
 

@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { apiGet, type ModAction } from "@/lib/api";
 import { ProtoHeader, ProtoFooter } from "@/components/shell/ProtoHeader";
+import { JuryPanelComp } from "@/components/futuristic/JuryPanel";
 
 type ActionFilter = "all" | "remove" | "warn" | "shadow" | "flag";
 
@@ -217,6 +218,13 @@ export function AISafetyScreen() {
           </p>
         </div>
       </div>
+
+      {/* Circle-unique Community Jury — real votes that finalise appeals */}
+      <section className="px-5 mt-4">
+        <div className="rounded-2xl border border-border bg-card p-4">
+          <JuryPanelComp />
+        </div>
+      </section>
 
       <ProtoFooter section="" title="Transparent moderation">
         No black-box bans. Every action explains itself — which model fired, how confident, and what rule

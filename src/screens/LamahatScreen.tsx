@@ -8,6 +8,8 @@ import {
 } from "lucide-react";
 import { apiGet, apiPost, type Photo } from "@/lib/api";
 import { fireShare } from "@/components/shell/ShareSheet";
+import { AnimatePresence } from "framer-motion";
+import StoryCraftStudio from "@/components/futuristic/StoryCraftStudio";
 
 type Tab = "Following" | "Nearby" | "Trending" | "Memories";
 
@@ -17,6 +19,7 @@ export function LamahatScreen() {
   const [tab, setTab] = useState<Tab>("Following");
   const [precision, setPrecision] = useState<"none" | "city" | "hood" | "precise">("hood");
   const [visualSearch, setVisualSearch] = useState(false);
+  const [studio, setStudio] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -56,7 +59,10 @@ export function LamahatScreen() {
             · IPFS · On-device AI
           </p>
         </div>
-        <button className="text-xs px-3 py-1.5 rounded-full bg-gradient-gold text-brand-charcoal font-medium flex items-center gap-1">
+        <button
+          onClick={() => setStudio(true)}
+          className="text-xs px-3 py-1.5 rounded-full bg-gradient-gold text-brand-charcoal font-medium flex items-center gap-1 hover:scale-105 transition"
+        >
           <ImagePlus className="w-3.5 h-3.5" /> New
         </button>
       </div>
@@ -274,6 +280,11 @@ export function LamahatScreen() {
           </p>
         </div>
       </div>
+
+      {/* Story-Craft Studio modal */}
+      <AnimatePresence>
+        {studio && <StoryCraftStudio onClose={() => setStudio(false)} />}
+      </AnimatePresence>
     </div>
   );
 }

@@ -5,7 +5,7 @@
 // • sponsored hashtags from /mashahd/sponsored
 // • creator analytics dashboard
 // • subscribe / channel membership
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type MouseEvent as ReactMouseEvent } from "react";
 import {
   Heart, MessageCircle, Share2, Music, Sparkles, Radio, Gift, Coins,
   Shield, BadgeCheck, Globe2, Tag, X, Send, BarChart3, Eye, Users,
@@ -18,6 +18,7 @@ import {
   type CreatorAnalytics,
 } from "@/lib/api";
 import { fireShare } from "@/components/shell/ShareSheet";
+import TheaterPlayer from "@/components/futuristic/TheaterPlayer";
 
 const ME = 1;
 const VIEWER_COUNTRY = "EG"; // derived from IP server-side in production
@@ -41,6 +42,7 @@ export function MashahdScreen() {
   const [tipping, setTipping] = useState<Video | null>(null);
   const [commentsOf, setCommentsOf] = useState<Video | null>(null);
   const [analytics, setAnalytics] = useState<Video | null>(null);
+  const [theater, setTheater] = useState<Video | null>(null);
 
   const load = (f: Filter) => {
     setLoading(true);
@@ -141,6 +143,7 @@ export function MashahdScreen() {
               onLike={() => like(v)}
               onTip={() => setTipping(v)}
               onComments={() => setCommentsOf(v)}
+              onOpen={() => setTheater(v)}
             />
           ))}
         </div>
@@ -182,6 +185,13 @@ export function MashahdScreen() {
         {tipping && <TipModal video={tipping} onClose={() => setTipping(null)} />}
         {commentsOf && <CommentsDrawer video={commentsOf} onClose={() => setCommentsOf(null)} />}
         {analytics && <AnalyticsModal video={analytics} onClose={() => setAnalytics(null)} />}
+        {theater && (
+          <TheaterPlayer
+            video={theater}
+            onClose={() => setTheater(null)}
+            onTip={(v) => { setTheater(null); setTipping(v); }}
+          />
+        )}
       </AnimatePresence>
     </div>
   );
@@ -190,8 +200,8 @@ export function MashahdScreen() {
 /* ─────────────────────────── Video card with bullet overlay ─────────────────────────── */
 
 function VideoCard({
-  video: v, i, onLike, onTip, onComments,
-}: { video: Video; i: number; onLike: () => void; onTip: () => void; onComments: () => void }) {
+  video: v, i, onLike, onTip, onComments, onOpen,
+}: { video: Video; i: number; onLike: () => void; onTip: () => void; onComments: () => void; onOpen: () => void }) {
   const [bullets, setBullets] = useState<VideoComment[]>([]);
   const isLive = (v as any).is_live === 1;
   const liveViewers = (v as any).live_viewer_count ?? 0;
@@ -207,8 +217,20 @@ function VideoCard({
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: Math.min(i, 6) * 0.05 }}
-      className="stage-frame relative aspect-[9/14] sm:aspect-[16/9]"
+      className="stage-frame relative aspect-[9/14] sm:aspect-[16/9] cursor-pointer group"
+      onClick={onOpen}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(); } }}
     >
+      {/* Hover halo — Circle identity orbit ring */}
+      <div className="absolute -inset-0.5 rounded-2xl orbit-ring opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-0" />
+      {/* Play affordance */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
+        <div className="w-16 h-16 rounded-full bg-secondary/90 backdrop-blur flex items-center justify-center shadow-2xl">
+          <svg viewBox="0 0 24 24" className="w-7 h-7 text-secondary-foreground ml-1" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+      </div>
       <div className="absolute inset-0 bg-gradient-mesh" />
       <div
         className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-transparent to-transparent"
@@ -267,10 +289,10 @@ function VideoCard({
 
       {/* Right action rail */}
       <div className="absolute bottom-4 right-3 flex flex-col items-center gap-3 z-10" style={{ color: "hsl(var(--cream))" }}>
-        <ActionPill icon={Heart} label={kn(v.likes)} onClick={onLike} />
-        <ActionPill icon={MessageCircle} label={kn(bullets.length)} onClick={onComments} />
-        <ActionPill icon={Share2} label="Share" onClick={() => fireShare({ pillar: 'mashahd', id: String(v.id), title: v.title })} />
-        <ActionPill icon={Gift} label="Tip" onClick={onTip} accent />
+        <ActionPill icon={Heart} label={kn(v.likes)} onClick={(e) => { e?.stopPropagation?.(); onLike(); }} />
+        <ActionPill icon={MessageCircle} label={kn(bullets.length)} onClick={(e) => { e?.stopPropagation?.(); onComments(); }} />
+        <ActionPill icon={Share2} label="Share" onClick={(e) => { e?.stopPropagation?.(); fireShare({ pillar: 'mashahd', id: String(v.id), title: v.title }); }} />
+        <ActionPill icon={Gift} label="Tip" onClick={(e) => { e?.stopPropagation?.(); onTip(); }} accent />
       </div>
     </motion.div>
   );
@@ -617,9 +639,9 @@ function Stat({ icon: Icon, label, value, suffix }: { icon: any; label: string; 
   );
 }
 
-function ActionPill({ icon: Icon, label, onClick, accent }: { icon: any; label: string; onClick?: () => void; accent?: boolean }) {
+function ActionPill({ icon: Icon, label, onClick, accent }: { icon: any; label: string; onClick?: (e?: ReactMouseEvent) => void; accent?: boolean }) {
   return (
-    <button onClick={onClick} className="flex flex-col items-center gap-1">
+    <button onClick={(e) => { e.stopPropagation(); onClick?.(e); }} className="flex flex-col items-center gap-1">
       {accent ? (
         // Tip-coin — Circle's gold-coin tip button, NOT YouTube's $ pill
         <span className="tip-coin">

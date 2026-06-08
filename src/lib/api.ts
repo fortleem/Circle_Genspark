@@ -250,3 +250,23 @@ export interface PrivacySimRun {
 export interface PrivacySimSummary { runs_count: number; avg_visible: number; most_private: number; least_private: number }
 
 export interface AIConsent { pillar: string; on_device: number; federated: number; cloud: number; updated_at: string }
+
+// Community Jury (§16)
+export interface JuryAppeal {
+  id: number; content_kind: string; content_id: string; detector: string;
+  action: string; score?: number; reason?: string;
+  appealed: number; appeal_status?: 'pending'|'overturned'|'upheld';
+  overturn_count: number; uphold_count: number; abstain_count: number;
+  created_at: string;
+}
+export interface JuryVote {
+  id: number; action_id: number; juror_id: number;
+  vote: 'overturn'|'uphold'|'abstain'; rationale?: string;
+  reputation_at_vote: number; created_at: string;
+  handle?: string; display_name?: string;
+}
+export interface JuryPanelist {
+  id: number; juror_id: number; cases_heard: number; status: string;
+  empanelled_at: string; retired_at?: string;
+  handle?: string; display_name?: string;
+}
