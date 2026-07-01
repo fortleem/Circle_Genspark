@@ -28,7 +28,7 @@ const QUICK_ACTIONS = [
   { label: "Translate live",        route: "/translate",icon: Languages,     hint: "On-device · no cloud" },
   { label: "AI safety controls",    route: "/aisafety", icon: ShieldCheck,   hint: "Per-pillar limits" },
   { label: "My digital ID",         route: "/id",       icon: KeyRound,      hint: "Passkeys + DIDs" },
-  { label: "Education workspace",   route: "/maktab",   icon: Building2,     hint: "Maktab" },
+  { label: "Education workspace",   route: "/madrasa",  icon: Building2,     hint: "Madrasa" },
   { label: "Open journeys",         route: "/journeys", icon: BookOpen,      hint: "User stories" },
 ];
 

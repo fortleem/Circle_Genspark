@@ -144,12 +144,13 @@ export function TopBar() {
               <DropdownMenuSeparator />
               {KNOWN_COUNTRIES.map(cc => (
                 <DropdownMenuItem
-                  key={cc}
-                  onClick={() => setCountry(cc)}
-                  className={country === cc ? "bg-muted/50 font-semibold" : ""}
+                  key={cc.code}
+                  onClick={() => setCountry(cc.code)}
+                  className={country === cc.code ? "bg-muted/50 font-semibold" : ""}
                 >
-                  <span className="font-mono text-xs w-10">{cc}</span>
-                  <span className="text-xs text-muted-foreground">→ {region.country === cc ? region.region : '…'}</span>
+                  <span className="w-6">{cc.flag}</span>
+                  <span className="font-mono text-xs w-8">{cc.code}</span>
+                  <span className="text-xs text-muted-foreground truncate">{cc.name}</span>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>

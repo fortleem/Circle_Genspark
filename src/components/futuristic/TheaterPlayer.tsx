@@ -84,6 +84,8 @@ export function TheaterPlayer({
   const [progress, setProgress] = useState(0)             // seconds elapsed
   const [speed, setSpeed] = useState(1)
   const [theater, setTheater] = useState(false)           // wide-screen mode
+  const [isFullscreen, setIsFullscreen] = useState(false)  // actual browser fullscreen
+  const containerRef = useRef<HTMLDivElement>(null)
   const [showSettings, setShowSettings] = useState(false)
   const [showGraph, setShowGraph] = useState(true)
   const [showDanmaku, setShowDanmaku] = useState(true)
@@ -126,6 +128,41 @@ export function TheaterPlayer({
     return () => { document.body.style.overflow = prev }
   }, [])
 
+  // Track actual fullscreen state
+  useEffect(() => {
+    const onFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement)
+    }
+    document.addEventListener('fullscreenchange', onFullscreenChange)
+    document.addEventListener('webkitfullscreenchange', onFullscreenChange)
+    return () => {
+      document.removeEventListener('fullscreenchange', onFullscreenChange)
+      document.removeEventListener('webkitfullscreenchange', onFullscreenChange)
+    }
+  }, [])
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        const el = containerRef.current
+        if (el) {
+          if (el.requestFullscreen) await el.requestFullscreen()
+          else if ((el as any).webkitRequestFullscreen) (el as any).webkitRequestFullscreen()
+          else if ((el as any).msRequestFullscreen) (el as any).msRequestFullscreen()
+          setTheater(true) // also enter theater mode for max viewport
+        }
+      } else {
+        if (document.exitFullscreen) await document.exitFullscreen()
+        else if ((document as any).webkitExitFullscreen) (document as any).webkitExitFullscreen()
+        else if ((document as any).msExitFullscreen) (document as any).msExitFullscreen()
+      }
+    } catch (err) {
+      // Fallback to theater mode if fullscreen API is blocked
+      setTheater((t) => !t)
+      toast.info(isFullscreen ? 'Exited theater mode' : 'Entered theater mode (fullscreen blocked by browser)')
+    }
+  }
+
   // Keyboard shortcuts
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -134,10 +171,11 @@ export function TheaterPlayer({
       else if (e.key === 'ArrowLeft') setProgress((p) => Math.max(0, p - 5))
       else if (e.key === 'ArrowRight') setProgress((p) => Math.min(dur, p + 5))
       else if (e.key === 'm') setMuted((m) => !m)
+      else if (e.key === 'f') { e.preventDefault(); toggleFullscreen() }
       else if (e.key === 't') setTheater((t) => !t)
       else if (e.key === 'c') setCaptions((c) => !c)
       else if (e.key === 'Escape') onClose()
-      else if (e.key === '?' || e.key === '/') toast.info("Space play · ← → seek · M mute · T theater · C captions · Esc close")
+      else if (e.key === '?' || e.key === '/') toast.info("Space play · ← → seek · M mute · T theater · F fullscreen · C captions · Esc close")
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -165,6 +203,7 @@ export function TheaterPlayer({
 
   return (
     <motion.div
+      ref={containerRef}
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className="fixed inset-0 z-[60] bg-black/95 backdrop-blur-2xl"
     >
@@ -195,6 +234,9 @@ export function TheaterPlayer({
             </button>
             <button onClick={() => setTheater((t) => !t)} className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 grid place-items-center" title="Theater mode (T)">
               {theater ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            </button>
+            <button onClick={toggleFullscreen} className={`w-9 h-9 rounded-full grid place-items-center ${isFullscreen ? 'bg-secondary/30 hover:bg-secondary/40 text-secondary' : 'bg-white/10 hover:bg-white/20'}`} title="Fullscreen (F)">
+              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
             </button>
           </div>
 
@@ -342,6 +384,11 @@ export function TheaterPlayer({
                   {/* Theater toggle */}
                   <button onClick={() => setTheater((t) => !t)} className="w-9 h-9 grid place-items-center rounded-full hover:bg-white/15" title="Theater (T)">
                     {theater ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                  </button>
+
+                  {/* Fullscreen toggle */}
+                  <button onClick={toggleFullscreen} className={`w-9 h-9 grid place-items-center rounded-full hover:bg-white/15 ${isFullscreen ? 'text-secondary' : ''}`} title="Fullscreen (F)">
+                    {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                   </button>
                 </div>
               </div>

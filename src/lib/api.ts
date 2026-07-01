@@ -22,7 +22,7 @@ export const apiPost = <T = any>(path: string, body: any) => http<T>(path, { met
 
 export interface User { id: number; handle: string; display_name: string; verified: number; city: string; country: string; matrix_id?: string; verified_claim?: string }
 export interface MidanPost { id: number; author_id: number; content: string; hashtags?: string; city?: string; likes: number; reposts: number; replies_count: number; created_at: string; anonymous: number; handle: string; display_name: string; verified: number }
-export interface Video { id: string; title: string; description: string; thumbnail_cid?: string; ipfs_cid?: string; views: number; likes: number; duration_seconds: number; published_at: string; handle: string; display_name: string; verified: number; uploader_id: number }
+export interface Video { id: string; title: string; description: string; thumbnail_cid?: string; thumbnail_url?: string; ipfs_cid?: string; cid?: string; views: number; likes: number; duration_seconds: number; duration_sec?: number; duration_s?: number; published_at: string; handle: string; display_name: string; verified: number; uploader_id: number; city?: string; format?: string; is_live?: number; live_viewer_count?: number }
 export interface Photo { id: number; uploader_id: number; caption?: string; city?: string; ipfs_cid?: string; likes: number; published_at: string; handle: string; display_name: string }
 export interface Room { id: string; name: string; kind: string; member_count: number; last_message?: string; last_at?: string; created_at: string; matrix_room_id?: string; is_encrypted?: number; topic?: string }
 export interface Message { id: string; room_id: string; sender_id: number; body: string; status: number; is_encrypted: number; created_at: string; handle: string; display_name: string }
@@ -71,7 +71,7 @@ export interface WaslCall {
   ended_at?: string;
   duration_sec?: number;
 }
-export interface MaktabAudit {
+export interface MadrasaAudit {
   id: number;
   workspace_id: string;
   actor_id: number;
@@ -81,6 +81,8 @@ export interface MaktabAudit {
   created_at: string;
   actor_name?: string;
 }
+/** @deprecated Renamed to MadrasaAudit */
+export type MaktabAudit = MadrasaAudit;
 export interface WaslReaction { emoji: string; count: number; }
 export interface WaslOverride {
   room_id: string;

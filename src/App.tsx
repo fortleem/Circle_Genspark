@@ -26,7 +26,7 @@ import { MidanScreen } from "@/screens/MidanScreen";
 // Community -------------------------------------------------------------------
 import CirclesScreen from "@/screens/CirclesScreen";
 import ChannelsScreen from "@/screens/ChannelsScreen";
-import MaktabScreen from "@/screens/MaktabScreen";
+import MadrasaScreen from "@/screens/MadrasaScreen";
 import ProScreen from "@/screens/ProScreen";
 import VerifyScreen from "@/screens/VerifyScreen";
 import GovernanceScreen from "@/screens/GovernanceScreen";
@@ -57,6 +57,15 @@ import SelfhostScreen from "@/screens/SelfhostScreen";
 import RoadmapScreen from "@/screens/RoadmapScreen";
 import TransparencyScreen from "@/screens/TransparencyScreen";
 import JourneysScreen from "@/screens/JourneysScreen";
+
+// Auth ------------------------------------------------------------------------
+import { AuthScreen } from "@/screens/AuthScreen";
+
+// Emergency -------------------------------------------------------------------
+import { EmergencyScreen } from "@/screens/EmergencyScreen";
+
+// Citizen Shield ---------------------------------------------------------------
+import CitizenShieldScreen from "@/screens/CitizenShieldScreen";
 
 // Misc ------------------------------------------------------------------------
 import { ProfileScreen } from "@/screens/ProfileScreen";
@@ -120,7 +129,8 @@ const App = () => (
                 {/* Community */}
                 <Route path="/circles" element={<CirclesScreen />} />
                 <Route path="/channels" element={<ChannelsScreen />} />
-                <Route path="/maktab" element={<MaktabScreen />} />
+                <Route path="/madrasa" element={<MadrasaScreen />} />
+                <Route path="/maktab" element={<MadrasaScreen />} />
                 <Route path="/pro" element={<ProScreen />} />
                 <Route path="/verify" element={<VerifyScreen />} />
                 <Route path="/governance" element={<GovernanceScreen />} />
@@ -152,9 +162,18 @@ const App = () => (
                 <Route path="/transparency" element={<TransparencyScreen />} />
                 <Route path="/journeys" element={<JourneysScreen />} />
 
+                {/* Emergency */}
+                <Route path="/emergency" element={<EmergencyScreen />} />
+                <Route path="/shield" element={<CitizenShieldScreen />} />
+
                 {/* Profile */}
                 <Route path="/profile" element={<ProfileScreen />} />
               </Route>
+
+              {/* Auth */}
+              <Route path="/auth" element={<AuthScreen />} />
+              <Route path="/login" element={<AuthScreen />} />
+              <Route path="/register" element={<AuthScreen />} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>

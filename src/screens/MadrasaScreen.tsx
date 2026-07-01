@@ -1,4 +1,4 @@
-// — Educational & Institutional Workspaces (Wasl Maktab). Prototype design.
+// — Madrasa: Educational & Institutional Workspaces. Powered by the Wasl Maktab backbone.
 // Covers Multi-audience, Onboarding, Features (assignments/grades/
 // attendance/conferences/fees/permission), Zero-cost, Minors compliance,
 // Audit, Comparison.
@@ -27,12 +27,12 @@ const TOOLS = [
   { icon: BookOpen, name: "Learn", desc: "Courses · quizzes · certificates on Circle ID" },
 ];
 
-export function MaktabScreen() {
+export function MadrasaScreen() {
   return (
     <div className="pb-32 space-y-5">
       <ProtoHeader
-        title="Maktab"
-        arabic="المكتب"
+        title="Madrasa"
+        arabic="مدرسة"
         section=""
         tagline="Schools · institutions · workspaces"
         right={
@@ -158,4 +158,4 @@ export function MaktabScreen() {
   );
 }
 
-export default MaktabScreen;
+export default MadrasaScreen;

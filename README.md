@@ -35,6 +35,7 @@
 | F14 | **Notifications Inbox** (`/api/notifications/:user`) | ✅ | Cross-pillar inbox w/ priority bands + kind colors |
 | F15 | **Privacy Simulator** (`/api/privacy/sim`) | ✅ | "What Can X See?" — viewer-kind picker · 0-100 visibility score · prescriptive recs |
 | F16 | **AI Consent Matrix** (`/api/ai/consents`) | ✅ | Per-pillar × per-tier (on-device / federated / cloud) consent toggles · privacy-by-default |
+| F17 | **Citizen Shield** (`/api/citizen-shield/*`) | ✅ | National Civic Intelligence Services — incident reporting, evidence lock, witness network, authority routing, SLA escalation |
 
 ## Pillar Screens — World-Class Upgrades (Wave 3)
 
@@ -84,6 +85,15 @@ SignalMeter real-time 0-100 score (rage/noise/signal detection) · AntiRageGate 
 - `GET /api/lens/:city` · `POST /api/lens`
 - `GET /api/echoes/:room_id` · `GET /api/constellation/:user_id`
 
+### Wave 3 (Part 37 · Citizen Shield)
+- `GET /api/citizen-shield/dashboard` — national civic intelligence view
+- `GET /api/citizen-shield/reports?user_id=1` — list user's cases
+- `GET /api/citizen-shield/reports/:id` — case details + evidence + witnesses + updates
+- `POST /api/citizen-shield/reports` — submit incident with evidence lock and auto-routing
+- `POST /api/citizen-shield/reports/:id/witness` — join as witness
+- `POST /api/citizen-shield/reports/:id/escalate` — SLA breach / escalation
+- `GET /api/citizen-shield/offices` — public service index
+
 ### Wave 2 (F10/F12/F15/F16 · Vault / Tickets / Privacy / AI Consent)
 - `GET /api/vaults/:user_id` · `POST /api/vaults` · `POST /api/vaults/:id/consent`
 - `GET /api/tickets/:user_id` · `POST /api/tickets` · `POST /api/tickets/:id/validate` · `POST /api/tickets/:id/transfer`
@@ -96,8 +106,8 @@ SignalMeter real-time 0-100 score (rage/noise/signal detection) · AntiRageGate 
 
 - **Storage**: Cloudflare D1 (SQLite at edge)
 - **DB name**: `circle-production`
-- **Migrations**: `0001` → `0007` (futuristic_features applied locally)
-- **Tables**: 30+ including `users`, `rooms`, `messages`, `posts`, `videos`, `photos`, `mail_outbox`, `notifications`, `shares`, `presence`, `pulse_events`, `time_capsules`, `whispers`, `reality_lens`, `echoes`
+- **Migrations**: `0001` → `0015` (Citizen Shield applied locally)
+- **Tables**: 30+ including `users`, `rooms`, `messages`, `posts`, `videos`, `photos`, `mail_outbox`, `notifications`, `shares`, `presence`, `pulse_events`, `time_capsules`, `whispers`, `reality_lens`, `echoes`, `citizen_reports`, `citizen_evidence`, `citizen_witnesses`, `citizen_office_index`
 
 ## User Guide
 
@@ -109,6 +119,7 @@ SignalMeter real-time 0-100 score (rage/noise/signal detection) · AntiRageGate 
 6. **Whisper** (Midan): Send a self-destruct message that burns after first view (configurable TTL + max-views).
 7. **Cultural Interpreter** (Rihla): Pick a city — see local greetings, tipping norms, dress codes, taboos.
 8. **Constellation** (Profile): Live 3-orbit visualization of your top connections by message volume.
+9. **Citizen Shield** (`/shield`): Report civic incidents, attach hashed evidence, choose identity mode (verified / protected / anonymous), track SLA and routing, and see the national civic dashboard.
 
 ## Local Development
 
@@ -130,10 +141,11 @@ Pending. See `PRODUCTION_CHECKLIST.md` for full §1-§35 blueprint mapping.
 
 ## Status
 
-- ✅ Migrations 0001–0007 applied
-- ✅ 28+ routes 200 OK
-- ✅ Zero console errors on /midan /wasl /profile /rihla /home /mail /lamahat /mashahd
-- ✅ All 14 futuristic features wired end-to-end (UI + API + DB)
+- ✅ Migrations 0001–0015 applied
+- ✅ 33+ routes 200 OK
+- ✅ Zero console errors on /midan /wasl /profile /rihla /home /mail /lamahat /mashahd /shield
+- ✅ All 15 futuristic features wired end-to-end (UI + API + DB)
 - ✅ Tip webhook hardened (graceful 404 instead of 500)
-- ⏳ Production Cloudflare D1 + Pages deploy
-- **Last Updated**: 2026-06-06
+- ✅ Citizen Shield (Part 37) wired: `/shield` route, nav, API, D1 migration, local preview
+- ⏳ Production Cloudflare D1 + Pages deploy (local-only per current directive)
+- **Last Updated**: 2026-06-30

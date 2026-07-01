@@ -1,6 +1,6 @@
 // Wasl (Connect) — Production chat module. Prototype design + real Matrix-style features.
 // Features: E2EE rooms, privacy controls, GIF/stickers, voice/video calls, broadcast channels,
-// device verification (SAS/QR), offline mesh queue, Maktab workspace admin.
+// device verification (SAS/QR), offline mesh queue, Madrasa workspace admin.
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -20,6 +20,7 @@ import {
 import { EchoPlayback } from "@/components/futuristic/EchoPlayback";
 import { fireShare } from "@/components/shell/ShareSheet";
 import WaslComposerPro from "@/components/futuristic/WaslComposerPro";
+import MadrasaWorkspace from "@/components/futuristic/MadrasaWorkspace";
 
 const ME = 1;
 
@@ -113,7 +114,7 @@ export function WaslScreen() {
             { k: "dm", l: "Personal" },
             { k: "group", l: "Groups" },
             { k: "channel", l: "Channels" },
-            { k: "maktab", l: "Maktab" },
+            { k: "maktab", l: "Madrasa" },
           ] as { k: Kind; l: string }[]
         ).map((f) => (
           <button
@@ -210,7 +211,7 @@ export function WaslScreen() {
                     )}
                     {r.kind === "workspace" && (
                       <span className="gold-stroke text-[9px] uppercase tracking-wider">
-                        <Building2 className="w-2.5 h-2.5" /> Maktab
+                        <Building2 className="w-2.5 h-2.5" /> Madrasa
                       </span>
                     )}
                   </div>
@@ -543,7 +544,7 @@ function CreateRoomModal({
     { k: "dm", l: "Direct message", d: "End-to-end encrypted 1:1 chat", i: MessageSquare },
     { k: "group", l: "Group chat", d: "Up to 1,000 people · E2EE", i: Users },
     { k: "channel", l: "Broadcast channel", d: "One-to-many · public · indexed", i: Radio },
-    { k: "maktab", l: "Maktab workspace", d: "Self-hosted Matrix for orgs", i: Building2 },
+    { k: "maktab", l: "Madrasa workspace", d: "Schools · classrooms · parent-teacher hub", i: Building2 },
   ];
 
   return (
@@ -621,7 +622,7 @@ function CreateRoomModal({
           )}
           {kind === "maktab" && (
             <div className="rounded-xl border border-secondary/30 bg-secondary/5 text-[11px] text-secondary px-3 py-2">
-              Workspace will be created on your Maktab homeserver with admin bot, audit log, and retention rules.
+              Workspace will be created on your Madrasa homeserver with admin bot, audit log, and retention rules.
             </div>
           )}
 
@@ -661,7 +662,7 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
   const [showVerify, setShowVerify] = useState(false);
   const [showCall, setShowCall] = useState<null | "voice" | "video">(null);
   const [showGIF, setShowGIF] = useState(false);
-  const [showMaktab, setShowMaktab] = useState(false);
+  const [showMadrasa, setShowMadrasa] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [forwardMsg, setForwardMsg] = useState<Message | null>(null);
@@ -669,7 +670,7 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
   const messagesEnd = useRef<HTMLDivElement>(null);
 
   const isBroadcast = room.kind === "broadcast";
-  const isMaktab = room.kind === "workspace";
+  const isMadrasa = room.kind === "workspace";
   const isOwner = room.created_by === ME;
   const subscribers = room.member_count;
 
@@ -798,7 +799,7 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
           className="w-10 h-10 rounded-xl bg-gradient-hero flex items-center justify-center text-primary-foreground font-display shrink-0"
         >
           {isBroadcast ? <Radio className="w-4 h-4" /> :
-           isMaktab ? <Building2 className="w-4 h-4" /> :
+           isMadrasa ? <Building2 className="w-4 h-4" /> :
            room.kind === "group" ? <Users className="w-4 h-4" /> :
            (room.name[0] ?? "?")}
         </button>
@@ -812,9 +813,9 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
               <>
                 <Radio className="w-3 h-3" /> Broadcast · {subscribers.toLocaleString()} subscribers
               </>
-            ) : isMaktab ? (
+            ) : isMadrasa ? (
               <>
-                <Building2 className="w-3 h-3" /> Maktab · {subscribers} members
+                <Building2 className="w-3 h-3" /> Madrasa · {subscribers} members
               </>
             ) : room.is_encrypted ? (
               <>
@@ -845,9 +846,9 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
             </button>
           </>
         )}
-        {isMaktab && (
+        {isMadrasa && (
           <button
-            onClick={() => setShowMaktab(true)}
+            onClick={() => setShowMadrasa(true)}
             className="w-9 h-9 rounded-full hover:bg-muted/60 flex items-center justify-center"
             title="Workspace admin"
           >
@@ -1106,7 +1107,13 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
             onClose={() => setShowGIF(false)}
           />
         )}
-        {showMaktab && <MaktabAdminModal room={room} onClose={() => setShowMaktab(false)} />}
+        {showMadrasa && (
+          <MadrasaWorkspace
+            workspaceId={room.id.startsWith("maktab_") ? room.id : "maktab_demo_cairo"}
+            workspaceName={room.name ?? "Madrasa"}
+            onClose={() => setShowMadrasa(false)}
+          />
+        )}
         {showOptions && <RoomOptionsModal room={room} onClose={() => setShowOptions(false)} />}
         {showAnalytics && <BroadcastAnalyticsModal room={room} onClose={() => setShowAnalytics(false)} />}
         {forwardMsg && <ForwardModal msg={forwardMsg} room={room} onClose={() => setForwardMsg(null)} />}
@@ -1369,9 +1376,9 @@ function GIFPickerModal({
   );
 }
 
-/* ─────────────────────────── Maktab admin commands ─────────────────────────── */
+/* ─────────────────────────── Madrasa admin commands (legacy) ─────────────────────────── */
 
-function MaktabAdminModal({ room, onClose }: { room: Room; onClose: () => void }) {
+function MadrasaAdminModal({ room, onClose }: { room: Room; onClose: () => void }) {
   const [audit, setAudit] = useState<any[]>([]);
   const [cmd, setCmd] = useState("");
   const [busy, setBusy] = useState(false);
@@ -1402,7 +1409,7 @@ function MaktabAdminModal({ room, onClose }: { room: Room; onClose: () => void }
   };
 
   return (
-    <ModalShell onClose={onClose} title="Maktab admin">
+    <ModalShell onClose={onClose} title="Madrasa admin">
       <div className="space-y-3">
         <div className="text-[11px] text-muted-foreground">
           Workspace: <span className="font-mono">{room.name}</span> · run admin bot commands

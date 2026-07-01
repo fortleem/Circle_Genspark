@@ -4,11 +4,13 @@
 import { useEffect, useState, useMemo } from "react";
 import {
   Sparkles, Layers, Heart, MapPin, Search, Shield, Camera, Eye, EyeOff,
-  Clock, ImagePlus, Hash, BadgeCheck, Share2
+  Clock, ImagePlus, Hash, BadgeCheck, Share2, X, ChevronLeft, ChevronRight,
+  Download, Maximize2, MessageCircle, Bot, Send,
 } from "lucide-react";
-import { apiGet, apiPost, type Photo } from "@/lib/api";
+import { motion, AnimatePresence } from "framer-motion";
+import { apiGet, apiPost } from "@/lib/api";
+import type { Photo } from "@/lib/api";
 import { fireShare } from "@/components/shell/ShareSheet";
-import { AnimatePresence } from "framer-motion";
 import StoryCraftStudio from "@/components/futuristic/StoryCraftStudio";
 
 type Tab = "Following" | "Nearby" | "Trending" | "Memories";
@@ -20,6 +22,9 @@ export function LamahatScreen() {
   const [precision, setPrecision] = useState<"none" | "city" | "hood" | "precise">("hood");
   const [visualSearch, setVisualSearch] = useState(false);
   const [studio, setStudio] = useState(false);
+  const [viewer, setViewer] = useState<number | null>(null); // index of photo in fullscreen
+  const [aiCaption, setAiCaption] = useState<string | null>(null);
+  const [captionLoading, setCaptionLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -189,7 +194,8 @@ export function LamahatScreen() {
               return (
                 <div
                   key={p.id}
-                  className={`relative group ${offset}`}
+                  className={`relative group cursor-pointer ${offset}`}
+                  onClick={() => setViewer(idx)}
                 >
                   <div
                     className="hex-tile hex-tile-stroke"
@@ -285,6 +291,36 @@ export function LamahatScreen() {
       <AnimatePresence>
         {studio && <StoryCraftStudio onClose={() => setStudio(false)} />}
       </AnimatePresence>
+
+      {/* Fullscreen Photo Viewer */}
+      <AnimatePresence>
+        {viewer !== null && items[viewer] && (
+          <PhotoViewer
+            photo={items[viewer]}
+            index={viewer}
+            total={items.length}
+            onClose={() => { setViewer(null); setAiCaption(null); }}
+            onPrev={() => setViewer(Math.max(0, viewer - 1))}
+            onNext={() => setViewer(Math.min(items.length - 1, viewer + 1))}
+            onLike={() => like(items[viewer])}
+            aiCaption={aiCaption}
+            captionLoading={captionLoading}
+            onGenerateCaption={async () => {
+              setCaptionLoading(true);
+              try {
+                const res = await apiPost<{ caption: string; hashtags: string[] }>('/sage/caption', {
+                  context: items[viewer].caption ?? 'photo',
+                });
+                setAiCaption(`${res.caption} ${res.hashtags?.join(' ') ?? ''}`);
+              } catch {
+                setAiCaption('A moment worth capturing.');
+              } finally {
+                setCaptionLoading(false);
+              }
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -298,6 +334,149 @@ function PolicyChip({ icon: Icon, label, desc }: { icon: any; label: string; des
       </div>
       <p className="text-[10px] text-muted-foreground mt-0.5">{desc}</p>
     </div>
+  );
+}
+
+/* ─────────────────────────── Fullscreen Photo Viewer ─────────────────────────── */
+
+function PhotoViewer({
+  photo, index, total, onClose, onPrev, onNext, onLike, aiCaption, captionLoading, onGenerateCaption,
+}: {
+  photo: any;
+  index: number;
+  total: number;
+  onClose: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+  onLike: () => void;
+  aiCaption: string | null;
+  captionLoading: boolean;
+  onGenerateCaption: () => void;
+}) {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [comment, setComment] = useState("");
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+        setIsFullscreen(true);
+      } else {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      }
+    } catch { /* ignore */ }
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowLeft") onPrev();
+      if (e.key === "ArrowRight") onNext();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose, onPrev, onNext]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 bg-black flex flex-col"
+    >
+      {/* Top bar */}
+      <div className="flex items-center justify-between p-4 text-white relative z-10">
+        <button onClick={onClose} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition">
+          <X className="w-5 h-5" />
+        </button>
+        <div className="text-sm font-medium">{index + 1} / {total}</div>
+        <div className="flex items-center gap-2">
+          <button onClick={toggleFullscreen} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition">
+            <Maximize2 className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Photo area */}
+      <div className="flex-1 flex items-center justify-center relative px-4">
+        {/* Navigation arrows */}
+        {index > 0 && (
+          <button onClick={onPrev} className="absolute left-4 w-12 h-12 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition z-10">
+            <ChevronLeft className="w-6 h-6 text-white" />
+          </button>
+        )}
+        {index < total - 1 && (
+          <button onClick={onNext} className="absolute right-4 w-12 h-12 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition z-10">
+            <ChevronRight className="w-6 h-6 text-white" />
+          </button>
+        )}
+
+        {/* Photo display */}
+        <motion.div
+          key={photo.id}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full max-w-lg aspect-square rounded-2xl overflow-hidden"
+          style={{
+            background: `linear-gradient(135deg, hsl(${photo.hue} 60% 55%), hsl(${(photo.hue + 60) % 360} 50% 35%))`,
+          }}
+        />
+      </div>
+
+      {/* Bottom info */}
+      <div className="p-4 text-white relative z-10">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-10 h-10 rounded-full bg-gradient-hero flex items-center justify-center text-sm font-display">
+            {(photo.handle ?? "?")[0].toUpperCase()}
+          </div>
+          <div className="flex-1">
+            <div className="font-medium">@{photo.handle}</div>
+            <div className="text-xs text-white/70">{photo.city ?? "Cairo"} · {new Date(photo.created_at).toLocaleDateString()}</div>
+          </div>
+        </div>
+
+        {photo.caption && <p className="text-sm mb-3 text-white/90">{photo.caption}</p>}
+
+        {/* AI Caption */}
+        {aiCaption ? (
+          <div className="rounded-xl bg-white/10 p-3 mb-3 flex items-start gap-2">
+            <Bot className="w-4 h-4 text-secondary mt-0.5 shrink-0" />
+            <p className="text-sm text-white/90">{aiCaption}</p>
+          </div>
+        ) : (
+          <button
+            onClick={onGenerateCaption}
+            disabled={captionLoading}
+            className="rounded-xl bg-white/10 px-3 py-2 mb-3 flex items-center gap-2 text-xs text-white/80 hover:bg-white/20 transition disabled:opacity-50"
+          >
+            {captionLoading ? <Sparkles className="w-3.5 h-3.5 animate-spin" /> : <Bot className="w-3.5 h-3.5" />}
+            {captionLoading ? "Sage AI generating..." : "Generate AI caption"}
+          </button>
+        )}
+
+        {/* Actions */}
+        <div className="flex items-center gap-4">
+          <button onClick={onLike} className="flex items-center gap-1.5 text-white/80 hover:text-red-400 transition">
+            <Heart className="w-5 h-5" />
+            <span className="text-sm">{photo.likes}</span>
+          </button>
+          <button className="flex items-center gap-1.5 text-white/80 hover:text-white transition">
+            <MessageCircle className="w-5 h-5" />
+            <span className="text-sm">Comment</span>
+          </button>
+          <button
+            onClick={() => fireShare({ pillar: 'lamahat', id: String(photo.id), title: photo.caption ?? 'Photo' })}
+            className="flex items-center gap-1.5 text-white/80 hover:text-white transition"
+          >
+            <Share2 className="w-5 h-5" />
+            <span className="text-sm">Share</span>
+          </button>
+          <button className="flex items-center gap-1.5 text-white/80 hover:text-white transition ms-auto">
+            <Download className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+    </motion.div>
   );
 }
 

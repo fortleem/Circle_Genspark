@@ -21,7 +21,7 @@ const PILLARS: { key: string; label: string; sub: string }[] = [
   { key: "mashahd", label: "Mashahd", sub: "Auto-captions, recommendations" },
   { key: "lamahat", label: "Lamahat", sub: "Story moderation, hashtag suggest" },
   { key: "midan",   label: "Midan",   sub: "Spam filter, ranking" },
-  { key: "maktab",  label: "Maktab",  sub: "Doc summarisation, search" },
+  { key: "madrasa", label: "Madrasa", sub: "Doc summarisation, search, attendance insights" },
   { key: "mail",    label: "Mail",    sub: "Inbox triage, draft assist" },
   { key: "pay",     label: "Pay",     sub: "Fraud detection only" },
   { key: "rihla",   label: "Rihla",   sub: "Travel etiquette, translation" },

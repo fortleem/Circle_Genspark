@@ -4,6 +4,8 @@ import type { D1Database } from '@cloudflare/workers-types'
 
 export interface Env {
   DB: D1Database
+  HF_API_KEY?: string
+  GROQ_API_KEY?: string
 }
 
 export async function all<T = any>(db: D1Database, sql: string, ...params: any[]): Promise<T[]> {

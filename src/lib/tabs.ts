@@ -40,7 +40,7 @@ export const NAV_ITEMS: NavItem[] = [
   // COMMUNITY ──────────────────────────────────────────────
   { id: 'circles', path: '/circles', icon: UsersIcon, label: n => n.module_groups, hint: 'Groups & communities', keywords: ['groups','communities','circles','clubs'], group: 'community', production: true },
   { id: 'channels', path: '/channels', icon: Radio, label: n => n.module_official, hint: 'Official channels', keywords: ['channels','official','broadcast','gov'], group: 'community', production: true },
-  { id: 'maktab', path: '/maktab', icon: GraduationCap, label: n => n.module_maktab, hint: 'Classrooms & study', keywords: ['classroom','school','learn','maktab','study','education'], group: 'community', production: true },
+  { id: 'madrasa', path: '/madrasa', icon: GraduationCap, label: n => n.module_maktab, hint: 'Schools & classrooms', keywords: ['classroom','school','learn','madrasa','maktab','study','education','teacher','student','parent','grades','attendance'], group: 'community', production: true },
   { id: 'pro', path: '/pro', icon: Briefcase, label: n => n.module_professional, hint: 'Jobs & professional', keywords: ['jobs','work','career','pro','linkedin'], group: 'community', production: true },
   { id: 'verify', path: '/verify', icon: BadgeCheck, label: n => n.module_verify, hint: 'Verification', keywords: ['verify','kyc','identity','badge'], group: 'community', production: true },
   { id: 'governance', path: '/governance', icon: Vote, label: n => n.nav_governance, hint: 'Vote & propose', keywords: ['governance','vote','poll','proposal','dao'], group: 'community', production: true },
@@ -66,6 +66,10 @@ export const NAV_ITEMS: NavItem[] = [
   { id: 'covenant', path: '/covenant', icon: BadgeCheck, label: n => n.covenant, hint: 'Our covenant', keywords: ['covenant','manifesto','principles'], group: 'about', production: true },
   { id: 'vision', path: '/vision', icon: Eye, label: n => n.module_vision, hint: 'Our vision', keywords: ['vision','mission','about'], group: 'about', production: true },
   { id: 'transparency', path: '/transparency', icon: BarChart3, label: n => n.nav_transparency, hint: 'Transparency report', keywords: ['transparency','metrics','stats','report'], group: 'about', production: true },
+
+  // EMERGENCY
+  { id: 'emergency', path: '/emergency', icon: Star, label: () => 'Emergency', hint: 'Emergency SOS', keywords: ['emergency','sos','fire','ambulance','police','help','911','طوارئ'], group: 'life', production: true },
+  { id: 'shield', path: '/shield', icon: ShieldCheck, label: n => n.module_shield, hint: 'Citizen Shield incident reporting', keywords: ['shield','citizen','report','police','municipal','passport','authority','witness','accountability','درع','مواطن'], group: 'life', production: true },
 
   // PROFILE (dock-only, never in sidebar group)
   { id: 'profile', path: '/profile', icon: User, label: () => 'Profile', hint: 'Your account', keywords: ['profile','account','me','settings'], primary: true, group: 'life', production: false },

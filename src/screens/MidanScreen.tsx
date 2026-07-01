@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Heart, MessageCircle, Repeat2, Share2, ShieldCheck, Mic, BadgeCheck, BarChart3, Radio,
-  Globe2, EyeOff, Hash, Flag, Sparkles, Send,
+  Globe2, EyeOff, Hash, Flag, Sparkles, Send, Bot, Loader2,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { apiGet, apiPost, type MidanPost } from "@/lib/api";
@@ -43,6 +43,8 @@ export function MidanScreen() {
   const [showQuote, setShowQuote] = useState(false);
   const [rageOverride, setRageOverride] = useState(false);
   const [rageDismissed, setRageDismissed] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
+  const [aiLoading, setAiLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -197,6 +199,40 @@ export function MidanScreen() {
             onRephrase={(s) => { setComposer(s); setRageOverride(false); setRageDismissed(false); }}
             onDismiss={() => setRageDismissed(true)}
           />
+        )}
+
+        {/* AI Content Suggestions */}
+        {!composer && (
+          <div className="mt-2 pt-2 border-t border-border/30">
+            <button
+              onClick={async () => {
+                setAiLoading(true);
+                try {
+                  const res = await apiPost<{ suggestions: string[] }>('/sage/content-suggest', { pillar: 'midan' });
+                  setAiSuggestions(res.suggestions ?? []);
+                } catch { setAiSuggestions(["Share your thoughts on today's trending topic..."]); }
+                finally { setAiLoading(false); }
+              }}
+              disabled={aiLoading}
+              className="flex items-center gap-1.5 text-[10px] text-secondary hover:text-secondary/80 transition"
+            >
+              {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Bot className="w-3 h-3" />}
+              {aiLoading ? "Getting suggestions..." : "Sage AI: What should I post?"}
+            </button>
+            {aiSuggestions.length > 0 && (
+              <div className="mt-2 space-y-1.5">
+                {aiSuggestions.map((s, i) => (
+                  <button
+                    key={i}
+                    onClick={() => { setComposer(s); setAiSuggestions([]); }}
+                    className="block w-full text-left text-xs px-2 py-1.5 rounded-lg bg-secondary/5 hover:bg-secondary/10 transition text-foreground/80"
+                  >
+                    💡 {s}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         )}
       </div>
 

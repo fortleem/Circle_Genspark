@@ -76,10 +76,11 @@ export function DREScreen() {
           Below is the live DRE in action. Click any country — Circle re-routes infrastructure, adjusts feature flags, and reloads UI strings without a single app update.
         </p>
         <div className="flex flex-wrap gap-1.5 mb-4">
-          {KNOWN_COUNTRIES.map((c) => (
-            <button key={c} onClick={() => setCountry(c)}
-              className={`px-2.5 py-1 rounded-full text-xs border ${country === c ? "bg-secondary text-secondary-foreground border-secondary" : "glass border-border/40"}`}>
-              {c} <span className="text-[10px] opacity-60 ml-1">{planeFor(c)}</span>
+          {KNOWN_COUNTRIES.map((cc) => (
+            <button key={cc.code} onClick={() => setCountry(cc.code)}
+              className={`px-2.5 py-1 rounded-full text-xs border ${country === cc.code ? "bg-secondary text-secondary-foreground border-secondary" : "glass border-border/40"}`}
+              title={cc.name}>
+              <span className="mr-1">{cc.flag}</span>{cc.code} <span className="text-[10px] opacity-60 ml-1">{planeFor(cc.code)}</span>
             </button>
           ))}
         </div>
