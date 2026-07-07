@@ -194,7 +194,7 @@ export function HomeScreen() {
               { icon: ScanLine, label: "Scan & Pay", to: "/pay", color: "text-emerald-500" },
               { icon: Plus, label: "New Post", to: "/midan", color: "text-blue-500" },
               { icon: Camera, label: "Go Live", to: "/mashahd", color: "text-purple-500" },
-              { icon: Users, label: "New Circle", to: "/circles", color: "text-teal-500" },
+              { icon: Users, label: "New Cirkle", to: "/cirkles", color: "text-teal-500" },
               { icon: MessageCircle, label: "Chat", to: "/wasl", color: "text-secondary" },
               { icon: ImageIcon, label: "Photo", to: "/lamahat", color: "text-pink-500" },
               { icon: MapPin, label: "Maps", to: "/maps", color: "text-orange-500" },
@@ -321,7 +321,7 @@ export function HomeScreen() {
         <div className="px-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {[
-              { t: "Trending in your circles", s: "23 new posts from people you follow", to: "/midan", icon: TrendingUp, color: "from-blue-500/10 to-transparent border-blue-500/30" },
+              { t: "Trending in your cirkles", s: "23 new posts from people you follow", to: "/midan", icon: TrendingUp, color: "from-blue-500/10 to-transparent border-blue-500/30" },
               { t: "New videos for you", s: "5 unwatched from subscriptions", to: "/mashahd", icon: Play, color: "from-purple-500/10 to-transparent border-purple-500/30" },
               { t: "A 3-day getaway to AlUla", s: "Based on your wishlist · Rihla AI", to: "/rihla", icon: Calendar, color: "from-secondary/10 to-transparent border-secondary/30" },
               { t: "Weekly read: Calm tech", s: "12-min curated by Sage AI", to: "/aicore", icon: Sparkles, color: "from-amber-500/10 to-transparent border-amber-500/30" },
@@ -449,11 +449,11 @@ export function HomeScreen() {
         </div>
       </BlueprintSection>
 
-      {/* ─── Upcoming in Your Circles ─── */}
-      <BlueprintSection title="Upcoming in your circles" hint="Next events from joined Circles">
+      {/* ─── Upcoming in Your Cirkles ─── */}
+      <BlueprintSection title="Upcoming in your cirkles" hint="Next events from joined Cirkles">
         <div className="px-5 space-y-2">
           {upcoming.map((e) => (
-            <Link key={e.id} to="/circles" className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 hover:bg-muted/30 transition">
+            <Link key={e.id} to="/cirkles" className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 hover:bg-muted/30 transition">
               <Calendar className="w-5 h-5 text-secondary" />
               <div className="flex-1 min-w-0">
                 <div className="font-medium truncate">{e.title}</div>

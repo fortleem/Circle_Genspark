@@ -266,7 +266,7 @@ export function MeshScreen() {
       </div>
 
       <ProtoFooter section="" title="Offline-first backbone">
-        When networks fail, Circle keeps working. Bluetooth LE and Wi-Fi Direct discover phones nearby,
+        When networks fail, Cirkle keeps working. Bluetooth LE and Wi-Fi Direct discover phones nearby,
         messages hop 4-6 peers, and SOS alerts spread until one device regains internet — then everything
         syncs back. No towers. No servers. No surveillance. Just neighbours helping neighbours.
       </ProtoFooter>

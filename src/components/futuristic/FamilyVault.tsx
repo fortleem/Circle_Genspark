@@ -1,7 +1,7 @@
 // ╔══════════════════════════════════════════════════════════════════╗
 // ║  FamilyVault — Shamir M-of-N social-recovery vault (F10)         ║
 // ║                                                                  ║
-// ║  Circle-unique. No competitor offers cryptographic family vaults ║
+// ║  Cirkle-unique. No competitor offers cryptographic family vaults ║
 // ║  where N trusted relatives each hold a share and M must consent  ║
 // ║  to unlock. Every vault has a SHA-256 anchor pinned on-chain.    ║
 // ║  Holders see consent state in real time; recovery is auditable.  ║
@@ -48,7 +48,7 @@ export function FamilyVaultPanel() {
             <h3 className="font-display text-base leading-tight">Family Vault</h3>
             <p className="text-[11px] text-muted-foreground">
               <Sparkles className="w-2.5 h-2.5 inline mr-0.5 -mt-0.5" />
-              Shamir M-of-N social recovery · Circle-unique
+              Shamir M-of-N social recovery · Cirkle-unique
             </p>
           </div>
         </div>

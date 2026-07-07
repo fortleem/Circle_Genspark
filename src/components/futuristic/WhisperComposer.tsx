@@ -1,5 +1,5 @@
 // ╔══════════════════════════════════════════════════════════════════╗
-// ║  WhisperComposer — Self-destruct messages (Circle-unique F5)     ║
+// ║  WhisperComposer — Self-destruct messages (Cirkle-unique F5)     ║
 // ║                                                                  ║
 // ║  Send a message that burns itself after N seconds of being seen, ║
 // ║  or after M views. Snapchat-class ephemerality, but anchored to  ║

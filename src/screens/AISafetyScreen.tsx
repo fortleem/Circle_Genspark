@@ -219,7 +219,7 @@ export function AISafetyScreen() {
         </div>
       </div>
 
-      {/* Circle-unique Community Jury — real votes that finalise appeals */}
+      {/* Cirkle-unique Community Jury — real votes that finalise appeals */}
       <section className="px-5 mt-4">
         <div className="rounded-2xl border border-border bg-card p-4">
           <JuryPanelComp />

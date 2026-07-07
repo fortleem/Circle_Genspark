@@ -27,7 +27,7 @@ const FEATURED_APPS = [
     gradient: "from-emerald-500 to-teal-600", icon: "💰"
   },
   {
-    id: 102, name: "FocusZone", category: "productivity", desc: "Pomodoro timer with circle groups",
+    id: 102, name: "FocusZone", category: "productivity", desc: "Pomodoro timer with cirkle groups",
     installs: 32100, rating: 4.9, permissions: ["notifications"],
     gradient: "from-purple-500 to-indigo-600", icon: "⏱️"
   },

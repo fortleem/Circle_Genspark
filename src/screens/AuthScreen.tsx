@@ -1,4 +1,4 @@
-// Circle — Auth Screen: Register / Login / Identity Verification
+// Cirkle — Auth Screen: Register / Login / Identity Verification
 // Supports: Email, Phone (SMS), Telegram, Haweya (Egyptian National ID), InstaPay
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -41,7 +41,7 @@ export function AuthScreen() {
 
   // Check if already logged in
   useEffect(() => {
-    const sid = localStorage.getItem('circle-session');
+    const sid = localStorage.getItem('cirkle-session');
     if (sid) {
       apiGet(`/auth/session/${sid}`)
         .then((d: any) => {
@@ -109,9 +109,9 @@ export function AuthScreen() {
         session_id: session.session_id,
         otp,
       });
-      localStorage.setItem('circle-session', session.session_id);
-      localStorage.setItem('circle-user', JSON.stringify(res.user));
-      toast.success('Welcome to Circle!');
+      localStorage.setItem('cirkle-session', session.session_id);
+      localStorage.setItem('cirkle-user', JSON.stringify(res.user));
+      toast.success('Welcome to Cirkle!');
       setStep('success');
       setTimeout(() => navigate('/'), 1500);
     } catch (e: any) {
@@ -149,11 +149,11 @@ export function AuthScreen() {
             <Lock className="w-7 h-7 text-white" />
           </div>
           <h1 className="font-display text-3xl mb-1">
-            {step === 'choose' ? 'Circle' : step === 'register' ? 'Create Account' : step === 'login' ? 'Welcome Back' : step === 'otp' ? 'Verify Code' : step === 'verify-identity' ? 'Verify Identity' : 'Welcome!'}
+            {step === 'choose' ? 'Cirkle' : step === 'register' ? 'Create Account' : step === 'login' ? 'Welcome Back' : step === 'otp' ? 'Verify Code' : step === 'verify-identity' ? 'Verify Identity' : 'Welcome!'}
           </h1>
           <p className="text-sm text-muted-foreground">
             {step === 'choose' ? 'Sign in to your social operating system' :
-             step === 'register' ? 'Join the Circle community' :
+             step === 'register' ? 'Join the Cirkle community' :
              step === 'login' ? 'Sign in with your credentials' :
              step === 'otp' ? `Enter the code sent to your ${method}` :
              step === 'verify-identity' ? 'Prove your identity with Haweya or InstaPay' :
@@ -191,7 +191,7 @@ export function AuthScreen() {
                 </div>
                 <div className="flex-1 text-left">
                   <div className="text-sm font-medium">Create Account</div>
-                  <div className="text-[11px] text-muted-foreground">New to Circle? Join now</div>
+                  <div className="text-[11px] text-muted-foreground">New to Cirkle? Join now</div>
                 </div>
                 <ChevronRight className="w-4 h-4 text-muted-foreground" />
               </button>
@@ -363,7 +363,7 @@ export function AuthScreen() {
               >
                 <CheckCircle2 className="w-10 h-10 text-secondary" />
               </motion.div>
-              <h2 className="font-display text-2xl mb-2">Welcome to Circle!</h2>
+              <h2 className="font-display text-2xl mb-2">Welcome to Cirkle!</h2>
               <p className="text-sm text-muted-foreground">Redirecting to your dashboard…</p>
             </motion.div>
           )}
@@ -440,7 +440,7 @@ function IdentityVerificationStep({ onBack }: { onBack: () => void }) {
 
   // Check existing verifications for demo user
   useEffect(() => {
-    const stored = localStorage.getItem('circle-user');
+    const stored = localStorage.getItem('cirkle-user');
     const userId = stored ? JSON.parse(stored)?.id : 1;
     apiGet(`/auth/verify-identity/${userId}`)
       .then((d: any) => setExistingVerifications(d.verifications ?? []))
@@ -460,7 +460,7 @@ function IdentityVerificationStep({ onBack }: { onBack: () => void }) {
     if (provider === 'haweya' && !nationalId) { setError('National ID is required'); return; }
     if (provider === 'instapay' && !instapayPhone) { setError('InstaPay phone number is required'); return; }
 
-    const stored = localStorage.getItem('circle-user');
+    const stored = localStorage.getItem('cirkle-user');
     const userId = stored ? JSON.parse(stored)?.id : 1;
 
     setLoading(true);
@@ -489,7 +489,7 @@ function IdentityVerificationStep({ onBack }: { onBack: () => void }) {
           <BadgeCheck className="w-8 h-8 text-secondary" />
         </div>
         <h2 className="font-display text-xl">Identity Verified!</h2>
-        <p className="text-sm text-muted-foreground">Your Circle account now has verified identity status.</p>
+        <p className="text-sm text-muted-foreground">Your Cirkle account now has verified identity status.</p>
         <button onClick={onBack} className="text-sm text-secondary hover:underline">Back to auth</button>
       </motion.div>
     );
@@ -625,7 +625,7 @@ function IdentityVerificationStep({ onBack }: { onBack: () => void }) {
 
           <div className="glass rounded-2xl p-3 text-[10px] text-muted-foreground space-y-1.5">
             <div className="flex items-center gap-1.5"><Lock className="w-3 h-3 text-secondary shrink-0" /> National ID is hashed on-device before transmission</div>
-            <div className="flex items-center gap-1.5"><Shield className="w-3 h-3 text-secondary shrink-0" /> Circle never stores raw personal data</div>
+            <div className="flex items-center gap-1.5"><Shield className="w-3 h-3 text-secondary shrink-0" /> Cirkle never stores raw personal data</div>
             <div className="flex items-center gap-1.5"><Sparkles className="w-3 h-3 text-secondary shrink-0" /> Verified status unlocks higher transaction limits</div>
           </div>
         </div>

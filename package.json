@@ -1,5 +1,5 @@
 {
-  "name": "circle-webapp",
+  "name": "cirkle-webapp",
   "private": true,
   "version": "12.0.0",
   "type": "module",
@@ -12,9 +12,9 @@
     "test:watch": "vitest",
     "pages:dev": "wrangler pages dev dist --ip 0.0.0.0 --port 3000",
     "pages:deploy": "npm run build && wrangler pages deploy dist",
-    "db:migrate:local": "wrangler d1 migrations apply circle-production --local",
-    "db:migrate:prod": "wrangler d1 migrations apply circle-production",
-    "db:seed:local": "wrangler d1 execute circle-production --local --file=./seed.sql && wrangler d1 execute circle-production --local --file=./seed_v12.sql",
+    "db:migrate:local": "wrangler d1 migrations apply cirkle-production --local",
+    "db:migrate:prod": "wrangler d1 migrations apply cirkle-production",
+    "db:seed:local": "wrangler d1 execute cirkle-production --local --file=./seed.sql && wrangler d1 execute cirkle-production --local --file=./seed_v12.sql",
     "db:reset:local": "rm -rf .wrangler/state/v3/d1 && npm run db:migrate:local && npm run db:seed:local",
     "clean-port": "fuser -k 3000/tcp 2>/dev/null || true"
   },

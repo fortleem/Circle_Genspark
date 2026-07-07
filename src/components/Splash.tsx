@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { CircleMark } from "@/components/brand/CircleMark";
+import { CirkleMark } from "@/components/brand/CirkleMark";
 
 export function Splash() {
   return (
@@ -16,7 +16,7 @@ export function Splash() {
         transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         className="relative"
       >
-        <CircleMark size={120} />
+        <CirkleMark size={120} />
       </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 12 }}
@@ -24,7 +24,7 @@ export function Splash() {
         transition={{ delay: 0.5, duration: 0.6 }}
         className="mt-8 text-center"
       >
-        <div className="font-display text-4xl gradient-text">Circle</div>
+        <div className="font-display text-4xl gradient-text">Cirkle</div>
         <div className="text-[10px] tracking-[0.4em] uppercase text-muted-foreground mt-2">دواير</div>
       </motion.div>
     </motion.div>

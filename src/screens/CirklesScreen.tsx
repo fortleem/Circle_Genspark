@@ -1,4 +1,4 @@
-// — The Circle (Group System). Prototype design language.
+// — The Cirkle (Group System). Prototype design language.
 // Covers Creating, Roles, Modes, Features, Summary.
 import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
@@ -6,38 +6,38 @@ import {
   Users, Plus, Search, Globe2, Lock, Sparkles, Calendar, FileText,
   Vote, FolderArchive, BookOpen, UserPlus, ScrollText, ShieldCheck,
 } from "lucide-react";
-import { apiGet, type CircleGroup } from "@/lib/api";
+import { apiGet, type CirkleGroup } from "@/lib/api";
 import { ProtoHeader, ProtoFooter } from "@/components/shell/ProtoHeader";
 
 type Mode = "all" | "public" | "private" | "federated";
 
-export function CirclesScreen() {
-  const [circles, setCircles] = useState<CircleGroup[]>([]);
+export function CirklesScreen() {
+  const [cirkles, setCirkles] = useState<CirkleGroup[]>([]);
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState<Mode>("all");
   const [q, setQ] = useState("");
 
   useEffect(() => {
     setLoading(true);
-    apiGet<{ circles: CircleGroup[] }>("/circles")
-      .then((d) => setCircles(d.circles ?? []))
-      .catch(() => setCircles([]))
+    apiGet<{ cirkles: CirkleGroup[] }>("/cirkles")
+      .then((d) => setCirkles(d.cirkles ?? []))
+      .catch(() => setCirkles([]))
       .finally(() => setLoading(false));
   }, []);
 
   const filtered = useMemo(() => {
-    return circles.filter((c) => {
+    return cirkles.filter((c) => {
       if (q && !c.name.toLowerCase().includes(q.toLowerCase()) && !(c.description ?? "").toLowerCase().includes(q.toLowerCase())) return false;
       if (mode === "all") return true;
       const v = c.visibility ?? c.mode ?? "public";
       return v === mode;
     });
-  }, [circles, q, mode]);
+  }, [cirkles, q, mode]);
 
   return (
     <div className="pb-32 space-y-5">
       <ProtoHeader
-        title="Circles"
+        title="Cirkles"
         arabic="الدائرة"
         section=""
         tagline="Public · private · federated"
@@ -55,7 +55,7 @@ export function CirclesScreen() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             className="bg-transparent flex-1 outline-none text-sm"
-            placeholder="Discover circles, communities, causes"
+            placeholder="Discover cirkles, communities, causes"
           />
           <Sparkles className="w-4 h-4 text-secondary" />
         </div>
@@ -84,7 +84,7 @@ export function CirclesScreen() {
       {/* Features row */}
       <div className="px-5">
         <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
-          Built into every Circle
+          Built into every Cirkle
         </div>
         <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
           {[
@@ -105,11 +105,11 @@ export function CirclesScreen() {
         </div>
       </div>
 
-      {/* Circle cards */}
+      {/* Cirkle cards */}
       {loading ? (
-        <div className="px-5 py-10 text-sm text-muted-foreground text-center">Loading circles…</div>
+        <div className="px-5 py-10 text-sm text-muted-foreground text-center">Loading cirkles…</div>
       ) : filtered.length === 0 ? (
-        <div className="px-5 py-10 text-sm text-muted-foreground text-center">No circles match this filter</div>
+        <div className="px-5 py-10 text-sm text-muted-foreground text-center">No cirkles match this filter</div>
       ) : (
         <ul className="space-y-3 px-3">
           {filtered.map((c, i) => {
@@ -156,10 +156,10 @@ export function CirclesScreen() {
 
       <ProtoFooter section="Summary" title="Long-haul communities">
         Owner / admin / moderator / member roles · IPFS-pinned archives · member voting · bylaws ·
-        audit log · full data export. No algorithmic engagement traps — Circles are for the long haul.
+        audit log · full data export. No algorithmic engagement traps — Cirkles are for the long haul.
       </ProtoFooter>
     </div>
   );
 }
 
-export default CirclesScreen;
+export default CirklesScreen;

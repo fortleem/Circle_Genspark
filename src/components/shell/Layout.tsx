@@ -1,4 +1,4 @@
-// Circle — App shell layout: ambient bg + TopBar + main router outlet + Dock + AI Orb
+// Cirkle — App shell layout: ambient bg + TopBar + main router outlet + Dock + AI Orb
 // + Universal Command Palette (⌘K) + Notifications Inbox.
 import { AnimatePresence, motion } from "framer-motion";
 import { Outlet, useLocation } from "react-router-dom";
@@ -45,7 +45,7 @@ export function Layout() {
 
       <AIOrb />
       <Dock />
-      {/* Circle-distinctive globals — mount once */}
+      {/* Cirkle-distinctive globals — mount once */}
       <CommandPalette />
       <ShareSheet />
     </div>

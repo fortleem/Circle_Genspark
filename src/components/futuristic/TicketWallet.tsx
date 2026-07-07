@@ -1,7 +1,7 @@
 // ╔══════════════════════════════════════════════════════════════════╗
 // ║  TicketWallet — Cryptographically-anchored event passes (F12)    ║
 // ║                                                                  ║
-// ║  Circle-unique. Each ticket carries a SHA-256 anchor + rotating  ║
+// ║  Cirkle-unique. Each ticket carries a SHA-256 anchor + rotating  ║
 // ║  QR. Validators can verify offline via mesh. Transferable on a   ║
 // ║  cryptographic chain-of-custody — no Ticketmaster fees, no       ║
 // ║  scalper bots, no centralised registry. Tier badges (general /   ║
@@ -198,7 +198,7 @@ function TicketCard({
             <button
               onClick={onTransfer}
               className="px-3 py-2 rounded-xl glass border border-border/40 text-xs flex items-center gap-1.5"
-              title="Transfer to another Circle ID"
+              title="Transfer to another Cirkle ID"
             >
               <ArrowLeftRight className="w-3.5 h-3.5" /> Transfer
             </button>
@@ -283,7 +283,7 @@ function TransferDialog({
   const submit = async () => {
     const n = Number(toUser)
     if (!n || n === ME) {
-      toast.error("Pick a different Circle ID")
+      toast.error("Pick a different Cirkle ID")
       return
     }
     setBusy(true)
@@ -315,9 +315,9 @@ function TransferDialog({
           </button>
         </div>
         <p className="text-xs text-muted-foreground mb-3">
-          Move {ticket.event_title} to another Circle ID. Chain-of-custody is permanent and auditable.
+          Move {ticket.event_title} to another Cirkle ID. Chain-of-custody is permanent and auditable.
         </p>
-        <label className="text-[10px] uppercase tracking-widest text-muted-foreground">Recipient Circle ID</label>
+        <label className="text-[10px] uppercase tracking-widest text-muted-foreground">Recipient Cirkle ID</label>
         <input
           type="number" min={1} value={toUser} onChange={(e) => setToUser(e.target.value)}
           className="w-full mt-1 px-3 py-2 rounded-xl bg-muted/40 border border-border/40 text-sm font-mono focus:outline-none focus:border-secondary"

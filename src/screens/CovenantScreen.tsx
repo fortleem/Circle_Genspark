@@ -4,13 +4,13 @@ import { BadgeCheck, ShieldCheck, Globe2, Users, Sparkles, Lock, Wifi, Server, C
 import { useApp } from "@/providers/AppProvider";
 import { Link } from "react-router-dom";
 
-// 1.2 Core Promises (The Circle Covenant)
+// 1.2 Core Promises (The Cirkle Covenant)
 const COVENANTS = [
   { icon: ShieldCheck, title: "Privacy First", desc: "End-to-end encrypted by default. No data sold, no surveillance economy. Personal data lives on-device only." },
   { icon: Globe2, title: "Federated & Open", desc: "Matrix + ActivityPub + IPFS + PeerTube. Self-host, migrate, fork — Apache 2.0 license." },
   { icon: Users, title: "Community Governed", desc: "Bylaws, town halls, DAO proposals. Future changes require community vote." },
   { icon: Sparkles, title: "AI-Native", desc: "On-device ONNX models, no cloud telemetry. Federated learning is opt-in only." },
-  { icon: Lock, title: "Sovereign Identity", desc: "Circle ID is self-custodial. One identity across all 31 modules, valid even if Circle disappears." },
+  { icon: Lock, title: "Sovereign Identity", desc: "Cirkle ID is self-custodial. One identity across all 31 modules, valid even if Cirkle disappears." },
   { icon: BadgeCheck, title: "Transparent Economics", desc: "Public ad ledger, monthly revenue reports, non-targeted local ads only — paid by invoice." },
 ];
 
@@ -19,7 +19,7 @@ const PROBLEM_SOLUTIONS = [
   { p: "Juggling 10+ apps", s: "One sovereign super-app replacing WhatsApp, YouTube, IG, X, LinkedIn, Trip.com, Gmail, Maps, Zoom..." },
   { p: "Surveillance ads", s: "Non-targeted local ads, paid by corporate invoice. Public ledger every month." },
   { p: "Escalating subscriptions", s: "$0 forever — no tiers, no premium, no paywalls. Funded by P2P efficiency + non-targeted ads." },
-  { p: "Vendor lock-in", s: "Export everything, migrate to any other Circle node, or self-host on your own VPS." },
+  { p: "Vendor lock-in", s: "Export everything, migrate to any other Cirkle node, or self-host on your own VPS." },
   { p: "Algorithmic dark patterns", s: "Transparent feeds: chronological + opt-in algo, recommender source code open." },
   { p: "Government / cloud outages", s: "Offline-first design + Bluetooth mesh. Works without internet, syncs when back online." },
 ];
@@ -60,7 +60,7 @@ const LONG_TERM = [
   { t: "Perpetual open source", d: "Apache 2.0. Anyone can fork, audit, self-host." },
   { t: "No enshittification", d: "Future changes require community DAO vote. Ads never target individuals." },
   { t: "Global mesh internet", d: "LoRa, Wi-Fi Direct, BLE — eventually independent of traditional ISPs." },
-  { t: "Decentralised identity", d: "Circle ID becomes a self-sovereign identity standard, gov-compatible but user-controlled." },
+  { t: "Decentralised identity", d: "Cirkle ID becomes a self-sovereign identity standard, gov-compatible but user-controlled." },
   { t: "Zero marginal cost", d: "As P2P/federation improves, cost per new user → absolute zero." },
 ];
 
@@ -81,11 +81,11 @@ export function CovenantScreen() {
       title={names.covenant}
       arabicTitle="العهد"
       section=""
-      tagline="The non-negotiable promises Circle makes to every user"
-      intro="Circle (دواير) is a privacy-first social operating system that replaces a dozen standalone apps with one open-source, offline-first super-app. Every feature is totally free for every user, forever — funded by non-targeted local ads paid via corporate invoice, never by selling user data."
+      tagline="The non-negotiable promises Cirkle makes to every user"
+      intro="Cirkle (دواير) is a privacy-first social operating system that replaces a dozen standalone apps with one open-source, offline-first super-app. Every feature is totally free for every user, forever — funded by non-targeted local ads paid via corporate invoice, never by selling user data."
     >
       {/* 1.2 Core Promises */}
-      <SectionHeader title="The Circle Covenant" hint="Non-negotiable commitments" />
+      <SectionHeader title="The Cirkle Covenant" hint="Non-negotiable commitments" />
       <div className="grid sm:grid-cols-2 gap-4 mb-12">
         {COVENANTS.map((p) => (
           <GlassCard key={p.title}>
@@ -103,13 +103,13 @@ export function CovenantScreen() {
       </div>
 
       {/* 1.3 Problem → Solution Matrix */}
-      <SectionHeader title="Problem → Solution Matrix" hint="Why Circle exists" />
+      <SectionHeader title="Problem → Solution Matrix" hint="Why Cirkle exists" />
       <GlassCard className="overflow-x-auto mb-12">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-[10px] uppercase tracking-wider text-muted-foreground">
               <th className="text-left py-2 px-2 w-1/3">Problem</th>
-              <th className="text-left py-2 px-2">Circle's Solution</th>
+              <th className="text-left py-2 px-2">Cirkle's Solution</th>
             </tr>
           </thead>
           <tbody>
@@ -125,7 +125,7 @@ export function CovenantScreen() {
 
       {/* 1.4 Zero-Cost Architecture — 7 sub-principles */}
       <SectionHeader title="Zero-Cost Architecture" hint="Seven principles" />
-      <p className="text-sm text-muted-foreground mb-4">Circle does not rely on venture capital. Its design eliminates recurring bills through seven principles.</p>
+      <p className="text-sm text-muted-foreground mb-4">Cirkle does not rely on venture capital. Its design eliminates recurring bills through seven principles.</p>
       <div className="grid sm:grid-cols-2 gap-4 mb-12">
         {ZERO_COST.map((z) => (
           <GlassCard key={z.id}>
@@ -146,7 +146,7 @@ export function CovenantScreen() {
       </div>
 
       {/* 1.5 Target Audience */}
-      <SectionHeader title="Who is Circle for?" hint="Six core audiences" />
+      <SectionHeader title="Who is Cirkle for?" hint="Six core audiences" />
       <div className="grid sm:grid-cols-2 gap-3 mb-12">
         {AUDIENCES.map((a) => (
           <GlassCard key={a.who}>
@@ -179,10 +179,10 @@ export function CovenantScreen() {
         </table>
       </GlassCard>
 
-      {/* 1.7 What Circle replaces */}
-      <SectionHeader title="What Circle replaces" hint="One app, eleven dethroned" />
+      {/* 1.7 What Cirkle replaces */}
+      <SectionHeader title="What Cirkle replaces" hint="One app, eleven dethroned" />
       <div className="flex flex-wrap gap-2 mb-12">
-        {["WhatsApp → Wasl", "YouTube → Mashahd", "Instagram → Lamahat", "X / Twitter → Midan", "LinkedIn → Pro Network", "Trip.com → Rihla", "Gmail → Circle Mail", "Google Maps → Circle Maps", "Zoom → Wasl Maktab", "Google Translate → Translate", "Facebook Groups → The Circle"].map((x) => (
+        {["WhatsApp → Wasl", "YouTube → Mashahd", "Instagram → Lamahat", "X / Twitter → Midan", "LinkedIn → Pro Network", "Trip.com → Rihla", "Gmail → Cirkle Mail", "Google Maps → Cirkle Maps", "Zoom → Wasl Maktab", "Google Translate → Translate", "Facebook Groups → The Cirkle"].map((x) => (
           <span key={x} className="px-3 py-1.5 text-xs rounded-full glass border border-border/40">{x}</span>
         ))}
       </div>

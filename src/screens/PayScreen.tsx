@@ -1,4 +1,4 @@
-// — Circle Pay. Prototype design language + real /api/pay/wallet wiring.
+// — Cirkle Pay. Prototype design language + real /api/pay/wallet wiring.
 // Covers Wallet card, Send (P2P), Scan/NFC, Activity, Egyptian payment methods, Top-up, Compliance.
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -128,7 +128,7 @@ export function PayScreen() {
             </div>
             <div className="flex items-end justify-between">
               <div>
-                <div className="text-xs opacity-70">Circle ID · @ahmed.saleh</div>
+                <div className="text-xs opacity-70">Cirkle ID · @ahmed.saleh</div>
                 <div className="text-sm tracking-[0.3em] mt-1">•••• {String(ME).padStart(4, "0")}</div>
               </div>
               <div className="flex items-center gap-2">
@@ -462,7 +462,7 @@ function SendModal({ onClose, onSent, methods }: { onClose: () => void; onSent: 
           </button>
           <p className="text-[10px] text-muted-foreground text-center flex items-center justify-center gap-1">
             <Sparkles className="w-3 h-3" />
-            No fees · settles instantly via Circle Pay rails
+            No fees · settles instantly via Cirkle Pay rails
           </p>
         </div>
       </motion.div>
@@ -624,7 +624,7 @@ function TopupModal({ methods, currency, onClose }: { methods: PaymentMethod[]; 
             </div>
 
             <p className="text-[10px] text-muted-foreground text-center">
-              Circle Pay is non-custodial. Your wallet app handles authentication and KYC.
+              Cirkle Pay is non-custodial. Your wallet app handles authentication and KYC.
             </p>
           </div>
         )}

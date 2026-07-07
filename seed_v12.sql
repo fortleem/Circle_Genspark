@@ -1,4 +1,4 @@
--- Circle v12 — supplemental seed for gap-section tables.
+-- Cirkle v12 — supplemental seed for gap-section tables.
 -- Run after 0001 + 0002 migrations + seed.sql.
 
 -- ── §15 Local Mesh peers (around Cairo Metro) ─────────────────────────────
@@ -36,11 +36,11 @@ INSERT INTO ai_training_stats (user_id, model_name, samples_local, rounds_done, 
   (3, 'matrix_factor',  920, 11, 0.124, 64, 0, 0, 1.0, 1e-5);
 
 INSERT INTO federated_rounds (round_no, model_name, participants, aggregator_node, noise_added, finished_at, notes) VALUES
-  (1, 'matrix_factor', 1240, 'aggregator.eu.circle.app',   0.012, '2025-04-08 03:14:00', 'First federated round on EU plane'),
-  (2, 'matrix_factor', 1683, 'aggregator.eu.circle.app',   0.011, '2025-04-15 03:22:00', 'Loss dropped 12% over round 1'),
-  (3, 'distilgpt2',     487, 'aggregator.global.circle.app',0.018,'2025-04-22 03:09:00', 'Smart-reply quality improved'),
-  (4, 'matrix_factor', 2104, 'aggregator.eu.circle.app',   0.010, '2025-04-29 03:18:00', 'EU + ME participants combined'),
-  (5, 'matrix_factor', 2410, 'aggregator.global.circle.app',0.009,'2025-05-06 03:24:00', 'Cross-plane federation (anon)');
+  (1, 'matrix_factor', 1240, 'aggregator.eu.cirkle.app',   0.012, '2025-04-08 03:14:00', 'First federated round on EU plane'),
+  (2, 'matrix_factor', 1683, 'aggregator.eu.cirkle.app',   0.011, '2025-04-15 03:22:00', 'Loss dropped 12% over round 1'),
+  (3, 'distilgpt2',     487, 'aggregator.global.cirkle.app',0.018,'2025-04-22 03:09:00', 'Smart-reply quality improved'),
+  (4, 'matrix_factor', 2104, 'aggregator.eu.cirkle.app',   0.010, '2025-04-29 03:18:00', 'EU + ME participants combined'),
+  (5, 'matrix_factor', 2410, 'aggregator.global.cirkle.app',0.009,'2025-05-06 03:24:00', 'Cross-plane federation (anon)');
 
 -- ── §23 Maps — offline region packs ───────────────────────────────────────
 INSERT INTO map_regions (region_name, country, size_mb, tile_cid, osrm_cid, nominatim_cid, downloaded, pinned_by) VALUES
@@ -57,7 +57,7 @@ INSERT INTO map_regions (region_name, country, size_mb, tile_cid, osrm_cid, nomi
 INSERT INTO backups (user_id, method, size_mb, cid, shards_total, shards_threshold, encrypted) VALUES
   (1, 'matrix_keys',     0.02,  NULL,            NULL, NULL, 1),
   (1, 'ipfs',            12.4,  'QmAhmedBak...', NULL, NULL, 1),
-  (1, 'trusted_circle',  12.4,  'QmAhmedBak...', 5,    3,    1),
+  (1, 'trusted_cirkle',  12.4,  'QmAhmedBak...', 5,    3,    1),
   (2, 'local_file',      8.7,   NULL,            NULL, NULL, 1),
   (3, 'matrix_keys',     0.02,  NULL,            NULL, NULL, 1),
   (4, 'ipfs',            18.3,  'QmSaraBak...',  NULL, NULL, 1);
@@ -94,29 +94,29 @@ INSERT INTO ai_models (slug, name, task, size_mb, format, license, source, descr
 
 -- ── §33 Self-hosting nodes (community-operated) ──────────────────────────
 INSERT INTO self_host_nodes (node_kind, domain, operator, region, users_served, uptime_pct, monthly_cost_usd, setup_script) VALUES
-  ('matrix',         'matrix.circle.app',          'community-collective', 'global',  120000, 99.94,  18, 'https://circle.app/deploy-synapse.sh'),
-  ('matrix',         'matrix.circle.cn',           'cn-collective',         'china',    45000, 99.62,  22, 'https://circle.app/deploy-cn-plane.sh'),
-  ('matrix',         'matrix.eu.circle.app',       'eu-coop',               'eu',       38000, 99.88,  16, 'https://circle.app/deploy-synapse.sh'),
-  ('peertube',       'video.circle.app',           'video-coop',            'global',   65000, 99.71,  35, 'https://circle.app/deploy-peertube.sh'),
-  ('peertube',       'video.eu.circle.app',        'eu-video-coop',         'eu',       18000, 99.83,  28, 'https://circle.app/deploy-peertube.sh'),
-  ('mailcow',        'mail.circle.app',            'mail-collective',       'global',   84000, 99.96,  24, 'https://circle.app/deploy-mailcow.sh'),
-  ('maps',           'maps.circle.app',            'osm-friends',           'global',   54000, 99.65,  14, 'https://circle.app/deploy-maps.sh'),
-  ('maps',           'maps.cn.circle.app',         'cn-collective',         'china',    12000, 99.41,  19, 'https://circle.app/deploy-cn-maps.sh'),
-  ('pinning',        'pin1.circle.app',            'storage-coop',          'global',   30000, 99.55,  42, 'https://circle.app/deploy-ipfs-pin.sh'),
-  ('mini-app-store', 'apps.circle.app',            'apps-collective',       'global',   90000, 99.90,   8, 'https://circle.app/deploy-app-store.sh');
+  ('matrix',         'matrix.cirkle.app',          'community-collective', 'global',  120000, 99.94,  18, 'https://cirkle.app/deploy-synapse.sh'),
+  ('matrix',         'matrix.cirkle.cn',           'cn-collective',         'china',    45000, 99.62,  22, 'https://cirkle.app/deploy-cn-plane.sh'),
+  ('matrix',         'matrix.eu.cirkle.app',       'eu-coop',               'eu',       38000, 99.88,  16, 'https://cirkle.app/deploy-synapse.sh'),
+  ('peertube',       'video.cirkle.app',           'video-coop',            'global',   65000, 99.71,  35, 'https://cirkle.app/deploy-peertube.sh'),
+  ('peertube',       'video.eu.cirkle.app',        'eu-video-coop',         'eu',       18000, 99.83,  28, 'https://cirkle.app/deploy-peertube.sh'),
+  ('mailcow',        'mail.cirkle.app',            'mail-collective',       'global',   84000, 99.96,  24, 'https://cirkle.app/deploy-mailcow.sh'),
+  ('maps',           'maps.cirkle.app',            'osm-friends',           'global',   54000, 99.65,  14, 'https://cirkle.app/deploy-maps.sh'),
+  ('maps',           'maps.cn.cirkle.app',         'cn-collective',         'china',    12000, 99.41,  19, 'https://cirkle.app/deploy-cn-maps.sh'),
+  ('pinning',        'pin1.cirkle.app',            'storage-coop',          'global',   30000, 99.55,  42, 'https://cirkle.app/deploy-ipfs-pin.sh'),
+  ('mini-app-store', 'apps.cirkle.app',            'apps-collective',       'global',   90000, 99.90,   8, 'https://cirkle.app/deploy-app-store.sh');
 
 -- ── §34 Roadmap phases ───────────────────────────────────────────────────
 INSERT INTO roadmap_phases (phase_no, title, months, status, deliverables) VALUES
   (1, 'Foundation',                 3, 'done',
-     '["Flutter shell", "Matrix auth (email/OTP)", "Wasl E2EE chat", "Circle Verify ID scan", "Liveness detection"]'),
+     '["Flutter shell", "Matrix auth (email/OTP)", "Wasl E2EE chat", "Cirkle Verify ID scan", "Liveness detection"]'),
   (2, 'Social & Public Content',    3, 'done',
      '["Midan + ActivityPub federation", "Lamahat photos + Stories", "Mashahd video + PeerTube + WebTorrent", "Creator + Official channels", "AI moderation pipeline"]'),
   (3, 'Payments & Work',            3, 'in-progress',
-     '["Wasl Maktab workspaces", "Professional Network", "Circle Payments (Fawry/VC/InstaPay)", "Ad serving engine", "Advertiser self-serve"]'),
+     '["Wasl Maktab workspaces", "Professional Network", "Cirkle Payments (Fawry/VC/InstaPay)", "Ad serving engine", "Advertiser self-serve"]'),
   (4, 'Super-App Expansion',        4, 'in-progress',
-     '["Circle Mail @circle.app", "Circle ID OIDC", "Rihla travel suite", "Zero-cost mapping stack", "Local mesh offline network", "NLLB-200 translation", "Smart Post Router"]'),
+     '["Cirkle Mail @cirkle.app", "Cirkle ID OIDC", "Rihla travel suite", "Zero-cost mapping stack", "Local mesh offline network", "NLLB-200 translation", "Smart Post Router"]'),
   (5, 'Unique & AI Layer',          3, 'planned',
-     '["On-device AI personal assistant", "Personal AI Memoir", "Knowledge Circles", "Offline Content Stash", "Family Vault", "Anonymous Help Circles", "Decentralised ticketing", "Self-Learning AI Core"]'),
+     '["On-device AI personal assistant", "Personal AI Memoir", "Knowledge Cirkles", "Offline Content Stash", "Family Vault", "Anonymous Help Cirkles", "Decentralised ticketing", "Self-Learning AI Core"]'),
   (6, 'Mini App Ecosystem',         2, 'planned',
      '["Open Mini App Store", "Developer SDK", "Universal App Hub", "Geo-restricted Mini App logic", "Example apps (Uber/Didi/Meituan stubs)"]'),
   (7, 'Global Compliance & Data Planes', 4, 'planned',

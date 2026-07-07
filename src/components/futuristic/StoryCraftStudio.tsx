@@ -5,7 +5,7 @@
 //  • Geo-anchor toggle: hood vs city vs none (no precise GPS stored)
 //  • Collaborative album: invite collaborators by handle
 //  • On-device NSFW preview (Falconsai stub — flagged at 0.7+)
-//  • Privacy halo: who can see (Followers / Circle / Public)
+//  • Privacy halo: who can see (Followers / Cirkle / Public)
 //  • Schedule post for later (uses local queue)
 //
 // Drop into Lamahat as a modal opened from the "New" button.
@@ -44,7 +44,7 @@ const MUSIC = [
   { id: "fajr-bell",  name: "Fajr Bell",  bpm: 54,  mood: "amber" },
 ];
 
-type Audience = "followers" | "circle" | "public";
+type Audience = "followers" | "cirkle" | "public";
 
 export function StoryCraftStudio({ onClose }: { onClose: () => void }) {
   const [imageData, setImageData] = useState<string | null>(null);
@@ -317,7 +317,7 @@ export function StoryCraftStudio({ onClose }: { onClose: () => void }) {
               <div className="grid grid-cols-3 gap-1.5">
                 {([
                   { k: "followers", l: "Followers", icon: Users },
-                  { k: "circle",    l: "Circle",    icon: Globe2 },
+                  { k: "cirkle",    l: "Cirkle",    icon: Globe2 },
                   { k: "public",    l: "Public",    icon: Globe2 },
                 ] as const).map((o) => (
                   <button
@@ -445,7 +445,7 @@ function suggestTags(caption: string, mood: string): string[] {
   for (const [k, tags] of Object.entries(dict)) {
     if (lower.includes(k)) tags.forEach((t) => base.add(t));
   }
-  if (base.size < 3) ["circle","moment","lamahat"].forEach((t) => base.add(t));
+  if (base.size < 3) ["cirkle","moment","lamahat"].forEach((t) => base.add(t));
   return Array.from(base).slice(0, 6);
 }
 

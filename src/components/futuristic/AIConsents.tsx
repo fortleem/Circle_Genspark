@@ -1,7 +1,7 @@
 // ╔══════════════════════════════════════════════════════════════════╗
 // ║  AIConsents — Per-pillar AI training consent matrix (F16)        ║
 // ║                                                                  ║
-// ║  Circle-unique. No other platform lets you grant or revoke AI    ║
+// ║  Cirkle-unique. No other platform lets you grant or revoke AI    ║
 // ║  training consent at the pillar × tier level — on-device,        ║
 // ║  federated, or cloud — independently. Default is on-device only. ║
 // ║  Every toggle creates an audit trail. Withdrawal is instant.     ║
@@ -52,7 +52,7 @@ export function AIConsents() {
   const valueOf = (pillar: string, tier: Tier): number => {
     const c = map[pillar]
     if (!c) {
-      // Default: on-device on, others off — matches Circle's privacy-by-default ethos
+      // Default: on-device on, others off — matches Cirkle's privacy-by-default ethos
       return tier === "on_device" ? 1 : 0
     }
     return c[tier] ?? 0

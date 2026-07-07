@@ -1,8 +1,8 @@
-// Mock data for Circle screens
+// Mock data for Cirkle screens
 export const featured = [
   { id: "f1", kind: "alert", title: "Air-quality advisory", subtitle: "Riyadh • Moderate dust until 9pm", color: "rose" },
   { id: "f2", kind: "event", title: "Diriyah Light Festival", subtitle: "Tonight • 7:30 PM • 12 min away", color: "gold" },
-  { id: "f3", kind: "ai", title: "Your weekly digest is ready", subtitle: "Curated by Circle AI", color: "teal" },
+  { id: "f3", kind: "ai", title: "Your weekly digest is ready", subtitle: "Curated by Cirkle AI", color: "teal" },
   { id: "f4", kind: "feature", title: "New: Voice rooms in Midan", subtitle: "Join the conversation", color: "steel" },
 ];
 
@@ -25,12 +25,12 @@ export const chats = [
   { id: "c2", name: "Design Workspace", last: "Omar shared 4 new mockups", time: "12m", unread: 12, group: true },
   { id: "c3", name: "Khalid", last: "Voice message · 0:42", time: "1h", voice: true },
   { id: "c4", name: "Family ❤", last: "Mom: Don't be late", time: "3h", group: true },
-  { id: "c5", name: "Circle AI", last: "Here's a summary of today's news", time: "5h", ai: true, official: true },
+  { id: "c5", name: "Cirkle AI", last: "Here's a summary of today's news", time: "5h", ai: true, official: true },
   { id: "c6", name: "Sara H.", last: "📷 Photo", time: "Yesterday" },
 ];
 
 export const reels = [
-  { id: "r1", creator: "@dunes.studio", caption: "Sunset over AlUla — shot on Circle Pro", likes: "128K", music: "Ambient · Sahara" },
+  { id: "r1", creator: "@dunes.studio", caption: "Sunset over AlUla — shot on Cirkle Pro", likes: "128K", music: "Ambient · Sahara" },
   { id: "r2", creator: "@chefnoura", caption: "3-minute kunafa hack", likes: "89K", music: "Original audio" },
   { id: "r3", creator: "@urbanksa", caption: "Riyadh Boulevard tour", likes: "212K", music: "Lo-fi beats" },
 ];
@@ -46,7 +46,7 @@ export const posts = [
     body: "The new Wasl AI replies are uncannily good. It actually sounds like me 😅",
     likes: 248, comments: 32, reposts: 14, verified: true },
   { id: "po2", user: "Tariq", handle: "@tariq.dev", time: "22m",
-    body: "Hot take: Circle Pay's animation when NFC connects deserves an Oscar 🏆",
+    body: "Hot take: Cirkle Pay's animation when NFC connects deserves an Oscar 🏆",
     likes: 1290, comments: 88, reposts: 220 },
   { id: "po3", user: "Riyadh Daily", handle: "@riyadhdaily", time: "1h",
     body: "Diriyah Light Festival opens tonight. Threads of gold and lanterns return for the 4th season.",

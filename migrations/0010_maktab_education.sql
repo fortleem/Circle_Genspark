@@ -124,7 +124,7 @@ VALUES
   ('maktab_demo_cairo', 'Grade 7B · Mathematics',     'Mathematics', 'G7',  2, 28, '[{"day":"sun","start":"08:30","end":"09:30"},{"day":"tue","start":"08:30","end":"09:30"},{"day":"thu","start":"08:30","end":"09:30"}]'),
   ('maktab_demo_cairo', 'Grade 7B · Arabic Literature','Arabic',      'G7',  3, 28, '[{"day":"mon","start":"10:00","end":"11:00"},{"day":"wed","start":"10:00","end":"11:00"}]'),
   ('maktab_demo_cairo', 'Grade 7B · Science',          'Science',     'G7',  4, 28, '[{"day":"sun","start":"11:00","end":"12:00"},{"day":"tue","start":"11:00","end":"12:00"}]'),
-  ('maktab_demo_cairo', 'Quran · Hifz Circle I',       'Quran',       'Hifz-I', 5, 12, '[{"day":"sat","start":"17:00","end":"18:30"},{"day":"mon","start":"17:00","end":"18:30"}]'),
+  ('maktab_demo_cairo', 'Quran · Hifz Cirkle I',       'Quran',       'Hifz-I', 5, 12, '[{"day":"sat","start":"17:00","end":"18:30"},{"day":"mon","start":"17:00","end":"18:30"}]'),
   ('maktab_demo_cairo', 'Grade 12 · Calculus AP',      'Mathematics', 'G12', 2, 22, '[{"day":"sun","start":"13:00","end":"14:30"},{"day":"wed","start":"13:00","end":"14:30"}]');
 
 INSERT OR IGNORE INTO maktab_people (workspace_id, user_id, role, display_name, email, meta) VALUES

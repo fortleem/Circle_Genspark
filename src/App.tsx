@@ -1,4 +1,4 @@
-// Circle — application root: Router + Layout + 32 routes
+// Cirkle — application root: Router + Layout + 32 routes
 import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -24,7 +24,7 @@ import { LamahatScreen } from "@/screens/LamahatScreen";
 import { MidanScreen } from "@/screens/MidanScreen";
 
 // Community -------------------------------------------------------------------
-import CirclesScreen from "@/screens/CirclesScreen";
+import CirklesScreen from "@/screens/CirklesScreen";
 import ChannelsScreen from "@/screens/ChannelsScreen";
 import MadrasaScreen from "@/screens/MadrasaScreen";
 import ProScreen from "@/screens/ProScreen";
@@ -77,7 +77,7 @@ function BootGate({ children }: { children: React.ReactNode }) {
   const [showSplash, setShowSplash] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     if (typeof window === "undefined") return true;
-    return !localStorage.getItem("circle-onboarded");
+    return !localStorage.getItem("cirkle-onboarded");
   });
 
   useEffect(() => {
@@ -86,7 +86,7 @@ function BootGate({ children }: { children: React.ReactNode }) {
   }, []);
 
   const finishOnboarding = () => {
-    localStorage.setItem("circle-onboarded", "1");
+    localStorage.setItem("cirkle-onboarded", "1");
     setShowOnboarding(false);
   };
 
@@ -127,7 +127,7 @@ const App = () => (
                 <Route path="/midan" element={<MidanScreen />} />
 
                 {/* Community */}
-                <Route path="/circles" element={<CirclesScreen />} />
+                <Route path="/cirkles" element={<CirklesScreen />} />
                 <Route path="/channels" element={<ChannelsScreen />} />
                 <Route path="/madrasa" element={<MadrasaScreen />} />
                 <Route path="/maktab" element={<MadrasaScreen />} />

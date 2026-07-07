@@ -1,4 +1,4 @@
-// Circle — Citizen Shield (National Civic Intelligence Services, Part 37)
+// Cirkle — Citizen Shield (National Civic Intelligence Services, Part 37)
 // Incident reporting, evidence lock, witness network, authority routing, escalation.
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";

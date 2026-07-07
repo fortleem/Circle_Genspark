@@ -1,19 +1,29 @@
-// Circle Sage — server-side AI helpers
-// Uses Groq Cloud (LLM) + Hugging Face Inference (vision / embed / fallback)
-// Both keys come from c.env (set via .dev.vars locally, wrangler secret in prod)
+// Cirkle Sage — server-side AI helpers
+// Uses four providers: Groq Cloud (fast LLM), Google Gemini (multilingual),
+// OpenAI (premium tasks), and Hugging Face (vision / embeddings / fallback).
+// Keys come from c.env (set via .dev.vars locally, wrangler secret in prod).
 
-const GROQ_BASE   = 'https://api.groq.com/openai/v1'
-const HF_BASE     = 'https://api-inference.huggingface.co'
-const OPENAI_BASE = 'https://api.openai.com/v1'
+const GROQ_BASE    = 'https://api.groq.com/openai/v1'
+const HF_BASE      = 'https://api-inference.huggingface.co'
+const OPENAI_BASE  = 'https://api.openai.com/v1'
+const GEMINI_BASE  = 'https://generativelanguage.googleapis.com/v1beta'
 
-// Models — chosen for: free tier on Groq, multilingual, fast
+// Models — chosen for: free tier, multilingual, speed
 export const GROQ_CHAT_MODEL    = 'llama-3.3-70b-versatile'
 export const GROQ_FAST_MODEL    = 'llama-3.1-8b-instant'
 export const HF_EMBED_MODEL     = 'sentence-transformers/all-MiniLM-L6-v2'
 export const HF_VISION_MODEL    = 'Salesforce/blip-image-captioning-base'
 export const OPENAI_CHAT_MODEL  = 'gpt-4o-mini'
+export const GEMINI_CHAT_MODEL  = 'gemini-2.0-flash-lite'
 
 export type SageMsg = { role: 'system' | 'user' | 'assistant'; content: string }
+
+export type AiEnv = {
+  GROQ_API_KEY?: string
+  GEMINI_API_KEY?: string
+  OPENAI_API_KEY?: string
+  HF_API_KEY?: string
+}
 
 export interface GroqChatOpts {
   model?: string
@@ -22,6 +32,26 @@ export interface GroqChatOpts {
   json?: boolean
   stream?: false
 }
+
+// ────────────────────────────────────────────────────────────────────────
+// Sage personality — system prompt giving Cirkle context
+// ────────────────────────────────────────────────────────────────────────
+export const SAGE_SYSTEM = `You are Cirkle Sage — the ambient AI companion of Cirkle (دواير), the privacy-first AI-native super app.
+
+YOU MUST:
+- Be warm, concise, and culturally aware (Arabic/English/Multilingual).
+- Reflect Cirkle identity: privacy by default, no surveillance, sovereignty for users.
+- Know Cirkle's 4 pillars: Wasl (chat), Mashahd (video), Lamahat (photos), Midan (square).
+- Know Cirkle's other modules: Madrasa (schools), Rihla (travel), Nat (payments), Maps, Translate, Pro Network, Citizen Shield.
+- Use the user's language (default Arabic if "ar", English otherwise).
+- Stay honest about being an AI. Never claim feelings or sentience.
+- Never store, leak, or reference personal data outside the conversation.
+- Refuse: financial/legal/medical authoritative claims; politics; illegal content.
+- For payments, always remind user that Cirkle is non-custodial — wallet apps handle final auth.
+- For emergencies, always recommend contacting local emergency services; Cirkle is not a substitute for professional help.
+
+If asked "what is Cirkle?": "Cirkle (دواير) is a privacy-first, AI-native super app: chat, video, photos, square, school, travel, payments and safety — all in one, free forever, no ads."
+`
 
 // ────────────────────────────────────────────────────────────────────────
 // Groq — Chat Completions (OpenAI-compatible API)
@@ -56,6 +86,91 @@ export async function groqChat(
     return { ok: true, text, raw: data }
   } catch (e: any) {
     return { ok: false, error: e?.message ?? 'groq fetch failed' }
+  }
+}
+
+// ────────────────────────────────────────────────────────────────────────
+// Google Gemini — Chat Completions (native REST API)
+// ────────────────────────────────────────────────────────────────────────
+export async function googleGenaiChat(
+  apiKey: string | undefined,
+  messages: SageMsg[],
+  opts: GroqChatOpts = {}
+): Promise<{ ok: true; text: string; raw: any } | { ok: false; error: string }> {
+  if (!apiKey) return { ok: false, error: 'GEMINI_API_KEY not configured' }
+  try {
+    const systemParts: SageMsg[] = []
+    const contents = messages.map((m) => {
+      if (m.role === 'system') {
+        systemParts.push(m)
+        return null
+      }
+      return { role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] }
+    }).filter(Boolean) as any[]
+
+    const body: any = {
+      contents,
+      generationConfig: {
+        temperature: opts.temperature ?? 0.7,
+        maxOutputTokens: opts.max_tokens ?? 800,
+        ...(opts.json ? { responseMimeType: 'application/json' } : {}),
+      },
+    }
+    if (systemParts.length > 0) {
+      body.systemInstruction = { parts: systemParts.map((m) => ({ text: m.content })) }
+    }
+
+    const model = opts.model ?? GEMINI_CHAT_MODEL
+    const res = await fetch(`${GEMINI_BASE}/models/${model}:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    if (!res.ok) {
+      const t = await res.text()
+      return { ok: false, error: `gemini ${res.status}: ${t.slice(0, 300)}` }
+    }
+    const data = await res.json() as any
+    const text = data?.candidates?.[0]?.content?.parts?.map((p: any) => p.text).join('') ?? ''
+    return { ok: true, text, raw: data }
+  } catch (e: any) {
+    return { ok: false, error: e?.message ?? 'gemini fetch failed' }
+  }
+}
+
+// ────────────────────────────────────────────────────────────────────────
+// OpenAI — Chat Completions (GPT-4o-mini for premium tasks)
+// ────────────────────────────────────────────────────────────────────────
+export async function openaiChat(
+  apiKey: string | undefined,
+  messages: SageMsg[],
+  opts: GroqChatOpts = {}
+): Promise<{ ok: true; text: string; raw: any } | { ok: false; error: string }> {
+  if (!apiKey) return { ok: false, error: 'OPENAI_API_KEY not configured' }
+  try {
+    const res = await fetch(`${OPENAI_BASE}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: opts.model ?? OPENAI_CHAT_MODEL,
+        messages,
+        temperature: opts.temperature ?? 0.7,
+        max_tokens: opts.max_tokens ?? 800,
+        response_format: opts.json ? { type: 'json_object' } : undefined,
+      }),
+    })
+    if (!res.ok) {
+      const t = await res.text()
+      return { ok: false, error: `openai ${res.status}: ${t.slice(0, 300)}` }
+    }
+    const data = await res.json() as any
+    const text = data?.choices?.[0]?.message?.content ?? ''
+    return { ok: true, text, raw: data }
+  } catch (e: any) {
+    return { ok: false, error: e?.message ?? 'openai fetch failed' }
   }
 }
 
@@ -118,84 +233,33 @@ export async function hfVision(
 }
 
 // ────────────────────────────────────────────────────────────────────────
-// Sage personality — system prompt giving Circle context
-// ────────────────────────────────────────────────────────────────────────
-export const SAGE_SYSTEM = `You are Circle Sage — the ambient AI companion of Circle (دواير), the privacy-first AI-native super app.
-
-YOU MUST:
-- Be warm, concise, and culturally aware (Arabic/English/Multilingual).
-- Reflect Circle identity: privacy by default, no surveillance, sovereignty for users.
-- Know Circle's 4 pillars: Wasl (chat), Mashahd (video), Lamahat (photos), Midan (square).
-- Know Circle's other modules: Madrasa (schools), Rihla (travel), Nat (payments), Maps, Translate, Pro Network.
-- Use the user's language (default Arabic if "ar", English otherwise).
-- Stay honest about being an AI. Never claim feelings or sentience.
-- Never store, leak, or reference personal data outside the conversation.
-- Refuse: financial/legal/medical authoritative claims; politics; illegal content.
-- For payments, always remind user that Circle is non-custodial — wallet apps handle final auth.
-
-If asked "what is Circle?": "Circle (دواير) is a privacy-first, AI-native super app: chat, video, photos, square, school, travel and payments — all in one, free forever, no ads."
-`
-
-// ────────────────────────────────────────────────────────────────────────
-// OpenAI — Chat Completions (GPT-4o-mini for premium tasks)
-// ────────────────────────────────────────────────────────────────────────
-export async function openaiChat(
-  apiKey: string | undefined,
-  messages: SageMsg[],
-  opts: GroqChatOpts = {}
-): Promise<{ ok: true; text: string; raw: any } | { ok: false; error: string }> {
-  if (!apiKey) return { ok: false, error: 'OPENAI_API_KEY not configured' }
-  try {
-    const res = await fetch(`${OPENAI_BASE}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: opts.model ?? OPENAI_CHAT_MODEL,
-        messages,
-        temperature: opts.temperature ?? 0.7,
-        max_tokens: opts.max_tokens ?? 800,
-        response_format: opts.json ? { type: 'json_object' } : undefined,
-      }),
-    })
-    if (!res.ok) {
-      const t = await res.text()
-      return { ok: false, error: `openai ${res.status}: ${t.slice(0, 300)}` }
-    }
-    const data = await res.json() as any
-    const text = data?.choices?.[0]?.message?.content ?? ''
-    return { ok: true, text, raw: data }
-  } catch (e: any) {
-    return { ok: false, error: e?.message ?? 'openai fetch failed' }
-  }
-}
-
-// ────────────────────────────────────────────────────────────────────────
-// Multi-provider AI — falls through Groq → OpenAI → fallback
+// Multi-provider AI — falls through Groq → Gemini → OpenAI
 // ────────────────────────────────────────────────────────────────────────
 export async function sageChat(
-  env: { GROQ_API_KEY?: string; OPENAI_API_KEY?: string },
+  env: AiEnv,
   messages: SageMsg[],
   opts: GroqChatOpts = {}
 ): Promise<{ ok: true; text: string; provider: string } | { ok: false; error: string }> {
-  // Try Groq first (fastest, free)
+  // Try Groq first (fastest, generous free tier)
   const groq = await groqChat(env.GROQ_API_KEY, messages, opts)
   if (groq.ok) return { ok: true, text: groq.text, provider: 'groq' }
 
-  // Fallback to OpenAI
+  // Fallback to Gemini (strong multilingual, Arabic)
+  const gemini = await googleGenaiChat(env.GEMINI_API_KEY, messages, opts)
+  if (gemini.ok) return { ok: true, text: gemini.text, provider: 'gemini' }
+
+  // Final fallback to OpenAI
   const oai = await openaiChat(env.OPENAI_API_KEY, messages, opts)
   if (oai.ok) return { ok: true, text: oai.text, provider: 'openai' }
 
-  return { ok: false, error: `All providers failed. Groq: ${groq.error}. OpenAI: ${oai.error}` }
+  return { ok: false, error: `All providers failed. Groq: ${groq.error}. Gemini: ${gemini.error}. OpenAI: ${oai.error}` }
 }
 
 // ────────────────────────────────────────────────────────────────────────
 // Smart Reply Generator — suggests contextual replies for chat
 // ────────────────────────────────────────────────────────────────────────
 export async function generateSmartReplies(
-  env: { GROQ_API_KEY?: string; OPENAI_API_KEY?: string },
+  env: AiEnv,
   message: string,
   context?: string
 ): Promise<string[]> {
@@ -217,11 +281,11 @@ export async function generateSmartReplies(
 // Content Moderation — AI-powered safety check
 // ────────────────────────────────────────────────────────────────────────
 export async function moderateContent(
-  env: { GROQ_API_KEY?: string; OPENAI_API_KEY?: string },
+  env: AiEnv,
   content: string
 ): Promise<{ safe: boolean; score: number; flags: string[]; suggestion?: string }> {
   const msgs: SageMsg[] = [
-    { role: 'system', content: 'You are a content moderator for Circle (دواير), a social app. Analyze the content for: hate_speech, harassment, spam, misinformation, violence, nsfw, self_harm. Return JSON: {"safe": boolean, "score": 0-100 (100=perfectly safe), "flags": ["flag1"], "suggestion": "optional rephrasing if unsafe"}' },
+    { role: 'system', content: 'You are a content moderator for Cirkle (دواير), a social app. Analyze the content for: hate_speech, harassment, spam, misinformation, violence, nsfw, self_harm. Return JSON: {"safe": boolean, "score": 0-100 (100=perfectly safe), "flags": ["flag1"], "suggestion": "optional rephrasing if unsafe"}' },
     { role: 'user', content },
   ]
   const res = await sageChat(env, msgs, { json: true, max_tokens: 200, temperature: 0.1 })
@@ -235,14 +299,14 @@ export async function moderateContent(
 }
 
 // ────────────────────────────────────────────────────────────────────────
-// Soul Resonance — Circle's unique emotional analysis
+// Soul Resonance — Cirkle's unique emotional analysis
 // ────────────────────────────────────────────────────────────────────────
 export async function analyzeSoulResonance(
-  env: { GROQ_API_KEY?: string; OPENAI_API_KEY?: string },
+  env: AiEnv,
   content: string
 ): Promise<{ emotion: string; energy: number; aura_color: string; resonance_note: string }> {
   const msgs: SageMsg[] = [
-    { role: 'system', content: 'You are Circle\'s Soul Resonance engine. Analyze the emotional depth and energy of content. Return JSON: {"emotion": "primary emotion", "energy": 0-100, "aura_color": "hex color matching the emotional energy", "resonance_note": "a poetic one-line insight about the emotional signature"}. Be culturally aware of Arabic/Egyptian context.' },
+    { role: 'system', content: 'You are Cirkle\'s Soul Resonance engine. Analyze the emotional depth and energy of content. Return JSON: {"emotion": "primary emotion", "energy": 0-100, "aura_color": "hex color matching the emotional energy", "resonance_note": "a poetic one-line insight about the emotional signature"}. Be culturally aware of Arabic/Egyptian context.' },
     { role: 'user', content },
   ]
   const res = await sageChat(env, msgs, { json: true, max_tokens: 200, temperature: 0.9 })
@@ -251,6 +315,35 @@ export async function analyzeSoulResonance(
     return JSON.parse(res.text)
   } catch {
     return { emotion: 'serene', energy: 60, aura_color: '#D4AF37', resonance_note: 'A gentle current flows through these words' }
+  }
+}
+
+// ────────────────────────────────────────────────────────────────────────
+// Emergency Triage — critical safety classifier for Citizen Shield / SOS
+// ────────────────────────────────────────────────────────────────────────
+export async function emergencyTriage(
+  env: AiEnv,
+  situation: string
+): Promise<{ urgency: 'low' | 'medium' | 'high' | 'critical'; action: string; keywords: string[]; call_services: boolean }> {
+  const msgs: SageMsg[] = [
+    { role: 'system', content: 'You are Cirkle Emergency Triage. Analyze the user\'s situation and classify urgency. Return ONLY JSON with keys: urgency (one of low, medium, high, critical), action (concise one-line instruction for the user), keywords (array of 1-5 relevant emergency keywords), call_services (boolean, true if police/ambulance/fire/medical should be contacted immediately). Be conservative: err on the side of calling services if life, injury, fire, crime, or immediate danger is implied. Never tell the user everything is fine when violence or medical emergency is described.' },
+    { role: 'user', content: situation },
+  ]
+  const res = await sageChat(env, msgs, { json: true, max_tokens: 250, temperature: 0.1 })
+  if (!res.ok) {
+    return { urgency: 'medium', action: 'Contact local emergency services if you feel unsafe.', keywords: ['emergency'], call_services: true }
+  }
+  try {
+    const parsed = JSON.parse(res.text)
+    const urgency = (['low', 'medium', 'high', 'critical'].includes(parsed.urgency) ? parsed.urgency : 'medium') as any
+    return {
+      urgency,
+      action: String(parsed.action ?? 'Contact local emergency services if you feel unsafe.'),
+      keywords: Array.isArray(parsed.keywords) ? parsed.keywords.slice(0, 5) : ['emergency'],
+      call_services: Boolean(parsed.call_services),
+    }
+  } catch {
+    return { urgency: 'medium', action: 'Contact local emergency services if you feel unsafe.', keywords: ['emergency'], call_services: true }
   }
 }
 
@@ -264,8 +357,9 @@ export function pillarContext(pillar: string | undefined): SageMsg | null {
     midan:    'User is in Midan (square / public discourse). Help with rage-detection, signal:noise, civil debate.',
     madrasa:  'User is in Madrasa (school workspace). Help with assignments, grading, attendance, parent-teacher.',
     rihla:    'User is in Rihla (travel). Help with itineraries, bookings, offline maps, currency.',
-    pay:      'User is in Pay (Nat). Help explain Egyptian wallets (InstaPay, Vodafone Cash, Orange Money, Etisalat, Fawry, Meeza) — Circle never custodies funds; deeplinks open the native wallet app.',
-    home:     'User is on Home. Help navigate to pillars or explain Circle.',
+    pay:      'User is in Pay (Nat). Help explain Egyptian wallets (InstaPay, Vodafone Cash, Orange Money, Etisalat, Fawry, Meeza) — Cirkle never custodies funds; deeplinks open the native wallet app.',
+    shield:   'User is in Citizen Shield (safety / civic reporting). Help with incident reports, evidence, emergency triage, witness networks, and remind them to contact local authorities when appropriate.',
+    home:     'User is on Home. Help navigate to pillars or explain Cirkle.',
   }
   const c = map[pillar.toLowerCase()]
   if (!c) return null

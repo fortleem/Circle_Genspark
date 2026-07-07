@@ -13,7 +13,7 @@ const MODULES_PRIVACY = [
   { id: "mashahd", name: "Mashahd (Video)", icon: Activity, level: "high", desc: "Watch history local-only", color: "text-emerald-500" },
   { id: "lamahat", name: "Lamahat (Photos)", icon: Camera, level: "maximum", desc: "EXIF stripped · Encrypted at rest", color: "text-emerald-500" },
   { id: "midan", name: "Midan (Public)", icon: Globe, level: "medium", desc: "Posts public by default", color: "text-amber-500" },
-  { id: "pay", name: "Circle Pay", icon: Database, level: "high", desc: "Txns encrypted · CBE compliant", color: "text-emerald-500" },
+  { id: "pay", name: "Cirkle Pay", icon: Database, level: "high", desc: "Txns encrypted · CBE compliant", color: "text-emerald-500" },
   { id: "location", name: "Location", icon: MapPin, level: "high", desc: "Geohash-5 only (±4.9 km)", color: "text-emerald-500" },
   { id: "mesh", name: "Mesh Network", icon: Wifi, level: "maximum", desc: "MAC randomized · No IP logging", color: "text-emerald-500" },
   { id: "ai", name: "AI Features", icon: Shield, level: "maximum", desc: "On-device only · Opt-in cloud", color: "text-emerald-500" },
@@ -25,9 +25,9 @@ const PRIVACY_THREATS = [
 ];
 
 const DATA_FLOWS = [
-  { from: "Your Device", to: "Circle Servers", data: "Encrypted blobs only", encrypted: true },
+  { from: "Your Device", to: "Cirkle Servers", data: "Encrypted blobs only", encrypted: true },
   { from: "Your Device", to: "Mesh Peers", data: "E2EE packets", encrypted: true },
-  { from: "Circle Servers", to: "Third Parties", data: "NOTHING", encrypted: true, blocked: true },
+  { from: "Cirkle Servers", to: "Third Parties", data: "NOTHING", encrypted: true, blocked: true },
   { from: "Your Device", to: "IPFS Network", data: "CID pinning (public content only)", encrypted: false },
 ];
 
@@ -56,8 +56,8 @@ export function PrivacyScreen() {
           <div className="relative flex items-center gap-6">
             <div className="relative w-24 h-24">
               <svg className="w-24 h-24 -rotate-90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="8" className="text-muted/30" />
-                <circle cx="50" cy="50" r="40" fill="none" stroke="url(#privGrad)" strokeWidth="8"
+                <cirkle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="8" className="text-muted/30" />
+                <cirkle cx="50" cy="50" r="40" fill="none" stroke="url(#privGrad)" strokeWidth="8"
                   strokeDasharray={`${privacyScore * 2.51} 251`} strokeLinecap="round" />
                 <defs><linearGradient id="privGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stopColor="hsl(var(--secondary))" />
@@ -163,7 +163,7 @@ export function PrivacyScreen() {
             </div>
           ))}
           <p className="text-[10px] text-muted-foreground text-center mt-2">
-            Circle NEVER sells, shares, or analyzes your data. Zero third-party access.
+            Cirkle NEVER sells, shares, or analyzes your data. Zero third-party access.
           </p>
         </div>
       </div>

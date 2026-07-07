@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS pay_intents (
   method_id     TEXT NOT NULL,                      -- e.g. 'vodafone_cash' | 'instapay'
   amount        REAL NOT NULL,
   currency      TEXT NOT NULL,
-  recipient_handle TEXT,                            -- @recipient or phone for non-Circle
+  recipient_handle TEXT,                            -- @recipient or phone for non-Cirkle
   recipient_user_id INTEGER REFERENCES users(id),
   note          TEXT,
   deeplink      TEXT,                               -- generated deeplink (e.g. vfcash://pay?...)

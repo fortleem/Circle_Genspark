@@ -3,7 +3,7 @@ import { PageShell, GlassCard, SectionHeader, StatTile } from "@/components/shel
 import { Sparkles, Palette, Type, Globe, FileJson, MessageCircle, AppWindow, Check } from "lucide-react";
 import { useApp } from "@/providers/AppProvider";
 import { ALL_LANGS, getNames } from "@/lib/i18n";
-import { CircleMark } from "@/components/brand/CircleMark";
+import { CirkleMark } from "@/components/brand/CirkleMark";
 import { useState } from "react";
 
 const PRIMARY_MODULES = [
@@ -43,12 +43,12 @@ const VISUAL = {
 
 // 2.5 Domains
 const DOMAINS = [
-  { tld: "circle.app", use: "Global root, English (Brand)" },
-  { tld: "circle.app/ar", use: "Arabic users → دواير" },
-  { tld: "circle.app/zh", use: "Chinese users → 圆圈" },
-  { tld: "circle.app/fr", use: "French users → Cercle" },
+  { tld: "cirkle.app", use: "Global root, English (Brand)" },
+  { tld: "cirkle.app/ar", use: "Arabic users → دواير" },
+  { tld: "cirkle.app/zh", use: "Chinese users → 圆圈" },
+  { tld: "cirkle.app/fr", use: "French users → Cercle" },
   { tld: "dawayer.app", use: "Arabic-region alias" },
-  { tld: "circle.eg", use: "Egypt ccTLD (DRE-routed)" },
+  { tld: "cirkle.eg", use: "Egypt ccTLD (DRE-routed)" },
 ];
 
 // 2.7 Brand Voice
@@ -70,13 +70,13 @@ export function IdentityScreen() {
       arabicTitle="دواير"
       section=""
       tagline="One soul, many voices — eight locales, one cohesive identity"
-      intro="Circle's identity is rooted in its Arabic origin (Dawayer — circles of connection). However, every module dynamically presents localized names based on the user's language preference, creating a uniquely accessible super-app for the world."
+      intro="Cirkle's identity is rooted in its Arabic origin (Dawayer — cirkles of connection). However, every module dynamically presents localized names based on the user's language preference, creating a uniquely accessible super-app for the world."
     >
       {/* 2.1 Brand mark + tagline */}
       <SectionHeader title="One Soul, Many Voices" />
       <GlassCard className="mb-8">
         <div className="flex items-center gap-6 flex-wrap">
-          <CircleMark size={96} />
+          <CirkleMark size={96} />
           <div className="flex-1 min-w-0">
             <h2 className="font-display text-4xl">دواير</h2>
             <p className="text-sm text-muted-foreground mt-1">Daw&apos;air — <em>the rings of a connected life</em></p>
@@ -228,7 +228,7 @@ console.log(names.module_chat) // 'وصل' or 'Connect' or 'Wasl' etc.`}</code><
         <p className="text-sm text-muted-foreground mb-3"><AppWindow className="inline w-4 h-4 mr-1 text-secondary" /> Each regional App Store listing uses the localized name for the app title and each featured module.</p>
         <div className="grid sm:grid-cols-3 gap-2 text-xs">
           <div className="px-3 py-2 rounded-lg glass border border-border/40"><strong>🇪🇬 Apple AR</strong><br /><span className="text-muted-foreground">دواير · تطبيق العالم المتصل</span></div>
-          <div className="px-3 py-2 rounded-lg glass border border-border/40"><strong>🇺🇸 Apple US</strong><br /><span className="text-muted-foreground">Circle · A New Social OS</span></div>
+          <div className="px-3 py-2 rounded-lg glass border border-border/40"><strong>🇺🇸 Apple US</strong><br /><span className="text-muted-foreground">Cirkle · A New Social OS</span></div>
           <div className="px-3 py-2 rounded-lg glass border border-border/40"><strong>🇨🇳 Apple CN</strong><br /><span className="text-muted-foreground">圆圈 · 全新社交操作系统</span></div>
         </div>
       </GlassCard>

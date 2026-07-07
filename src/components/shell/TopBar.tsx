@@ -1,9 +1,9 @@
-// Circle — Sticky glass TopBar with title, locale switch, theme toggle, region,
+// Cirkle — Sticky glass TopBar with title, locale switch, theme toggle, region,
 // notifications bell with live unread badge + command-palette shortcut hint.
 import { Sun, Moon, Bell, Search, Globe2, Command } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useApp } from "@/providers/AppProvider";
-import { CircleMark } from "@/components/brand/CircleMark";
+import { CirkleMark } from "@/components/brand/CirkleMark";
 import { NAV_ITEMS, findNavMatch } from "@/lib/tabs";
 import { useEffect, useState } from "react";
 import {
@@ -78,7 +78,7 @@ export function TopBar() {
       <header className="sticky top-0 z-40 px-4 pt-[env(safe-area-inset-top)]">
         <div className="glass rounded-full mt-3 px-3 py-2 flex items-center gap-2 shadow-glass">
           <div className="flex items-center gap-2 min-w-0">
-            <CircleMark size={32} />
+            <CirkleMark size={32} />
             <div className="leading-none min-w-0">
               <div className="font-display text-base sm:text-lg truncate">{title}</div>
               <div className="text-[10px] text-muted-foreground tracking-widest uppercase truncate">
@@ -156,7 +156,7 @@ export function TopBar() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Circle-unique Live Mesh Chip — exposes the whole mesh, not just one online dot */}
+          {/* Cirkle-unique Live Mesh Chip — exposes the whole mesh, not just one online dot */}
           <div className="hidden md:flex">
             <MeshStatusChip />
           </div>

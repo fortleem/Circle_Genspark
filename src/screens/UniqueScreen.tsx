@@ -1,4 +1,4 @@
-// — Unique: Showcase of Circle's signature features that no competitor has
+// — Unique: Showcase of Cirkle's signature features that no competitor has
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
@@ -24,7 +24,7 @@ const SIGNATURE_FEATURES = [
     icon: Clock,
     title: "Whispers",
     arabic: "الهمسات",
-    desc: "Messages that self-destruct after being read. View-once photos, timed texts, and vanishing voice notes. Not even Circle can recover them.",
+    desc: "Messages that self-destruct after being read. View-once photos, timed texts, and vanishing voice notes. Not even Cirkle can recover them.",
     gradient: "from-pink-500 to-rose-600",
     path: "/wasl",
     category: "Privacy",
@@ -94,7 +94,7 @@ const SIGNATURE_FEATURES = [
     icon: Eye,
     title: "Privacy Simulator",
     arabic: "محاكي الخصوصية",
-    desc: "See exactly what data is visible to strangers, friends, and Circle itself. A live preview of your digital footprint.",
+    desc: "See exactly what data is visible to strangers, friends, and Cirkle itself. A live preview of your digital footprint.",
     gradient: "from-violet-500 to-purple-600",
     path: "/privacy",
     category: "Privacy",
@@ -124,7 +124,7 @@ const SIGNATURE_FEATURES = [
     icon: Camera,
     title: "Reality Lens",
     arabic: "عدسة الواقع",
-    desc: "Geo-anchored AR memory layer. Leave digital notes at physical locations visible only to your circles. A private social layer on the real world.",
+    desc: "Geo-anchored AR memory layer. Leave digital notes at physical locations visible only to your cirkles. A private social layer on the real world.",
     gradient: "from-cyan-500 to-teal-600",
     path: "/maps",
     category: "AR",
@@ -140,7 +140,7 @@ export function UniqueScreen() {
   return (
     <div className="pb-32">
       <div className="px-5 pt-2">
-        <h1 className="font-display text-3xl">What Makes Circle Unique</h1>
+        <h1 className="font-display text-3xl">What Makes Cirkle Unique</h1>
         <p className="text-sm text-muted-foreground mt-1">12 signature features no other platform offers</p>
       </div>
 
@@ -210,25 +210,25 @@ export function UniqueScreen() {
             <thead>
               <tr className="bg-muted/30">
                 <th className="text-left p-2.5 font-medium">Feature</th>
-                <th className="p-2.5 font-medium text-center">Circle</th>
+                <th className="p-2.5 font-medium text-center">Cirkle</th>
                 <th className="p-2.5 font-medium text-center text-muted-foreground">WhatsApp</th>
                 <th className="p-2.5 font-medium text-center text-muted-foreground">Telegram</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/30">
               {[
-                { feat: "On-device AI", circle: true, wa: false, tg: false },
-                { feat: "E2EE by default", circle: true, wa: true, tg: false },
-                { feat: "Social recovery", circle: true, wa: false, tg: false },
-                { feat: "Liquid democracy", circle: true, wa: false, tg: false },
-                { feat: "Offline mesh", circle: true, wa: false, tg: false },
-                { feat: "Open source", circle: true, wa: false, tg: true },
-                { feat: "No phone required", circle: true, wa: false, tg: false },
-                { feat: "Data portability", circle: true, wa: false, tg: true },
+                { feat: "On-device AI", cirkle: true, wa: false, tg: false },
+                { feat: "E2EE by default", cirkle: true, wa: true, tg: false },
+                { feat: "Social recovery", cirkle: true, wa: false, tg: false },
+                { feat: "Liquid democracy", cirkle: true, wa: false, tg: false },
+                { feat: "Offline mesh", cirkle: true, wa: false, tg: false },
+                { feat: "Open source", cirkle: true, wa: false, tg: true },
+                { feat: "No phone required", cirkle: true, wa: false, tg: false },
+                { feat: "Data portability", cirkle: true, wa: false, tg: true },
               ].map((row, i) => (
                 <tr key={i}>
                   <td className="p-2.5">{row.feat}</td>
-                  <td className="p-2.5 text-center">{row.circle ? '✅' : '❌'}</td>
+                  <td className="p-2.5 text-center">{row.cirkle ? '✅' : '❌'}</td>
                   <td className="p-2.5 text-center">{row.wa ? '✅' : '❌'}</td>
                   <td className="p-2.5 text-center">{row.tg ? '✅' : '❌'}</td>
                 </tr>

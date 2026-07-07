@@ -1,4 +1,4 @@
-// — Circle Verify. Prototype design language.
+// — Cirkle Verify. Prototype design language.
 // Covers Tiers, Cryptographic signing, Public ledger, Revocation.
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -19,7 +19,7 @@ const TIERS = [
     cost: "Free",
     time: "~2 min",
     desc: "Verified email + phone + anti-bot challenge. The minimum any real human can clear.",
-    perks: ["Post + chat", "Join Circles", "Basic Wasl"],
+    perks: ["Post + chat", "Join Cirkles", "Basic Wasl"],
   },
   {
     n: 2,
@@ -54,7 +54,7 @@ const TIERS = [
     ring: "border-accent/40",
     cost: "Free · manual review",
     time: "~7 days",
-    desc: "Multi-source attestation by reviewers + community vote. Revocable by Circle governance.",
+    desc: "Multi-source attestation by reviewers + community vote. Revocable by Cirkle governance.",
     perks: ["Verified badge", "Anti-impersonation lock", "Priority moderation"],
   },
 ];
@@ -172,7 +172,7 @@ export function VerifyScreen() {
               <div className="font-medium text-sm">Cryptographically signed</div>
             </div>
             <p className="text-xs text-muted-foreground mt-1.5">
-              Each badge is an Ed25519 signature from Circle's verification keys, embedded in your profile
+              Each badge is an Ed25519 signature from Cirkle's verification keys, embedded in your profile
               and rotated yearly. Forging is computationally infeasible.
             </p>
           </div>

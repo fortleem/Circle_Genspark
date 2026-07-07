@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS sponsored_hashtags (
   budget       INTEGER DEFAULT 0
 );
 
--- §7.4 Tip transactions (non-custodial — Circle only logs intent + referral)
+-- §7.4 Tip transactions (non-custodial — Cirkle only logs intent + referral)
 CREATE TABLE IF NOT EXISTS tip_transactions (
   id             TEXT PRIMARY KEY,
   from_user      INTEGER NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS tip_transactions (
   widget         TEXT NOT NULL,           -- moonpay | ramp | transak | paymob | wechange
   status         TEXT DEFAULT 'pending',  -- pending | confirmed | failed
   webhook_ref    TEXT,                    -- widget transaction ID
-  circle_fee_bp  INTEGER DEFAULT 150,     -- basis points (1.5%)
+  cirkle_fee_bp  INTEGER DEFAULT 150,     -- basis points (1.5%)
   created_at     DATETIME DEFAULT CURRENT_TIMESTAMP,
   confirmed_at   DATETIME
 );

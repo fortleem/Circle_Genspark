@@ -1,5 +1,5 @@
 // ╔══════════════════════════════════════════════════════════════════╗
-// ║  CapsuleComposer — Time-Capsule post composer (Circle-unique F4) ║
+// ║  CapsuleComposer — Time-Capsule post composer (Cirkle-unique F4) ║
 // ║                                                                  ║
 // ║  Write a message NOW that becomes visible at a chosen future     ║
 // ║  date. Server stamps it with a SHA-256 anchor hash at seal time, ║

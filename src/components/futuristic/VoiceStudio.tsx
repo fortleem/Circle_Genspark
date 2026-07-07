@@ -188,7 +188,7 @@ export function VoiceStudio({ syncText, syncLang, onTranscript }: {
             </select>
           </div>
           <button
-            onClick={speaking ? stopSpeaking : () => speak(syncText ?? "Welcome to Circle. Your voice, your privacy, your data.")}
+            onClick={speaking ? stopSpeaking : () => speak(syncText ?? "Welcome to Cirkle. Your voice, your privacy, your data.")}
             disabled={!hasTTS}
             className={`w-full py-3 rounded-xl text-xs font-medium flex items-center justify-center gap-2 transition ${
               speaking

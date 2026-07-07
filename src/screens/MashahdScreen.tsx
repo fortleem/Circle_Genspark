@@ -153,11 +153,11 @@ export function MashahdScreen() {
       <div className="mx-5 mt-8 rounded-2xl glass p-4">
         <div className="flex items-center gap-2 mb-3">
           <DollarSign className="w-4 h-4 text-secondary" />
-          <h3 className="font-display text-sm">Income streams · zero cost to Circle</h3>
+          <h3 className="font-display text-sm">Income streams · zero cost to Cirkle</h3>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
-          <RevTile title="Local CPM ads" desc="30% Circle · 70% creator" />
-          <RevTile title="Affiliate links" desc="80% creator · 20% Circle" />
+          <RevTile title="Local CPM ads" desc="30% Cirkle · 70% creator" />
+          <RevTile title="Affiliate links" desc="80% creator · 20% Cirkle" />
           <RevTile title="Creator premium" desc="$5-10/mo via Stripe/Paymob" />
           <RevTile title="Sponsored trends" desc="City-level only · labelled" />
           <RevTile title="API freemium" desc="Free <1k req/day" />
@@ -174,7 +174,7 @@ export function MashahdScreen() {
           <span className="uppercase tracking-widest text-secondary text-[10px]">Compliance</span>
         </div>
         <p className="text-muted-foreground leading-relaxed">
-          Circle never receives, holds, or sends user funds. Widget providers (MoonPay/Ramp/Paymob/Transak/WeChange)
+          Cirkle never receives, holds, or sends user funds. Widget providers (MoonPay/Ramp/Paymob/Transak/WeChange)
           handle KYC/AML, sanctions screening, and cross-border tax. No money-transmitter licence required.
           Tipping disabled for under-18; sanctioned regions auto-blocked at widget level.
         </p>
@@ -223,7 +223,7 @@ function VideoCard({
       tabIndex={0}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(); } }}
     >
-      {/* Hover halo — Circle identity orbit ring */}
+      {/* Hover halo — Cirkle identity orbit ring */}
       <div className="absolute -inset-0.5 rounded-2xl orbit-ring opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-0" />
       {/* Play affordance */}
       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
@@ -444,10 +444,10 @@ function TipModal({ video: v, onClose }: { video: Video; onClose: () => void }) 
             </button>
 
             <div className="mt-3 text-[10px] text-muted-foreground space-y-1">
-              <p>• Circle never sees your payment details</p>
+              <p>• Cirkle never sees your payment details</p>
               <p>• Widget handles KYC, currency conversion, payout</p>
               <p>• Net amount goes directly to creator's wallet</p>
-              <p>• Circle earns a small referral fee (~1.5%)</p>
+              <p>• Cirkle earns a small referral fee (~1.5%)</p>
             </div>
           </>
         )}
@@ -616,7 +616,7 @@ function AnalyticsModal({ video, onClose }: { video: Video; onClose: () => void 
 
             <div className="rounded-xl bg-secondary/5 border border-secondary/20 p-3 text-[11px] text-muted-foreground">
               <Shield className="w-3 h-3 inline mr-1 text-secondary" />
-              Anonymised aggregates. Circle never tracks individual viewers or their watch history.
+              Anonymised aggregates. Cirkle never tracks individual viewers or their watch history.
             </div>
           </>
         )}
@@ -643,7 +643,7 @@ function ActionPill({ icon: Icon, label, onClick, accent }: { icon: any; label: 
   return (
     <button onClick={(e) => { e.stopPropagation(); onClick?.(e); }} className="flex flex-col items-center gap-1">
       {accent ? (
-        // Tip-coin — Circle's gold-coin tip button, NOT YouTube's $ pill
+        // Tip-coin — Cirkle's gold-coin tip button, NOT YouTube's $ pill
         <span className="tip-coin">
           <Icon className="w-5 h-5" />
         </span>

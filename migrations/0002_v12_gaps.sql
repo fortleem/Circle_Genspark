@@ -1,5 +1,5 @@
 -- ============================================================================
--- Circle v12 gap-filling migration
+-- Cirkle v12 gap-filling migration
 -- New tables for blueprint sections §15, §17, §18, §23, §27, §28, §32, §33, §34
 -- ============================================================================
 
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS map_regions (
 CREATE TABLE IF NOT EXISTS backups (
   id           INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id      INTEGER NOT NULL,
-  method       TEXT NOT NULL,                  -- 'local_file' | 'ipfs' | 'trusted_circle' | 'matrix_keys'
+  method       TEXT NOT NULL,                  -- 'local_file' | 'ipfs' | 'trusted_cirkle' | 'matrix_keys'
   size_mb      REAL,
   cid          TEXT,                            -- IPFS CID if applicable
   shards_total INTEGER,                         -- N for Shamir

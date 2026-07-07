@@ -195,7 +195,7 @@ export function AICoreScreen() {
         </div>
       </div>
 
-      {/* Circle-unique AI Consent Matrix — per-pillar, per-tier granular control */}
+      {/* Cirkle-unique AI Consent Matrix — per-pillar, per-tier granular control */}
       <div className="mx-4 mt-6 p-4 rounded-2xl glass border border-border/40">
         <AIConsents />
       </div>

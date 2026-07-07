@@ -1,5 +1,5 @@
 -- ╔══════════════════════════════════════════════════════════════════╗
--- ║  Migration 0008 — Wave 2 of Circle-unique futuristic features    ║
+-- ║  Migration 0008 — Wave 2 of Cirkle-unique futuristic features    ║
 -- ║                                                                  ║
 -- ║   F10 family_vault      — M-of-N inheritance vault (§27)         ║
 -- ║   F12 tickets           — Decentralized event passes (§26)       ║
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS ai_consents (
 
 -- ─────────────── Seed ───────────────
 INSERT INTO family_vaults (owner_id, name, description, threshold_m, total_n, vault_hash, status) VALUES
-  (1, 'Family heirlooms', 'Recovery keys for Circle ID + Pay wallet · M=3 of N=5', 3, 5, 'sha256:demo-vault-001', 'active'),
+  (1, 'Family heirlooms', 'Recovery keys for Cirkle ID + Pay wallet · M=3 of N=5', 3, 5, 'sha256:demo-vault-001', 'active'),
   (1, 'Travel docs vault',  'Passport, visas, insurance · M=2 of N=3',             2, 3, 'sha256:demo-vault-002', 'active');
 
 INSERT INTO family_vault_shares (vault_id, holder_id, share_hash, consented) VALUES
@@ -102,7 +102,7 @@ INSERT INTO event_tickets (event_title, event_city, event_at, issuer_id, holder_
 -- Sample privacy sim runs
 INSERT INTO privacy_sim_runs (user_id, viewer_kind, visible_score, visible_fields, recommendations) VALUES
   (1, 'stranger',   18, '["@handle","display_name","city"]',                           '["Hide city from public profile","Enable Ghost mode in Wasl"]'),
-  (1, 'friend',     62, '["@handle","display_name","city","posts","photos","stories"]','["Restrict Lamahat stories to inner circle"]'),
+  (1, 'friend',     62, '["@handle","display_name","city","posts","photos","stories"]','["Restrict Lamahat stories to inner cirkle"]'),
   (1, 'employer',   34, '["@handle","display_name","pro_profile","public_posts"]',     '["Separate professional persona via Dual Identity"]'),
   (1, 'advertiser',  4, '["city_level_geohash5"]',                                     '["Already opted out of ad targeting · zero tracking"]'),
   (1, 'state',      28, '["@handle","display_name","city","public_posts","kyc_hash"]', '["DRE compliance is read-only · no further mitigation needed"]');

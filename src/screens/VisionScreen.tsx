@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 // 1.6 Year-1 Quantitative Goals (Egypt) and 5-year markers
 const GOALS = [
-  { y: "2025 Q3", t: "Public beta", n: "Core 4 pillars (Wasl, Mashahd, Lamahat, Midan) + Circle ID" },
+  { y: "2025 Q3", t: "Public beta", n: "Core 4 pillars (Wasl, Mashahd, Lamahat, Midan) + Cirkle ID" },
   { y: "2025 Q4", t: "Federation v1", n: "Self-host toolkit, IPFS-pinned content, Matrix bridges" },
   { y: "2026 Q1", t: "Egypt GA launch", n: "1M MAU target. 500 self-hosted nodes. Arabic-first interface." },
   { y: "2026 Q2", t: "AI core ships", n: "On-device translation, mod, recommendations — zero telemetry" },
@@ -28,10 +28,10 @@ const AUDIENCES = [
 
 // 1.8 Long-term vision (10 years)
 const LONG_TERM = [
-  { t: "Perpetual open source", d: "Apache 2.0. Anyone can fork, audit, self-host. No proprietary forks ever shipped by Circle Foundation." },
+  { t: "Perpetual open source", d: "Apache 2.0. Anyone can fork, audit, self-host. No proprietary forks ever shipped by Cirkle Foundation." },
   { t: "No enshittification", d: "Future changes require community DAO vote. Ads never target individuals." },
   { t: "Global mesh internet", d: "LoRa, Wi-Fi Direct, BLE — eventually independent of traditional ISPs." },
-  { t: "Decentralised identity", d: "Circle ID becomes a self-sovereign identity standard, gov-compatible but user-controlled." },
+  { t: "Decentralised identity", d: "Cirkle ID becomes a self-sovereign identity standard, gov-compatible but user-controlled." },
   { t: "Zero marginal cost", d: "As P2P/federation improves, cost per new user → absolute zero." },
 ];
 
@@ -44,7 +44,7 @@ export function VisionScreen() {
       arabicTitle="الرؤية"
       section="-"
       tagline="A unified, sovereign digital home — not a megacorp's data farm"
-      intro="By 2027, one billion people could be using a connected, federated platform they truly control. Circle is the architecture that gets us there: AI-native, privacy-first, community-owned. This page details exactly who Circle is for, the year-1 metrics that will measure success, and the 10-year commitments that prevent enshittification."
+      intro="By 2027, one billion people could be using a connected, federated platform they truly control. Cirkle is the architecture that gets us there: AI-native, privacy-first, community-owned. This page details exactly who Cirkle is for, the year-1 metrics that will measure success, and the 10-year commitments that prevent enshittification."
     >
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-12">
@@ -55,7 +55,7 @@ export function VisionScreen() {
       </div>
 
       {/* Target audience */}
-      <SectionHeader title="Who Circle is for" hint="Six core audiences" />
+      <SectionHeader title="Who Cirkle is for" hint="Six core audiences" />
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-12">
         {AUDIENCES.map((a) => (
           <GlassCard key={a.who}>

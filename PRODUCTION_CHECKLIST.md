@@ -1,4 +1,4 @@
-# Circle — Production Readiness Checklist (Blueprint v12.0 → Implementation)
+# Cirkle — Production Readiness Checklist (Blueprint v12.0 → Implementation)
 
 **Mapped against CIRCLE BLUEPRINT.docx §1–§35.** Updated 2026-06-04.
 
@@ -22,7 +22,7 @@ Legend: ✅ done · 🟡 partial · ⏳ pending · 🆕 futuristic-unique (no in
 ## §3 Zero-Cost Technical Architecture
 - ✅ D1 SQLite, IPFS-tagged photos, federation chip
 - ✅ Migrations 0001-0007 applied
-- 🟡 Matrix Synapse — IDs are realistic (`!group-cairo-coffee:matrix.circle.app`) but not connected
+- 🟡 Matrix Synapse — IDs are realistic (`!group-cairo-coffee:matrix.cirkle.app`) but not connected
 - 🟡 PeerTube/WebTorrent — UI strings reference it; actual streaming uses MP4
 
 ## §4 Dynamic Regional Engine (DRE)
@@ -63,8 +63,8 @@ Legend: ✅ done · 🟡 partial · ⏳ pending · 🆕 futuristic-unique (no in
 - 🆕 **Whisper composer** (F5) — self-destruct messages with TTL & view-cap
 - 🆕 Cross-pillar Share-To on every post
 
-## §10 The Circle (Groups)
-- ✅ CirclesScreen with knowledge wiki, events, watch-together stubs
+## §10 The Cirkle (Groups)
+- ✅ CirklesScreen with knowledge wiki, events, watch-together stubs
 - 🟡 Matrix power levels — visual badges only
 
 ## §11 Official Channels
@@ -90,7 +90,7 @@ Legend: ✅ done · 🟡 partial · ⏳ pending · 🆕 futuristic-unique (no in
 - 🆕 **MeshStatusChip** in TopBar (live counts of online/mesh/E2EE)
 - 🟡 BLE/Wi-Fi Direct — strings + presence rows (`reticulum:nodeID`)
 
-## §16 Circle Verify
+## §16 Cirkle Verify
 - ✅ VerifyScreen + IDScreen
 - ✅ One-account-per-ID hash strings
 - 🟡 MobileNetV2 liveness — UI only
@@ -104,21 +104,21 @@ Legend: ✅ done · 🟡 partial · ⏳ pending · 🆕 futuristic-unique (no in
 - ✅ AICoreScreen with on-device tone
 - ✅ **Echo Threads** — backend + UI playback control (`EchoPlayback`) wired in WaslScreen
 
-## §19 Circle Payments
+## §19 Cirkle Payments
 - ✅ PayScreen with wallet, txns, QR strings
 - 🟡 CBDC / stablecoin — labels only (out-of-scope: requires bank integration)
 - ✅ Tip webhook hardened (resolved this session)
 
-## §20 Circle Mail
+## §20 Cirkle Mail
 - ✅ MailScreen with folders, on-device summary heuristic, PGP chip
 - 🆕 **Compose modal** wired to /mail/send (PGP toggle, anon-from option)
 - ✅ Cross-pillar share into mail (via ShareSheet)
 
-## §21 Circle ID
+## §21 Cirkle ID
 - ✅ IDScreen exists
 - 🟡 OIDC provider — UI only
 
-## §22 Circle Travel (Rihla)
+## §22 Cirkle Travel (Rihla)
 - ✅ RihlaScreen with mock itinerary
 - 🆕 **Cultural Interpreter** card (added below)
 - 🟡 AI itinerary builder — placeholder
@@ -135,7 +135,7 @@ Legend: ✅ done · 🟡 partial · ⏳ pending · 🆕 futuristic-unique (no in
 - ✅ AppsScreen with hub
 - 🟡 Geo-regional alternatives — strings only
 
-## §26 Unique Out-of-the-Box Features  ← Circle's identity moat
+## §26 Unique Out-of-the-Box Features  ← Cirkle's identity moat
 - 🆕 **Smart Post Router** — composer auto-suggests best pillar (added below)
 - 🆕 **Personal AI Memoir** — Echoes provide raw material
 - ✅ Bullet Comments stub (Mashahd)
@@ -183,7 +183,7 @@ Legend: ✅ done · 🟡 partial · ⏳ pending · 🆕 futuristic-unique (no in
 
 ---
 
-## Circle-Unique Futuristic Features (✨ identity-defining)
+## Cirkle-Unique Futuristic Features (✨ identity-defining)
 
 These are features NO competitor (WhatsApp / IG / X / YouTube / Telegram / TikTok) has:
 
@@ -212,11 +212,11 @@ These are features NO competitor (WhatsApp / IG / X / YouTube / Telegram / TikTo
 
 - ✅ Migrations 0001–0009 applied locally (9 migrations · 50+ tables)
 - ✅ **Tip webhook 500 error** — RESOLVED · returns graceful 404 if tip not found
-- ⏳ Production D1 instance creation (`wrangler d1 create circle-production`)
+- ⏳ Production D1 instance creation (`wrangler d1 create cirkle-production`)
 - ⏳ Deploy to Cloudflare Pages
 - ⏳ Custom domain bind
 - ✅ TS clean / build clean / Playwright clean on 8+ screens
-- ✅ All 16 Circle-unique futuristic features implemented (UI + backend + DB)
+- ✅ All 16 Cirkle-unique futuristic features implemented (UI + backend + DB)
 - ✅ §35 User Journeys narrative — 7 personas (Layla / Ahmed / Zhang Wei / Karim / Yousef / Anaïs / Tariq)
 
 ---
@@ -224,56 +224,56 @@ These are features NO competitor (WhatsApp / IG / X / YouTube / Telegram / TikTo
 ## Wave 3 — World-Class Pillar Upgrades (✨ "best of its kind, worldwide")
 
 Goal: each of the 4 pillar screens beats its global benchmark (YouTube / WhatsApp / Instagram / X)
-on parity AND adds Circle uniques the incumbent cannot match.
+on parity AND adds Cirkle uniques the incumbent cannot match.
 
 ### Mashahd — beats YouTube
 - ✅ **TheaterPlayer** full-screen player (`src/components/futuristic/TheaterPlayer.tsx`)
 - ✅ YouTube parity: play/pause, seek, volume/mute, quality picker (auto/1080p/720p/480p/240p),
      captions (auto/en/ar/fr/es/zh), smart speed 0.5×–3×, PiP, autoplay, loop, fullscreen
 - ✅ Keyboard shortcuts: Space, ← / →, M, T, C, Esc, ? (full overlay)
-- ✅ Circle-unique: **AI-chaptered timeline** with chapter markers + tag chips
-- ✅ Circle-unique: **Anchor-share** — copies URL pinned to `?t=<seconds>` + chapter title
-- ✅ Circle-unique: **Knowledge graph sidebar** — people / places / sources cited
-- ✅ Circle-unique: **Live scene poll** with 4 vote tiers
-- ✅ Circle-unique: **Fact-check note panel**
-- ✅ Circle-unique: **Watch-party invite** (mesh-coordinated 6-char code)
-- ✅ Circle-unique: **Tip-while-watching** coin button → opens TipModal
-- ✅ Circle-unique: **Reactions burst** overlay (❤️🔥🎉😮👏)
-- ✅ Circle-unique: **Danmaku lane** (bullet comments) — pre-seeded
+- ✅ Cirkle-unique: **AI-chaptered timeline** with chapter markers + tag chips
+- ✅ Cirkle-unique: **Anchor-share** — copies URL pinned to `?t=<seconds>` + chapter title
+- ✅ Cirkle-unique: **Knowledge graph sidebar** — people / places / sources cited
+- ✅ Cirkle-unique: **Live scene poll** with 4 vote tiers
+- ✅ Cirkle-unique: **Fact-check note panel**
+- ✅ Cirkle-unique: **Watch-party invite** (mesh-coordinated 6-char code)
+- ✅ Cirkle-unique: **Tip-while-watching** coin button → opens TipModal
+- ✅ Cirkle-unique: **Reactions burst** overlay (❤️🔥🎉😮👏)
+- ✅ Cirkle-unique: **Danmaku lane** (bullet comments) — pre-seeded
 - ✅ Wired into MashahdScreen.tsx via card-click → `setTheater(v)`
 
 ### Wasl — beats WhatsApp
 - ✅ **WaslComposerPro** (`src/components/futuristic/WaslComposerPro.tsx`)
 - ✅ WhatsApp parity: text, emoji, attach, send, online/offline mesh fallback
-- ✅ Circle-unique: **Voice notes with on-device transcript** (Web Speech API · never uploaded)
-- ✅ Circle-unique: **Scheduled send** with local queue + auto-flush (preset chips: +10m / +1h / Tomorrow 9am)
-- ✅ Circle-unique: **Inline message translation preview** (EN/AR/FR/ES/ZH) via `/translate/text`
-- ✅ Circle-unique: **Vanish timer picker** (10s / 1m / 5m / 1h / 24h / 7d) — sticky per chat
-- ✅ Circle-unique: **Slash-command palette** (/poll · /location · /payment · /event · /quote · /ai)
-- ✅ Circle-unique: **Smart-reply chips** (offline heuristic — Q? → Yes/No/Let me check, etc.)
-- ✅ Circle-unique: **Privacy halo** in composer — E2EE + mesh status visible inline
+- ✅ Cirkle-unique: **Voice notes with on-device transcript** (Web Speech API · never uploaded)
+- ✅ Cirkle-unique: **Scheduled send** with local queue + auto-flush (preset chips: +10m / +1h / Tomorrow 9am)
+- ✅ Cirkle-unique: **Inline message translation preview** (EN/AR/FR/ES/ZH) via `/translate/text`
+- ✅ Cirkle-unique: **Vanish timer picker** (10s / 1m / 5m / 1h / 24h / 7d) — sticky per chat
+- ✅ Cirkle-unique: **Slash-command palette** (/poll · /location · /payment · /event · /quote · /ai)
+- ✅ Cirkle-unique: **Smart-reply chips** (offline heuristic — Q? → Yes/No/Let me check, etc.)
+- ✅ Cirkle-unique: **Privacy halo** in composer — E2EE + mesh status visible inline
 
 ### Lamahat — beats Instagram
 - ✅ **StoryCraftStudio** (`src/components/futuristic/StoryCraftStudio.tsx`)
 - ✅ Instagram parity: photo picker, 8 filter presets (CSS · Saffron/Souq/Nile Dawn/Marble/Ramadan/Noir/Cyan),
-     caption, audience selector (Followers/Circle/Public)
-- ✅ Circle-unique: **Music-sync picker** — 6 royalty-free moods with BPM, auto-suggested by filter
-- ✅ Circle-unique: **AI auto-tags** (offline heuristic — coffee → #cafe #morning etc.)
-- ✅ Circle-unique: **Geo-anchor** (None / Hood / City — never precise GPS)
-- ✅ Circle-unique: **Collaborative albums** — invite collaborators by @handle
-- ✅ Circle-unique: **On-device NSFW preview** (Falconsai stub · auto-blur ≥ 0.7)
-- ✅ Circle-unique: **Schedule post** with datetime picker
+     caption, audience selector (Followers/Cirkle/Public)
+- ✅ Cirkle-unique: **Music-sync picker** — 6 royalty-free moods with BPM, auto-suggested by filter
+- ✅ Cirkle-unique: **AI auto-tags** (offline heuristic — coffee → #cafe #morning etc.)
+- ✅ Cirkle-unique: **Geo-anchor** (None / Hood / City — never precise GPS)
+- ✅ Cirkle-unique: **Collaborative albums** — invite collaborators by @handle
+- ✅ Cirkle-unique: **On-device NSFW preview** (Falconsai stub · auto-blur ≥ 0.7)
+- ✅ Cirkle-unique: **Schedule post** with datetime picker
 - ✅ Wired into LamahatScreen.tsx via "New" button → `setStudio(true)`
 
 ### Midan — beats X (Twitter)
 - ✅ **MidanSignal** suite (`src/components/futuristic/MidanSignal.tsx`)
 - ✅ X parity: feed tabs, anonymous posting, trending, federation, post actions
-- ✅ Circle-unique: **SignalMeter** — real-time signal:noise score 0-100 on composer
+- ✅ Cirkle-unique: **SignalMeter** — real-time signal:noise score 0-100 on composer
      (rage / noise / signal-hint detection · live as user types)
-- ✅ Circle-unique: **AntiRageGate** — when rage ≥ 0.4, blocks post with 10s breather +
+- ✅ Cirkle-unique: **AntiRageGate** — when rage ≥ 0.4, blocks post with 10s breather +
      auto-generated calmer rephrase suggestion (user can always override)
-- ✅ Circle-unique: **ConversationGraph** per-post signal:noise:dispute breakdown bar
-- ✅ Circle-unique: **CrossPillarQuote** — quote a Mashahd video / Lamahat photo / Wasl message
+- ✅ Cirkle-unique: **ConversationGraph** per-post signal:noise:dispute breakdown bar
+- ✅ Cirkle-unique: **CrossPillarQuote** — quote a Mashahd video / Lamahat photo / Wasl message
      into a Midan post as labelled embed
 - ✅ Existing: Time Capsule + Whisper + anonymous-mode + SmartRouter retained
 

@@ -1,5 +1,5 @@
 // — Professional Network. Prototype design language.
-// Covers jobs board, profile verification via Circle ID, regional matching,
+// Covers jobs board, profile verification via Cirkle ID, regional matching,
 // no surveillance / no pay-to-play ranking.
 import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
@@ -239,14 +239,14 @@ export function ProScreen() {
           <h3 className="font-display text-sm">+ Verification</h3>
         </div>
         <p className="text-xs text-muted-foreground leading-relaxed">
-          Credentials verified via Circle ID (/). No engagement-bait ranking, no "social selling"
+          Credentials verified via Cirkle ID (/). No engagement-bait ranking, no "social selling"
           funnel. Federated via ActivityPub — your profile lives on your own homeserver.
         </p>
       </div>
 
       <ProtoFooter section="Summary" title="Career platform without surveillance">
         Open job board · skill-verified profiles · regional matching · IPFS-hosted résumés ·
-        no recruiter spam. Federation lets professional networks span multiple Circle instances.
+        no recruiter spam. Federation lets professional networks span multiple Cirkle instances.
       </ProtoFooter>
     </div>
   );

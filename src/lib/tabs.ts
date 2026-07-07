@@ -1,4 +1,4 @@
-// Circle — full navigation map (production sidebar excludes internal/docs-only routes).
+// Cirkle — full navigation map (production sidebar excludes internal/docs-only routes).
 import {
   Home, MessageCircle, Play, Image as ImageIcon, Hash, Plane, Wallet, User,
   Users as UsersIcon, Radio, Briefcase, GraduationCap, Star, ArchiveRestore,
@@ -38,7 +38,7 @@ export const NAV_ITEMS: NavItem[] = [
   { id: 'midan', path: '/midan', icon: Hash, label: n => n.module_square, hint: 'Public square', keywords: ['square','feed','posts','midan','public','timeline'], primary: true, group: 'pillars', production: true },
 
   // COMMUNITY ──────────────────────────────────────────────
-  { id: 'circles', path: '/circles', icon: UsersIcon, label: n => n.module_groups, hint: 'Groups & communities', keywords: ['groups','communities','circles','clubs'], group: 'community', production: true },
+  { id: 'cirkles', path: '/cirkles', icon: UsersIcon, label: n => n.module_groups, hint: 'Groups & communities', keywords: ['groups','communities','cirkles','clubs'], group: 'community', production: true },
   { id: 'channels', path: '/channels', icon: Radio, label: n => n.module_official, hint: 'Official channels', keywords: ['channels','official','broadcast','gov'], group: 'community', production: true },
   { id: 'madrasa', path: '/madrasa', icon: GraduationCap, label: n => n.module_maktab, hint: 'Schools & classrooms', keywords: ['classroom','school','learn','madrasa','maktab','study','education','teacher','student','parent','grades','attendance'], group: 'community', production: true },
   { id: 'pro', path: '/pro', icon: Briefcase, label: n => n.module_professional, hint: 'Jobs & professional', keywords: ['jobs','work','career','pro','linkedin'], group: 'community', production: true },

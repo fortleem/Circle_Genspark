@@ -160,7 +160,7 @@ export function ChannelsScreen() {
         <p className="text-xs text-muted-foreground leading-relaxed">
           Government channels verify via diplomatic-mission DNS records ·
           Businesses & media self-verify via domain TXT records ·
-          Creators verify via Circle Verify () — no paid blue check.
+          Creators verify via Cirkle Verify () — no paid blue check.
         </p>
       </div>
 

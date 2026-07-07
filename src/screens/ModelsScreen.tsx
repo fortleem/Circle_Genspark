@@ -17,7 +17,7 @@ export function ModelsScreen() {
       arabicTitle="كتالوج النماذج"
       section=""
       tagline="On-device AI models — open-source, auditable, downloadable separately"
-      intro="Circle ships a curated catalogue of small, efficient ONNX models. Required models are bundled; optional ones (specialized translation pairs, niche detectors) can be downloaded on demand to keep the base app small."
+      intro="Cirkle ships a curated catalogue of small, efficient ONNX models. Required models are bundled; optional ones (specialized translation pairs, niche detectors) can be downloaded on demand to keep the base app small."
     >
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
         <StatTile label="Total models" value={models.length.toString()} />

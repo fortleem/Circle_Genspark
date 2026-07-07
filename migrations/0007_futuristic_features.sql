@@ -1,5 +1,5 @@
 -- ╔══════════════════════════════════════════════════════════════════╗
--- ║  Migration 0007 — Circle-unique futuristic features              ║
+-- ║  Migration 0007 — Cirkle-unique futuristic features              ║
 -- ║                                                                  ║
 -- ║  These tables back capabilities NO competitor has:               ║
 -- ║   • time_capsules — posts sealed until a future date             ║
@@ -136,8 +136,8 @@ INSERT INTO whispers (from_user, to_user, body, ttl_seconds, max_views, burned, 
 
 -- Echoes: AI summary marker for a Cairo coffee room
 INSERT INTO echoes (room_id, span_start, span_end, summary, sentiment, key_actors) VALUES
-  ('!group-cairo-coffee:matrix.circle.app', 1, 24, 'Group discussed best coffee spots downtown; consensus on El Fishawy. Plans for Friday meet-up at 5pm.', 'positive', '[1,2,3]'),
-  ('!group-cairo-coffee:matrix.circle.app', 25, 41, 'Debated whether to support a new bean roaster; tense, no resolution.', 'tense', '[1,4]');
+  ('!group-cairo-coffee:matrix.cirkle.app', 1, 24, 'Group discussed best coffee spots downtown; consensus on El Fishawy. Plans for Friday meet-up at 5pm.', 'positive', '[1,2,3]'),
+  ('!group-cairo-coffee:matrix.cirkle.app', 25, 41, 'Debated whether to support a new bean roaster; tense, no resolution.', 'tense', '[1,4]');
 
 -- Reality lens: geo-anchored Lamahat photos in Cairo
 INSERT INTO reality_lens (photo_id, user_id, lat, lng, bearing, city, caption) VALUES

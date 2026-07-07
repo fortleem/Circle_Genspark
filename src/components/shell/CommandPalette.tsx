@@ -1,5 +1,5 @@
-// Circle Universal Command Palette — ⌘K / Ctrl+K from any screen.
-// Distinguishes Circle: WhatsApp/IG/X/YT have NO universal launcher. This one merges
+// Cirkle Universal Command Palette — ⌘K / Ctrl+K from any screen.
+// Distinguishes Cirkle: WhatsApp/IG/X/YT have NO universal launcher. This one merges
 // navigation (37 routes), server-side fuzzy search across all pillars, and quick actions.
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -175,7 +175,7 @@ export function CommandPalette() {
               onClick={(e) => e.stopPropagation()}
               className="w-full max-w-xl orbit-ring overflow-hidden shadow-float"
               role="dialog"
-              aria-label="Circle command palette"
+              aria-label="Cirkle command palette"
             >
               {/* Input row */}
               <div className="flex items-center gap-3 px-4 py-3 border-b border-border/40">

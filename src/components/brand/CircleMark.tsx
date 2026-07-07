@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-export function CircleMark({ size = 40, animated = true }: { size?: number; animated?: boolean }) {
+export function CirkleMark({ size = 40, animated = true }: { size?: number; animated?: boolean }) {
   const Wrap = animated ? motion.svg : "svg";
   const props = animated
     ? { animate: { rotate: 360 }, transition: { duration: 30, repeat: Infinity, ease: "linear" } }
@@ -14,11 +14,11 @@ export function CircleMark({ size = 40, animated = true }: { size?: number; anim
           <stop offset="100%" stopColor="hsl(var(--teal))" />
         </linearGradient>
       </defs>
-      {/* Arabic-inspired interlocking circles */}
-      <circle cx="50" cy="32" r="22" stroke="url(#cg)" strokeWidth="1.5" opacity="0.9" />
-      <circle cx="32" cy="60" r="22" stroke="url(#cg)" strokeWidth="1.5" opacity="0.9" />
-      <circle cx="68" cy="60" r="22" stroke="url(#cg)" strokeWidth="1.5" opacity="0.9" />
-      <circle cx="50" cy="50" r="6" fill="url(#cg)" />
+      {/* Arabic-inspired interlocking cirkles */}
+      <cirkle cx="50" cy="32" r="22" stroke="url(#cg)" strokeWidth="1.5" opacity="0.9" />
+      <cirkle cx="32" cy="60" r="22" stroke="url(#cg)" strokeWidth="1.5" opacity="0.9" />
+      <cirkle cx="68" cy="60" r="22" stroke="url(#cg)" strokeWidth="1.5" opacity="0.9" />
+      <cirkle cx="50" cy="50" r="6" fill="url(#cg)" />
     </Wrap>
   );
 }

@@ -17,7 +17,7 @@ export function RihlaScreen() {
         <p className="text-sm text-muted-foreground mt-1">Three trips planned · 1 active</p>
       </div>
 
-      {/* Circle-unique Cultural Interpreter — local norms, tipping, taboos */}
+      {/* Cirkle-unique Cultural Interpreter — local norms, tipping, taboos */}
       <div className="px-5 mt-4">
         <CulturalInterpreter defaultCity="Cairo" />
       </div>
@@ -25,7 +25,7 @@ export function RihlaScreen() {
       {/* Map dashboard */}
       <div className="mx-5 mt-5 rounded-3xl overflow-hidden aspect-[16/10] relative shadow-float">
         <div className="absolute inset-0 bg-gradient-hero" />
-        <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "radial-gradient(circle at 30% 40%, hsl(var(--gold)/0.6), transparent 30%), radial-gradient(circle at 70% 60%, hsl(var(--rose)/0.6), transparent 35%)" }} />
+        <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "radial-gradient(cirkle at 30% 40%, hsl(var(--gold)/0.6), transparent 30%), radial-gradient(cirkle at 70% 60%, hsl(var(--rose)/0.6), transparent 35%)" }} />
         <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(hsl(var(--cream)/0.07) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--cream)/0.07) 1px, transparent 1px)", backgroundSize: "32px 32px" }} />
         {[
           { x: "30%", y: "40%", label: "AlUla" },

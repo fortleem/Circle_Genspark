@@ -5,29 +5,29 @@
 
 -- Ensure base seed users exist before rich mocks reference them (idempotent).
 INSERT OR IGNORE INTO users (id, handle, matrix_id, display_name, email, bio, country, city, language, verified, verified_claim) VALUES
-  (1, 'ahmed',   '@ahmed:matrix.circle.app',   'Ahmed Saleh',    'ahmed@circle.app',   'Civil engineer in Cairo. Tea + chess.',          'EG', 'Cairo',      'ar', 1, 'nationality_EG'),
-  (2, 'layla',   '@layla:matrix.circle.app',   'Layla Mansour',  'layla@circle.app',   'Photographer. Sufi music lover.',                'EG', 'Cairo',      'ar', 1, 'over_18'),
-  (3, 'omar',    '@omar:matrix.circle.app',    'Omar Khaled',    'omar@circle.app',    'Backend dev. Self-hosting evangelist.',          'EG', 'Alexandria', 'ar', 1, 'over_18'),
-  (4, 'fatima',  '@fatima:matrix.circle.app',  'Fatima Hossam',  'fatima@circle.app',  'Med student at Cairo University.',               'EG', 'Cairo',      'ar', 1, 'over_18'),
-  (5, 'youssef', '@youssef:matrix.circle.app', 'Youssef Adel',   'youssef@circle.app', 'Indie filmmaker.',                                'EG', 'Cairo',      'ar', 1, 'over_18'),
-  (6, 'mei',     '@mei:matrix.circle.cn',      'Mei Lin',        'mei@circle.app',     '上海的产品经理。',                                  'CN', 'Shanghai',   'zh', 1, 'real_name'),
-  (7, 'klaus',   '@klaus:matrix.circle.eu',    'Klaus Becker',   'klaus@circle.app',   'Berliner. Rust + Matrix contributor.',           'DE', 'Berlin',     'de', 1, 'over_18'),
-  (8, 'sara',    '@sara:matrix.circle.app',    'Sara Al-Otaibi', 'sara@circle.app',    'UX designer in Riyadh.',                          'SA', 'Riyadh',     'ar', 1, 'over_18'),
-  (9, 'jane',    '@jane:matrix.circle.app',    'Jane Doe',       'jane@circle.app',    'Open-source maintainer.',                         'US', 'Chicago',    'en', 0, NULL),
-  (10,'circle_official', '@official:matrix.circle.app', 'Circle Official', 'team@circle.app', 'The Circle covenant in action.',          'EG', 'Cairo',      'ar', 1, 'organization');
+  (1, 'ahmed',   '@ahmed:matrix.cirkle.app',   'Ahmed Saleh',    'ahmed@cirkle.app',   'Civil engineer in Cairo. Tea + chess.',          'EG', 'Cairo',      'ar', 1, 'nationality_EG'),
+  (2, 'layla',   '@layla:matrix.cirkle.app',   'Layla Mansour',  'layla@cirkle.app',   'Photographer. Sufi music lover.',                'EG', 'Cairo',      'ar', 1, 'over_18'),
+  (3, 'omar',    '@omar:matrix.cirkle.app',    'Omar Khaled',    'omar@cirkle.app',    'Backend dev. Self-hosting evangelist.',          'EG', 'Alexandria', 'ar', 1, 'over_18'),
+  (4, 'fatima',  '@fatima:matrix.cirkle.app',  'Fatima Hossam',  'fatima@cirkle.app',  'Med student at Cairo University.',               'EG', 'Cairo',      'ar', 1, 'over_18'),
+  (5, 'youssef', '@youssef:matrix.cirkle.app', 'Youssef Adel',   'youssef@cirkle.app', 'Indie filmmaker.',                                'EG', 'Cairo',      'ar', 1, 'over_18'),
+  (6, 'mei',     '@mei:matrix.cirkle.cn',      'Mei Lin',        'mei@cirkle.app',     '上海的产品经理。',                                  'CN', 'Shanghai',   'zh', 1, 'real_name'),
+  (7, 'klaus',   '@klaus:matrix.cirkle.eu',    'Klaus Becker',   'klaus@cirkle.app',   'Berliner. Rust + Matrix contributor.',           'DE', 'Berlin',     'de', 1, 'over_18'),
+  (8, 'sara',    '@sara:matrix.cirkle.app',    'Sara Al-Otaibi', 'sara@cirkle.app',    'UX designer in Riyadh.',                          'SA', 'Riyadh',     'ar', 1, 'over_18'),
+  (9, 'jane',    '@jane:matrix.cirkle.app',    'Jane Doe',       'jane@cirkle.app',    'Open-source maintainer.',                         'US', 'Chicago',    'en', 0, NULL),
+  (10,'cirkle_official', '@official:matrix.cirkle.app', 'Cirkle Official', 'team@cirkle.app', 'The Cirkle covenant in action.',          'EG', 'Cairo',      'ar', 1, 'organization');
 
 -- ───────────────── Extra users (mix of regions / languages) ─────────────────
 INSERT OR IGNORE INTO users (id, handle, matrix_id, display_name, email, avatar_cid, bio, country, city, language, verified) VALUES
-  (11, 'fatima_zahra',  '@fatima_z:matrix.circle.app','Fatima Zahra',   'fatima.z@circle.app','ipfs://QmF1', 'Math teacher · Cairo Modern School', 'EG', 'Cairo',     'ar', 1),
-  (12, 'omar_lebanon',  '@omar_lb:matrix.circle.app', 'Omar Habib',     'omar.lb@circle.app', 'ipfs://QmO2', 'Beirut food vlogger · 500K subs',    'LB', 'Beirut',    'ar', 1),
-  (13, 'nadia_tunis',   '@nadia:matrix.circle.app',   'Nadia Ben Ali',  'nadia@circle.app',   'ipfs://QmN3', 'Photographer · old medinas',         'TN', 'Tunis',     'ar', 0),
-  (14, 'yusuf_riyadh',  '@yusuf:matrix.circle.app',   'Yusuf Al-Saud',  'yusuf@circle.app',   'ipfs://QmY4', 'Riyadh F1 fan · car detailing',     'SA', 'Riyadh',    'ar', 1),
-  (15, 'leila_paris',   '@leila:matrix.circle.app',   'Leila Mansour',  'leila@circle.app',   'ipfs://QmL5', 'EG-FR · UX designer · Sorbonne',     'FR', 'Paris',     'fr', 0),
-  (16, 'tariq_dxb',     '@tariq:matrix.circle.app',   'Tariq Hassan',   'tariq@circle.app',   'ipfs://QmT6', 'Drone pilot Dubai · cinematic',      'AE', 'Dubai',     'ar', 1),
-  (17, 'mariam_amman',  '@mariam:matrix.circle.app',  'Mariam Khoury',  'mariam@circle.app',  'ipfs://QmM7', 'Civic-tech engineer · Amman',        'JO', 'Amman',     'ar', 0),
-  (18, 'salah_cairo',   '@salah:matrix.circle.app',   'Salah El-Din',   'salah@circle.app',   'ipfs://QmS8', 'Principal · Cairo Modern School',    'EG', 'Cairo',     'ar', 1),
-  (19, 'amina_ksa',     '@amina:matrix.circle.app',   'Amina Bint Said','amina@circle.app',   'ipfs://QmA9', 'Computer-science teacher · Al-Azhar','SA', 'Jeddah',    'ar', 1),
-  (20, 'kareem_dad',    '@kareem:matrix.circle.app',  'Kareem (Dad)',   'kareem@circle.app',  'ipfs://QmK0', 'Parent of Yara (Grade 7)',           'EG', 'Cairo',     'ar', 0);
+  (11, 'fatima_zahra',  '@fatima_z:matrix.cirkle.app','Fatima Zahra',   'fatima.z@cirkle.app','ipfs://QmF1', 'Math teacher · Cairo Modern School', 'EG', 'Cairo',     'ar', 1),
+  (12, 'omar_lebanon',  '@omar_lb:matrix.cirkle.app', 'Omar Habib',     'omar.lb@cirkle.app', 'ipfs://QmO2', 'Beirut food vlogger · 500K subs',    'LB', 'Beirut',    'ar', 1),
+  (13, 'nadia_tunis',   '@nadia:matrix.cirkle.app',   'Nadia Ben Ali',  'nadia@cirkle.app',   'ipfs://QmN3', 'Photographer · old medinas',         'TN', 'Tunis',     'ar', 0),
+  (14, 'yusuf_riyadh',  '@yusuf:matrix.cirkle.app',   'Yusuf Al-Saud',  'yusuf@cirkle.app',   'ipfs://QmY4', 'Riyadh F1 fan · car detailing',     'SA', 'Riyadh',    'ar', 1),
+  (15, 'leila_paris',   '@leila:matrix.cirkle.app',   'Leila Mansour',  'leila@cirkle.app',   'ipfs://QmL5', 'EG-FR · UX designer · Sorbonne',     'FR', 'Paris',     'fr', 0),
+  (16, 'tariq_dxb',     '@tariq:matrix.cirkle.app',   'Tariq Hassan',   'tariq@cirkle.app',   'ipfs://QmT6', 'Drone pilot Dubai · cinematic',      'AE', 'Dubai',     'ar', 1),
+  (17, 'mariam_amman',  '@mariam:matrix.cirkle.app',  'Mariam Khoury',  'mariam@cirkle.app',  'ipfs://QmM7', 'Civic-tech engineer · Amman',        'JO', 'Amman',     'ar', 0),
+  (18, 'salah_cairo',   '@salah:matrix.cirkle.app',   'Salah El-Din',   'salah@cirkle.app',   'ipfs://QmS8', 'Principal · Cairo Modern School',    'EG', 'Cairo',     'ar', 1),
+  (19, 'amina_ksa',     '@amina:matrix.cirkle.app',   'Amina Bint Said','amina@cirkle.app',   'ipfs://QmA9', 'Computer-science teacher · Al-Azhar','SA', 'Jeddah',    'ar', 1),
+  (20, 'kareem_dad',    '@kareem:matrix.cirkle.app',  'Kareem (Dad)',   'kareem@cirkle.app',  'ipfs://QmK0', 'Parent of Yara (Grade 7)',           'EG', 'Cairo',     'ar', 0);
 
 -- ───────────────── Madrasa demo rooms (Wasl workspace kind) ─────────────────
 INSERT OR IGNORE INTO rooms (id, name, topic, room_type, is_encrypted, created_by) VALUES
@@ -49,7 +49,7 @@ INSERT OR IGNORE INTO room_members (room_id, user_id, role) VALUES
 
 -- A handful of starter messages
 INSERT OR IGNORE INTO messages (id, room_id, sender_id, body, status, is_encrypted) VALUES
-  ('$evt_mk_1', 'maktab_demo_cairo',   18, 'Welcome to Cairo Modern School on Circle! Term begins Sunday.',    3, 1),
+  ('$evt_mk_1', 'maktab_demo_cairo',   18, 'Welcome to Cairo Modern School on Cirkle! Term begins Sunday.',    3, 1),
   ('$evt_mk_2', 'maktab_demo_cairo',   11, 'Grade 7 Math syllabus has been published in Resources.',           3, 1),
   ('$evt_mk_3', 'maktab_demo_cairo',   20, 'Thank you. Will the Friday parent-teacher slot be on Wasl video?', 2, 1),
   ('$evt_mk_4', 'maktab_demo_alazhar', 19, 'Faculty meeting Wed 10:00 — agenda in shared Drive.',              3, 1),
@@ -62,7 +62,7 @@ INSERT OR IGNORE INTO rooms (id, name, topic, room_type, is_encrypted, created_b
   ('!grp_arabicdevs',        'Arabic Devs',                  'Open Arabic-speaking engineers · 2,300 members',     'group',     1, 17),
   ('!grp_beirutfoodies',     'Beirut Foodies',               'Best of Beirut food · weekly meet-ups',              'group',     1, 12),
   ('!grp_madinacollectors',  'Old Medina Collectors',        'Architecture · doors · tilework · north Africa',     'group',     1, 13),
-  ('!ch_circle_news',        'Circle News',                  'Official product updates · monthly recap',           'broadcast', 0, 1),
+  ('!ch_cirkle_news',        'Cirkle News',                  'Official product updates · monthly recap',           'broadcast', 0, 1),
   ('!ch_gov_egypt',          'Egypt Civic Channel',          'Public service updates · ministry of education',     'broadcast', 0, 18);
 
 INSERT OR IGNORE INTO room_members (room_id, user_id, role) VALUES
@@ -71,7 +71,7 @@ INSERT OR IGNORE INTO room_members (room_id, user_id, role) VALUES
   ('!grp_arabicdevs',       17, 'owner'), ('!grp_arabicdevs',       11, 'admin'),  ('!grp_arabicdevs',       19, 'member'),
   ('!grp_beirutfoodies',    12, 'owner'), ('!grp_beirutfoodies',    13, 'member'),
   ('!grp_madinacollectors', 13, 'owner'), ('!grp_madinacollectors', 12, 'member'),
-  ('!ch_circle_news',        1, 'owner'),
+  ('!ch_cirkle_news',        1, 'owner'),
   ('!ch_gov_egypt',         18, 'owner');
 
 INSERT OR IGNORE INTO messages (id, room_id, sender_id, body, status, is_encrypted) VALUES
@@ -82,7 +82,7 @@ INSERT OR IGNORE INTO messages (id, room_id, sender_id, body, status, is_encrypt
   ('$msg_a5','!grp_arabicdevs',        11, 'I am — bringing a workshop on D1 + Hono.',                        3, 1),
   ('$msg_a6','!grp_beirutfoodies',     12, 'Tonight: Bourj Hammoud food crawl, RSVP in the Rihla itinerary.', 3, 1),
   ('$msg_a7','!grp_madinacollectors',  13, 'New album: 47 doors of Sidi Bou Said. See Lamahat 🎨',            3, 1),
-  ('$msg_a8','!ch_circle_news',         1, 'Wave 3 ships today: Theater Player, Jury Panel, AI Sage.',        3, 0),
+  ('$msg_a8','!ch_cirkle_news',         1, 'Wave 3 ships today: Theater Player, Jury Panel, AI Sage.',        3, 0),
   ('$msg_a9','!ch_gov_egypt',          18, 'Thanawiya Amma 2026 exam schedule published. Tap to download.',   3, 0);
 
 -- ───────────────────────────── Mashahd — bulk videos ─────────────────────────────
@@ -95,7 +95,7 @@ INSERT OR IGNORE INTO videos (id, uploader_id, title, description, cid, thumbnai
   (106, 17, 'How Amman is using civic-tech to fix water bills',  'Open-source dashboard for citizens.',             'bafyVid106', 'bafyThumb106',  900,  17822,   1450, 'Amman',  'ar', 0, datetime('now','-6 days')),
   (107, 11, 'Quadratic formula explained in Arabic · Grade 9',   'Cairo Modern School maths series.',               'bafyVid107', 'bafyThumb107',  540,   8910,    980, 'Cairo',  'ar', 0, datetime('now','-7 days')),
   (108, 19, 'Intro to LLMs · Faculty of Engineering · Al-Azhar', 'Open lecture · Arabic · slides included.',        'bafyVid108', 'bafyThumb108', 2700,  12340,   1820, 'Jeddah', 'ar', 0, datetime('now','-8 days')),
-  (109,  1, 'Circle product walkthrough · v12.0',                'Every pillar, every feature, in 12 minutes.',     'bafyVid109', 'bafyThumb109',  720, 152100,  18900, 'Cairo',  'en', 0, datetime('now','-9 days')),
+  (109,  1, 'Cirkle product walkthrough · v12.0',                'Every pillar, every feature, in 12 minutes.',     'bafyVid109', 'bafyThumb109',  720, 152100,  18900, 'Cairo',  'en', 0, datetime('now','-9 days')),
   (110, 12, 'Knafeh battle — Tripoli vs Nablus · live taste',    'Two old men, one phone, one knafeh tray.',        'bafyVid110', 'bafyThumb110',  610,  98712,   8123, 'Beirut', 'ar', 0, datetime('now','-10 days')),
   (111, 13, 'Carthage ruins at golden hour · timelapse',         'No music · only wind and stone.',                 'bafyVid111', 'bafyThumb111',  180,  74500,   6230, 'Tunis',  'ar', 0, datetime('now','-12 days')),
   (112, 14, 'F1 simulator setup tour — Riyadh edition',          'Building the rig that runs the Saudi GP livery.', 'bafyVid112', 'bafyThumb112',  840,  29010,   2400, 'Riyadh', 'ar', 0, datetime('now','-14 days')),
@@ -128,7 +128,7 @@ INSERT OR IGNORE INTO posts (id, author_id, content, hashtags, city, language, a
   (303, 15, 'Working on Arabic type for the web — kerning is killing me. Anyone shipping good RTL ligature shaping?',  '#typography #rtl',            'Paris',  'en', 0,  62,  340,  14),
   (304, 16, 'Why are drone permits so painful in EG? Took me 6 weeks for a 10-min Cairo sunset shot 🚁',                '#drone #egypt',               'Cairo',  'ar', 0,  78,  290,  21),
   (305, 19, 'Just published lecture 4 of the LLM course. Free, in Arabic, no paywall — link in profile.',              '#ai #education #arabic',      'Jeddah', 'ar', 0, 121,  680,   9),
-  (306,  1, 'Circle Wave 3 is LIVE — Theater Player, Jury Panel, Translate v2, AI Sage. Read the changelog.',          '#circle #release',            'Cairo',  'en', 0, 312, 1421,  44),
+  (306,  1, 'Cirkle Wave 3 is LIVE — Theater Player, Jury Panel, Translate v2, AI Sage. Read the changelog.',          '#cirkle #release',            'Cairo',  'en', 0, 312, 1421,  44),
   (307, 11, 'Tip for math teachers in Egypt: Geogebra now works offline in Madrasa. Saves me 2 hrs/week.',             '#teacherlife #math #madrasa', 'Cairo',  'ar', 0,  41,  182,   7),
   (308, 14, 'Saudi GP qualifying race in Jeddah next week — anyone going? Drop a 🏎️ if yes.',                          '#f1 #saudigp',                'Riyadh', 'ar', 0,  18,  402,  29),
   (309, 13, 'Old medinas of the Maghreb deserve a UNESCO joint listing. Same architectural DNA, same craftsmen.',      '#heritage #maghreb',          'Tunis',  'ar', 0,  92,  410,   8),
@@ -165,8 +165,8 @@ INSERT OR IGNORE INTO channel_posts (channel_id, title, body) VALUES
   (55, 'School newsletter',       'Term 2 schedule, parent-teacher dates, and the Geogebra rollout'),
   (56, 'Open data',               'Water-bill backend now on GitHub — citizens, audit away');
 
--- ───────────────────────────── Extra circles (groups) ─────────────────────────────
-INSERT OR IGNORE INTO circles (slug, name, description, visibility, category, city, member_count, owner_id) VALUES
+-- ───────────────────────────── Extra cirkles (groups) ─────────────────────────────
+INSERT OR IGNORE INTO cirkles (slug, name, description, visibility, category, city, member_count, owner_id) VALUES
   ('arabicdevs',      'Arabic Devs',          'Engineering in Arabic',         'public',  'tech',    'Cairo',  2310, 17),
   ('beirutfoodies',   'Beirut Foodies',       'Weekly meet-ups',               'public',  'food',    'Beirut',  840, 12),
   ('madinacollectors','Old Medina Collectors','Doors · tile · arches',         'public',  'art',     'Tunis',   612, 13),

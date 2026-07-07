@@ -1,8 +1,8 @@
 // ╔══════════════════════════════════════════════════════════════════╗
 // ║  PrivacySimulator — "What can X see?" (F15)                      ║
 // ║                                                                  ║
-// ║  Circle-unique. Every other platform shows what YOU control —    ║
-// ║  Circle shows what OTHERS see. Pick a viewer kind (stranger,     ║
+// ║  Cirkle-unique. Every other platform shows what YOU control —    ║
+// ║  Cirkle shows what OTHERS see. Pick a viewer kind (stranger,     ║
 // ║  friend, employer, advertiser, state authority), and we render   ║
 // ║  the exact surface they would see, with a 0-100 visibility score ║
 // ║  and prescriptive recommendations. Auditable; every run logged.  ║
@@ -21,8 +21,8 @@ const ME = 1
 type ViewerKind = "stranger" | "friend" | "employer" | "advertiser" | "state"
 
 const VIEWERS: { key: ViewerKind; label: string; sub: string; Icon: any }[] = [
-  { key: "stranger",   label: "Stranger",        sub: "Random Circle user",         Icon: UserX },
-  { key: "friend",     label: "Friend",          sub: "In your inner circle",       Icon: Users },
+  { key: "stranger",   label: "Stranger",        sub: "Random Cirkle user",         Icon: UserX },
+  { key: "friend",     label: "Friend",          sub: "In your inner cirkle",       Icon: Users },
   { key: "employer",   label: "Employer",        sub: "Recruiter or HR system",     Icon: Briefcase },
   { key: "advertiser", label: "Advertiser",      sub: "Ad-tech bidder",             Icon: BarChart3 },
   { key: "state",      label: "State authority", sub: "DRE-compliant request",      Icon: Landmark },
@@ -73,7 +73,7 @@ export function PrivacySimulator() {
           <h3 className="font-display text-base leading-tight">Privacy Simulator</h3>
           <p className="text-[11px] text-muted-foreground">
             <Sparkles className="w-2.5 h-2.5 inline mr-0.5 -mt-0.5" />
-            See what each viewer kind actually sees · Circle-unique
+            See what each viewer kind actually sees · Cirkle-unique
           </p>
         </div>
       </div>

@@ -1,22 +1,22 @@
--- Circle (دواير) Production Schema v1
+-- Cirkle (دواير) Production Schema v1
 -- Privacy-first AI-native super app. All persistent state for the web companion.
 
 -- ============================================================================
--- USERS & IDENTITY (Circle ID + Circle Verify)
+-- USERS & IDENTITY (Cirkle ID + Cirkle Verify)
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS users (
   id            INTEGER PRIMARY KEY AUTOINCREMENT,
   handle        TEXT UNIQUE NOT NULL,                -- @ahmed
-  matrix_id     TEXT UNIQUE NOT NULL,                -- @ahmed:matrix.circle.app
+  matrix_id     TEXT UNIQUE NOT NULL,                -- @ahmed:matrix.cirkle.app
   display_name  TEXT NOT NULL,
-  email         TEXT,                                -- ahmed@circle.app (Circle Mail)
+  email         TEXT,                                -- ahmed@cirkle.app (Cirkle Mail)
   avatar_cid    TEXT,                                -- ipfs://Qm...
   bio           TEXT,
   country       TEXT DEFAULT 'EG',                   -- ISO-3166-1 alpha-2
   city          TEXT,
   language      TEXT DEFAULT 'ar',                   -- preferred UI language
   brand_names   INTEGER DEFAULT 0,                   -- 0=US English (Connect), 1=Brand (Wasl)
-  verified      INTEGER DEFAULT 0,                   -- Circle Verify status
+  verified      INTEGER DEFAULT 0,                   -- Cirkle Verify status
   verified_claim TEXT,                               -- "over_18", "nationality_EG", etc.
   created_at    DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -27,7 +27,7 @@ CREATE INDEX IF NOT EXISTS idx_users_handle  ON users(handle);
 -- WASL (Chat) — rooms + messages (E2EE payloads opaque to server)
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS rooms (
-  id           TEXT PRIMARY KEY,                     -- !room:matrix.circle.app
+  id           TEXT PRIMARY KEY,                     -- !room:matrix.cirkle.app
   name         TEXT NOT NULL,
   topic        TEXT,
   room_type    TEXT NOT NULL DEFAULT 'direct',       -- direct | group | broadcast | workspace
@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS post_replies (
 -- ============================================================================
 -- THE CIRCLE (Groups), CHANNELS, WORKSPACES
 -- ============================================================================
-CREATE TABLE IF NOT EXISTS circles (
+CREATE TABLE IF NOT EXISTS cirkles (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
   slug        TEXT UNIQUE NOT NULL,
   name        TEXT NOT NULL,

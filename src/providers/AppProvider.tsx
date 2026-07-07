@@ -20,9 +20,9 @@ interface AppCtx {
 
 const Ctx = createContext<AppCtx | null>(null);
 
-const LOCALE_KEY = "circle-locale";
-const THEME_KEY = "circle-theme";
-const COUNTRY_KEY = "circle-country";
+const LOCALE_KEY = "cirkle-locale";
+const THEME_KEY = "cirkle-theme";
+const COUNTRY_KEY = "cirkle-country";
 
 function detectInitialLocale(): Lang {
   if (typeof window === "undefined") return "en-BRAND";

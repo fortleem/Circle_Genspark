@@ -1,5 +1,5 @@
 // ╔══════════════════════════════════════════════════════════════════╗
-// ║  MeshStatusChip — Live presence indicator (Circle-unique)        ║
+// ║  MeshStatusChip — Live presence indicator (Cirkle-unique)        ║
 // ║                                                                  ║
 // ║  Shows in TopBar: animated mesh-fill chip with                   ║
 // ║    • online count                                                ║
@@ -8,7 +8,7 @@
 // ║    • active region pulse                                         ║
 // ║  Click → opens presence flyout with full mesh roster.            ║
 // ║                                                                  ║
-// ║  This is the antidote to every other app's "online dot": Circle  ║
+// ║  This is the antidote to every other app's "online dot": Cirkle  ║
 // ║  exposes the WHOLE mesh, including off-grid Reticulum nodes.     ║
 // ╚══════════════════════════════════════════════════════════════════╝
 import { useEffect, useState } from "react"

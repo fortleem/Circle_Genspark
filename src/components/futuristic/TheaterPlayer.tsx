@@ -1,7 +1,7 @@
 // ╔══════════════════════════════════════════════════════════════════╗
 // ║  TheaterPlayer — Full-screen Mashahd theater (§7)                ║
 // ║                                                                  ║
-// ║  Exceeds YouTube on every axis + Circle-uniques:                 ║
+// ║  Exceeds YouTube on every axis + Cirkle-uniques:                 ║
 // ║    • Full-screen immersive theater w/ ambient glow                ║
 // ║    • Smart-speed (0.5×–3×) with pitch-corrected hint              ║
 // ║    • AI-generated chapters with timeline scrubbing markers        ║
@@ -356,7 +356,7 @@ export function TheaterPlayer({
 
                   <span className="flex-1" />
 
-                  {/* Circle-unique: Anchor share */}
+                  {/* Cirkle-unique: Anchor share */}
                   <button onClick={anchorShare} className="w-9 h-9 grid place-items-center rounded-full hover:bg-white/15" title="Anchor link to this moment">
                     <Link2 className="w-4 h-4" />
                   </button>
@@ -450,7 +450,7 @@ export function TheaterPlayer({
           </div>
         </div>
 
-        {/* ─── KNOWLEDGE GRAPH SIDEBAR (Circle-unique) ─── */}
+        {/* ─── KNOWLEDGE GRAPH SIDEBAR (Cirkle-unique) ─── */}
         {showGraph && !theater && (
           <aside className="hidden lg:flex flex-col bg-black/40 border-l border-white/10 text-white overflow-y-auto">
             <div className="px-4 py-3 border-b border-white/10 flex items-center gap-2">

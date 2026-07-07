@@ -1,4 +1,4 @@
-// Circle — Dynamic Naming Convention (Blueprint )
+// Cirkle — Dynamic Naming Convention (Blueprint )
 // 7 languages + 2 English variants. One binary, locally adapted labels.
 
 export type Lang = 'ar' | 'en' | 'en-BRAND' | 'zh' | 'fr' | 'es' | 'de' | 'it'
@@ -65,11 +65,11 @@ const dict: Record<Lang, NameMatrix> = {
     module_vision: 'الرؤية', module_monetization: 'نموذج العائد', module_shield: 'درع المواطن'
   },
   'en-BRAND': {
-    brand_name: 'Circle', tagline: 'One app, every life — free forever',
+    brand_name: 'Cirkle', tagline: 'One app, every life — free forever',
     module_chat: 'Wasl', module_video: 'Mashahd', module_photos: 'Lamahat', module_square: 'Midan',
-    module_groups: 'The Circle', module_official: 'Official Channels', module_creators: 'Creator Channels',
-    module_professional: 'Professional Network', module_travel: 'Rihla', module_mail: 'Circle Mail',
-    module_payments: 'Nat', module_id: 'Circle ID', module_verify: 'Circle Verify', module_maktab: 'Madrasa',
+    module_groups: 'The Cirkle', module_official: 'Official Channels', module_creators: 'Creator Channels',
+    module_professional: 'Professional Network', module_travel: 'Rihla', module_mail: 'Cirkle Mail',
+    module_payments: 'Nat', module_id: 'Cirkle ID', module_verify: 'Cirkle Verify', module_maktab: 'Madrasa',
     nav_home: 'Home', nav_dashboard: 'Dashboard', nav_governance: 'Governance',
     nav_transparency: 'Transparency', nav_apps: 'Mini Apps', covenant: 'The Covenant',
     module_mesh: 'Local Mesh', module_aisafety: 'AI Safety', module_aicore: 'Self-Learning AI',
@@ -80,11 +80,11 @@ const dict: Record<Lang, NameMatrix> = {
     module_vision: 'Vision', module_monetization: 'Monetization', module_shield: 'Citizen Shield'
   },
   'en': {
-    brand_name: 'Circle', tagline: 'One app, every life — free forever',
+    brand_name: 'Cirkle', tagline: 'One app, every life — free forever',
     module_chat: 'Connect', module_video: 'Watch', module_photos: 'Glimpses', module_square: 'Square',
-    module_groups: 'The Circle', module_official: 'Official Channels', module_creators: 'Creator Channels',
+    module_groups: 'The Cirkle', module_official: 'Official Channels', module_creators: 'Creator Channels',
     module_professional: 'Pro Network', module_travel: 'Travel', module_mail: 'Mail',
-    module_payments: 'Pay', module_id: 'Circle ID', module_verify: 'Verify', module_maktab: 'Madrasa',
+    module_payments: 'Pay', module_id: 'Cirkle ID', module_verify: 'Verify', module_maktab: 'Madrasa',
     nav_home: 'Home', nav_dashboard: 'Dashboard', nav_governance: 'Governance',
     nav_transparency: 'Transparency', nav_apps: 'Mini Apps', covenant: 'The Covenant',
     module_mesh: 'Local Mesh', module_aisafety: 'AI Safety', module_aicore: 'Self-Learning AI',

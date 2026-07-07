@@ -1,4 +1,4 @@
-// — Circle ID: Digital identity wallet with animated card, passkeys, verifications
+// — Cirkle ID: Digital identity wallet with animated card, passkeys, verifications
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -17,7 +17,7 @@ const LINKED_DEVICES = [
 const VERIFICATION_BADGES = [
   { id: 1, type: "identity", label: "Haweya ID", status: "verified", verifiedAt: "2024-03-15", icon: Fingerprint },
   { id: 2, type: "phone", label: "+20 100 123 ****", status: "verified", verifiedAt: "2024-01-10", icon: Smartphone },
-  { id: 3, type: "email", label: "y****@circle.eg", status: "verified", verifiedAt: "2024-01-10", icon: Globe },
+  { id: 3, type: "email", label: "y****@cirkle.eg", status: "verified", verifiedAt: "2024-01-10", icon: Globe },
   { id: 4, type: "payment", label: "InstaPay Account", status: "verified", verifiedAt: "2024-05-20", icon: Wallet },
 ];
 
@@ -36,7 +36,7 @@ export function IDScreen() {
   const { data: identityData } = useApi<{ verifications: any[] }>("/auth/verify-identity/1");
 
   const copyDid = () => {
-    navigator.clipboard?.writeText("did:circle:0x7f2a3b8c9d1e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9cae91");
+    navigator.clipboard?.writeText("did:cirkle:0x7f2a3b8c9d1e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9cae91");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -45,7 +45,7 @@ export function IDScreen() {
     <div className="pb-32">
       {/* Animated ID Card */}
       <div className="px-4 pt-2">
-        <h1 className="font-display text-3xl">Circle ID</h1>
+        <h1 className="font-display text-3xl">Cirkle ID</h1>
         <p className="text-sm text-muted-foreground mt-1">Your sovereign digital identity</p>
       </div>
 
@@ -61,7 +61,7 @@ export function IDScreen() {
           <div className="absolute inset-0 rounded-3xl overflow-hidden shadow-float" style={{ backfaceVisibility: "hidden" }}>
             <div className="absolute inset-0 bg-gradient-to-br from-[#1a3a4a] via-[#0d2a3a] to-[#0a1f2e]" />
             <div className="absolute inset-0 opacity-30" style={{
-              backgroundImage: "radial-gradient(circle at 20% 30%, rgba(56,189,248,0.3), transparent 50%), radial-gradient(circle at 80% 70%, rgba(168,85,247,0.2), transparent 40%)"
+              backgroundImage: "radial-gradient(cirkle at 20% 30%, rgba(56,189,248,0.3), transparent 50%), radial-gradient(cirkle at 80% 70%, rgba(168,85,247,0.2), transparent 40%)"
             }} />
             {/* Grid pattern */}
             <div className="absolute inset-0 opacity-10" style={{
@@ -71,7 +71,7 @@ export function IDScreen() {
             <div className="relative h-full p-6 flex flex-col justify-between text-white">
               <div className="flex items-start justify-between">
                 <div>
-                  <div className="text-[10px] uppercase tracking-[0.2em] opacity-60">Circle Decentralized ID</div>
+                  <div className="text-[10px] uppercase tracking-[0.2em] opacity-60">Cirkle Decentralized ID</div>
                   <div className="font-display text-2xl mt-1">Yousef Al-Harbi</div>
                 </div>
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary to-sky-400 flex items-center justify-center">
@@ -85,7 +85,7 @@ export function IDScreen() {
               <div className="flex items-end justify-between">
                 <div>
                   <div className="text-[10px] uppercase tracking-wider opacity-50 mb-0.5">DID</div>
-                  <div className="font-mono text-xs opacity-80">did:circle:0x7f2…ae91</div>
+                  <div className="font-mono text-xs opacity-80">did:cirkle:0x7f2…ae91</div>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <BadgeCheck className="w-4 h-4 text-sky-300" />

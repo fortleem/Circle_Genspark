@@ -1,4 +1,4 @@
-// Circle — UI copy strings (separate from NameMatrix which holds module/brand names)
+// Cirkle — UI copy strings (separate from NameMatrix which holds module/brand names)
 // Falls back to en-BRAND for any locale that hasn't been translated yet.
 
 import type { Lang } from "@/lib/i18n";

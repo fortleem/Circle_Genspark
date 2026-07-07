@@ -1,5 +1,5 @@
 // ╔══════════════════════════════════════════════════════════════════╗
-// ║  PulseRibbon — Real-time per-pillar activity heat (Circle-unique)║
+// ║  PulseRibbon — Real-time per-pillar activity heat (Cirkle-unique)║
 // ║                                                                  ║
 // ║  A thin gold-strand ribbon under TopBar showing the LIVE pulse   ║
 // ║  of activity across every pillar over the last 60 minutes.       ║

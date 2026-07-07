@@ -283,8 +283,8 @@ export function MapsScreen() {
             <h3 className="text-sm font-medium">Privacy</h3>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Circle's Maps module uses Google Maps Embed API for display only. Your search queries are processed
-            through Circle's privacy proxy — Google never receives your Circle user ID or profile data. Location
+            Cirkle's Maps module uses Google Maps Embed API for display only. Your search queries are processed
+            through Cirkle's privacy proxy — Google never receives your Cirkle user ID or profile data. Location
             history is stored on-device only and never synced to any cloud.
           </p>
         </div>

@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { CircleMark } from "@/components/brand/CircleMark";
+import { CirkleMark } from "@/components/brand/CirkleMark";
 import { useApp } from "@/providers/AppProvider";
 import { ui } from "@/lib/uiStrings";
 
@@ -26,7 +26,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
 
       <div className="relative h-full flex flex-col items-center justify-center px-8 text-center">
         <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}>
-          <CircleMark size={140} />
+          <CirkleMark size={140} />
         </motion.div>
 
         <AnimatePresence mode="wait">

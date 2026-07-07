@@ -1,11 +1,11 @@
 // ╔══════════════════════════════════════════════════════════════════╗
 // ║  RealityLens — Geo-anchored AR memory layer (F6)                 ║
 // ║                                                                  ║
-// ║  Circle-unique. Lamahat photos pinned to lat/lng/bearing build a ║
+// ║  Cirkle-unique. Lamahat photos pinned to lat/lng/bearing build a ║
 // ║  geo-temporal memory map. Walk through a city and see what other ║
-// ║  Circle users captured here, anchored by GPS + compass bearing.  ║
+// ║  Cirkle users captured here, anchored by GPS + compass bearing.  ║
 // ║  No competitor — Snap Map shows live, IG shows tagged places —   ║
-// ║  Circle shows the historical AR layer of human memory.           ║
+// ║  Cirkle shows the historical AR layer of human memory.           ║
 // ╚══════════════════════════════════════════════════════════════════╝
 import { useEffect, useMemo, useState } from "react"
 import { apiGet, type LensPin } from "@/lib/api"
@@ -55,7 +55,7 @@ export function RealityLens() {
           <h3 className="font-display text-base leading-tight">Reality Lens</h3>
           <p className="text-[11px] text-muted-foreground">
             <Sparkles className="w-2.5 h-2.5 inline mr-0.5 -mt-0.5" />
-            Geo-anchored AR memory layer · Circle-unique
+            Geo-anchored AR memory layer · Cirkle-unique
           </p>
         </div>
         <div className="flex gap-1 overflow-x-auto -mx-1 px-1 max-w-[55%]">

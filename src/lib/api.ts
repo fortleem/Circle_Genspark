@@ -1,4 +1,4 @@
-// Circle — Tiny typed API client for /api/*
+// Cirkle — Tiny typed API client for /api/*
 
 const BASE = '/api'
 
@@ -26,7 +26,7 @@ export interface Video { id: string; title: string; description: string; thumbna
 export interface Photo { id: number; uploader_id: number; caption?: string; city?: string; ipfs_cid?: string; likes: number; published_at: string; handle: string; display_name: string }
 export interface Room { id: string; name: string; kind: string; member_count: number; last_message?: string; last_at?: string; created_at: string; matrix_room_id?: string; is_encrypted?: number; topic?: string }
 export interface Message { id: string; room_id: string; sender_id: number; body: string; status: number; is_encrypted: number; created_at: string; handle: string; display_name: string }
-export interface CircleGroup { id: number; slug: string; name: string; description: string; visibility?: string; mode?: string; category?: string; city?: string; member_count: number; owner_id?: number; ipfs_cid?: string; created_at?: string }
+export interface CirkleGroup { id: number; slug: string; name: string; description: string; visibility?: string; mode?: string; category?: string; city?: string; member_count: number; owner_id?: number; ipfs_cid?: string; created_at?: string }
 export interface Channel { id: number; slug: string; name: string; channel_type: string; subscriber_count: number; verified?: number; verified_at?: string; description?: string; logo_url?: string; avatar_cid?: string | null; category?: string; country?: string; owner_id?: number; created_at?: string }
 export interface Job { id: number; title: string; company: string; city?: string; country?: string; location?: string; remote: number; created_at: string; posted_by_name?: string; description?: string; apply_url?: string; salary_min?: number; salary_max?: number; salary_currency?: string; tags?: string; posted_by?: number }
 export interface ProProfile { id: number; user_id: number; headline?: string; about?: string; skills?: string; experience_years?: number; handle: string; display_name: string; city?: string; country?: string }

@@ -16,8 +16,8 @@ export function SelfhostScreen() {
       title={names.module_selfhost}
       arabicTitle="الاستضافة الذاتية"
       section=""
-      tagline="Run your own Circle node — for one user, your family, or a million"
-      intro="Every Circle module is fully self-hostable. Download the docker compose, point your domain, and you have a sovereign social platform running on hardware you own. Browse public community-run nodes below."
+      tagline="Run your own Cirkle node — for one user, your family, or a million"
+      intro="Every Cirkle module is fully self-hostable. Download the docker compose, point your domain, and you have a sovereign social platform running on hardware you own. Browse public community-run nodes below."
     >
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
         <StatTile label="Public nodes" value={nodes.length.toString()} />

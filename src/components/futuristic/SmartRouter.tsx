@@ -1,7 +1,7 @@
 // ╔══════════════════════════════════════════════════════════════════╗
 // ║  SmartRouter — Heuristic post-routing suggestion (F9)            ║
 // ║                                                                  ║
-// ║  As you type, Circle figures out which pillar this belongs in.   ║
+// ║  As you type, Cirkle figures out which pillar this belongs in.   ║
 // ║  Long message + question mark? Probably a chat — suggest Wasl.   ║
 // ║  URL + emoji? Probably a story — suggest Lamahat.                ║
 // ║  Multi-line + sources? Maybe an article — suggest Channel.       ║

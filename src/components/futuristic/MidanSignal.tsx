@@ -149,7 +149,7 @@ export function AntiRageGate({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 mb-1">
             <span className="text-xs font-semibold text-rose-500">Anti-rage breather</span>
-            <span className="text-[10px] text-muted-foreground">· Circle slows fights, not voices</span>
+            <span className="text-[10px] text-muted-foreground">· Cirkle slows fights, not voices</span>
             <button onClick={onDismiss} className="ml-auto text-muted-foreground hover:text-foreground">
               <X className="w-3.5 h-3.5" />
             </button>
@@ -186,7 +186,7 @@ export function AntiRageGate({
               Post anyway {seconds > 0 ? `(${seconds}s)` : ""}
             </button>
             <span className="text-[9px] text-muted-foreground">
-              You can always post. Circle just adds {seconds > 0 ? "10 seconds" : "0 seconds"} of reflection.
+              You can always post. Cirkle just adds {seconds > 0 ? "10 seconds" : "0 seconds"} of reflection.
             </span>
           </div>
         </div>
@@ -284,7 +284,7 @@ export function CrossPillarQuote({
       >
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-display text-base flex items-center gap-2">
-            <QuoteIcon className="w-4 h-4 text-secondary" /> Quote from Circle
+            <QuoteIcon className="w-4 h-4 text-secondary" /> Quote from Cirkle
           </h3>
           <button onClick={onClose} className="w-7 h-7 rounded-full glass flex items-center justify-center">
             <X className="w-3.5 h-3.5" />

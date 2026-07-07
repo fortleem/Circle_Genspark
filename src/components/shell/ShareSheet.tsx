@@ -1,8 +1,8 @@
 // ╔══════════════════════════════════════════════════════════════════╗
-// ║  ShareSheet — Cross-pillar Share-To handoff (Circle-unique)      ║
+// ║  ShareSheet — Cross-pillar Share-To handoff (Cirkle-unique)      ║
 // ║                                                                  ║
 // ║  Global event-driven sheet. ANY screen fires:                    ║
-// ║    window.dispatchEvent(new CustomEvent('circle:share', {        ║
+// ║    window.dispatchEvent(new CustomEvent('cirkle:share', {        ║
 // ║      detail: { pillar: 'mashahd', id: 'v1', title: '...' }       ║
 // ║    }))                                                            ║
 // ║                                                                  ║
@@ -10,7 +10,7 @@
 // ║  Mail / external), and we POST /api/shares which fans out into   ║
 // ║  the actual destination pillar.                                  ║
 // ║                                                                  ║
-// ║  No competitor has this: cross-network handoff is Circle-native. ║
+// ║  No competitor has this: cross-network handoff is Cirkle-native. ║
 // ╚══════════════════════════════════════════════════════════════════╝
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -52,8 +52,8 @@ export function ShareSheet() {
       setTab('midan')
       setOpen(true)
     }
-    window.addEventListener('circle:share', handler as EventListener)
-    return () => window.removeEventListener('circle:share', handler as EventListener)
+    window.addEventListener('cirkle:share', handler as EventListener)
+    return () => window.removeEventListener('cirkle:share', handler as EventListener)
   }, [])
 
   // Load rooms on open
@@ -127,7 +127,7 @@ export function ShareSheet() {
                   <Share2 className="w-4 h-4 text-primary-foreground" />
                 </div>
                 <div>
-                  <div className="text-sm font-semibold tracking-tight">Share across Circle</div>
+                  <div className="text-sm font-semibold tracking-tight">Share across Cirkle</div>
                   <div className="text-[10px] text-muted-foreground uppercase tracking-wider">
                     {source.pillar} · {source.id}
                   </div>
@@ -191,7 +191,7 @@ export function ShareSheet() {
                   <input
                     value={mailAddr}
                     onChange={e => setMailAddr(e.target.value)}
-                    placeholder="someone@circle.network"
+                    placeholder="someone@cirkle.network"
                     className="w-full mt-1 px-3 py-2 rounded-lg bg-muted text-sm border border-border/40 focus:outline-none focus:ring-1 focus:ring-primary"
                   />
                 </div>
@@ -245,5 +245,5 @@ export function ShareSheet() {
 
 // Helper for any screen to fire a share event
 export function fireShare(detail: ShareSource) {
-  window.dispatchEvent(new CustomEvent('circle:share', { detail }))
+  window.dispatchEvent(new CustomEvent('cirkle:share', { detail }))
 }

@@ -104,7 +104,7 @@ export function MidanScreen() {
 
   return (
     <div className="pb-32">
-      {/* Header with city-pulse indicator (Circle-unique vs X/Bluesky) */}
+      {/* Header with city-pulse indicator (Cirkle-unique vs X/Bluesky) */}
       <div className="px-5 pt-2 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="city-pulse" style={{ width: 48, height: 48 }}>
@@ -142,7 +142,7 @@ export function MidanScreen() {
         ))}
       </div>
 
-      {/* Composer — anon-veil overlays when anonymous (Circle-unique vs X drafts).
+      {/* Composer — anon-veil overlays when anonymous (Cirkle-unique vs X drafts).
           Plain-text post box becomes a frosted "ghost capsule" in anon mode. */}
       <div className={`mx-5 mt-4 orbit-ring p-3 relative ${anonymous ? "overflow-hidden" : ""}`}>
         {anonymous && <div className="anon-veil absolute inset-0 rounded-[22px] pointer-events-none z-0" />}
@@ -185,10 +185,10 @@ export function MidanScreen() {
             <Send className="w-4 h-4" />
           </button>
         </div>
-        {/* Smart Post Router — suggests better pillar if appropriate (Circle-unique F9) */}
+        {/* Smart Post Router — suggests better pillar if appropriate (Cirkle-unique F9) */}
         <SmartRouter text={composer} />
 
-        {/* Circle-unique: real-time signal-vs-noise scoring */}
+        {/* Cirkle-unique: real-time signal-vs-noise scoring */}
         <SignalMeter text={composer} />
 
         {/* Anti-rage gate: 10s breather + rephrase suggestion when rage signals high */}
@@ -236,7 +236,7 @@ export function MidanScreen() {
         )}
       </div>
 
-      {/* Circle-unique futuristic actions — Time Capsule + Whisper + Cross-pillar Quote */}
+      {/* Cirkle-unique futuristic actions — Time Capsule + Whisper + Cross-pillar Quote */}
       <div className="mx-5 mt-3 grid grid-cols-3 gap-2">
         <button
           onClick={() => { setShowCapsule(s => !s); setShowWhisper(false); }}
@@ -289,8 +289,8 @@ export function MidanScreen() {
         </div>
       </div>
 
-      {/* Trending — Circle ranks each tag with a velocity arrow + rank badge.
-          X just shows a count; Circle shows momentum AND geographic provenance. */}
+      {/* Trending — Cirkle ranks each tag with a velocity arrow + rank badge.
+          X just shows a count; Cirkle shows momentum AND geographic provenance. */}
       <div className="mt-4 px-5">
         <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2 flex items-center gap-1.5">
           <BarChart3 className="w-3 h-3" /> Trending velocity · last 60 min · Cairo + global
@@ -366,7 +366,7 @@ export function MidanScreen() {
                       </span>
                     </div>
 
-                    {/* Circle-unique: signal-vs-noise conversation graph for this post */}
+                    {/* Cirkle-unique: signal-vs-noise conversation graph for this post */}
                     <ConversationGraph postId={p.id} replies={p.replies_count} />
 
                     <div className="mt-3 flex items-center gap-6 text-xs text-muted-foreground">
@@ -382,7 +382,7 @@ export function MidanScreen() {
                       <button
                         onClick={() => fireShare({ pillar: 'midan', id: String(p.id), title: (p.content ?? '').slice(0, 80) })}
                         className="flex items-center gap-1.5 hover:text-foreground transition"
-                        title="Share across Circle"
+                        title="Share across Cirkle"
                       >
                         <Share2 className="w-4 h-4" />
                       </button>

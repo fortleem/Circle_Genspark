@@ -1,18 +1,18 @@
--- Circle seed data: realistic Egypt-focused content + globally relevant samples
+-- Cirkle seed data: realistic Egypt-focused content + globally relevant samples
 -- Idempotent via OR IGNORE where possible
 
 -- Users
 INSERT OR IGNORE INTO users (id, handle, matrix_id, display_name, email, bio, country, city, language, verified, verified_claim) VALUES
-  (1, 'ahmed',   '@ahmed:matrix.circle.app',   'Ahmed Saleh',    'ahmed@circle.app',   'Civil engineer in Cairo. Tea + chess.',          'EG', 'Cairo',      'ar', 1, 'nationality_EG'),
-  (2, 'layla',   '@layla:matrix.circle.app',   'Layla Mansour',  'layla@circle.app',   'Photographer. Sufi music lover.',                'EG', 'Cairo',      'ar', 1, 'over_18'),
-  (3, 'omar',    '@omar:matrix.circle.app',    'Omar Khaled',    'omar@circle.app',    'Backend dev. Self-hosting evangelist.',          'EG', 'Alexandria', 'ar', 1, 'over_18'),
-  (4, 'fatima',  '@fatima:matrix.circle.app',  'Fatima Hossam',  'fatima@circle.app',  'Med student at Cairo University.',               'EG', 'Cairo',      'ar', 1, 'over_18'),
-  (5, 'youssef', '@youssef:matrix.circle.app', 'Youssef Adel',   'youssef@circle.app', 'Indie filmmaker.',                                'EG', 'Cairo',      'ar', 1, 'over_18'),
-  (6, 'mei',     '@mei:matrix.circle.cn',      'Mei Lin',        'mei@circle.app',     '上海的产品经理。',                                  'CN', 'Shanghai',   'zh', 1, 'real_name'),
-  (7, 'klaus',   '@klaus:matrix.circle.eu',    'Klaus Becker',   'klaus@circle.app',   'Berliner. Rust + Matrix contributor.',           'DE', 'Berlin',     'de', 1, 'over_18'),
-  (8, 'sara',    '@sara:matrix.circle.app',    'Sara Al-Otaibi', 'sara@circle.app',    'UX designer in Riyadh.',                          'SA', 'Riyadh',     'ar', 1, 'over_18'),
-  (9, 'jane',    '@jane:matrix.circle.app',    'Jane Doe',       'jane@circle.app',    'Open-source maintainer.',                         'US', 'Chicago',    'en', 0, NULL),
-  (10,'circle_official', '@official:matrix.circle.app', 'Circle Official', 'team@circle.app', 'The Circle covenant in action.',          'EG', 'Cairo',      'ar', 1, 'organization');
+  (1, 'ahmed',   '@ahmed:matrix.cirkle.app',   'Ahmed Saleh',    'ahmed@cirkle.app',   'Civil engineer in Cairo. Tea + chess.',          'EG', 'Cairo',      'ar', 1, 'nationality_EG'),
+  (2, 'layla',   '@layla:matrix.cirkle.app',   'Layla Mansour',  'layla@cirkle.app',   'Photographer. Sufi music lover.',                'EG', 'Cairo',      'ar', 1, 'over_18'),
+  (3, 'omar',    '@omar:matrix.cirkle.app',    'Omar Khaled',    'omar@cirkle.app',    'Backend dev. Self-hosting evangelist.',          'EG', 'Alexandria', 'ar', 1, 'over_18'),
+  (4, 'fatima',  '@fatima:matrix.cirkle.app',  'Fatima Hossam',  'fatima@cirkle.app',  'Med student at Cairo University.',               'EG', 'Cairo',      'ar', 1, 'over_18'),
+  (5, 'youssef', '@youssef:matrix.cirkle.app', 'Youssef Adel',   'youssef@cirkle.app', 'Indie filmmaker.',                                'EG', 'Cairo',      'ar', 1, 'over_18'),
+  (6, 'mei',     '@mei:matrix.cirkle.cn',      'Mei Lin',        'mei@cirkle.app',     '上海的产品经理。',                                  'CN', 'Shanghai',   'zh', 1, 'real_name'),
+  (7, 'klaus',   '@klaus:matrix.cirkle.eu',    'Klaus Becker',   'klaus@cirkle.app',   'Berliner. Rust + Matrix contributor.',           'DE', 'Berlin',     'de', 1, 'over_18'),
+  (8, 'sara',    '@sara:matrix.cirkle.app',    'Sara Al-Otaibi', 'sara@cirkle.app',    'UX designer in Riyadh.',                          'SA', 'Riyadh',     'ar', 1, 'over_18'),
+  (9, 'jane',    '@jane:matrix.cirkle.app',    'Jane Doe',       'jane@cirkle.app',    'Open-source maintainer.',                         'US', 'Chicago',    'en', 0, NULL),
+  (10,'cirkle_official', '@official:matrix.cirkle.app', 'Cirkle Official', 'team@cirkle.app', 'The Cirkle covenant in action.',          'EG', 'Cairo',      'ar', 1, 'organization');
 
 -- Wallets
 INSERT OR IGNORE INTO wallets (user_id, currency, balance) VALUES
@@ -36,50 +36,50 @@ INSERT OR IGNORE INTO pro_profiles (user_id, headline, current_role, company, sk
 
 -- Pro jobs
 INSERT INTO pro_jobs (title, company, city, country, remote, description, apply_url, posted_by) VALUES
-  ('Matrix Homeserver Engineer',     'Circle Foundation', 'Remote',     'EG', 1, 'Help us scale federated Synapse to 10M users.', 'https://circle.app/jobs/1', 10),
-  ('Senior Arabic UX Designer',      'Tabby',             'Riyadh',     'SA', 0, 'Design fintech flows for Arabic-first users.',  'https://circle.app/jobs/2', 8),
-  ('Junior Frontend (Flutter)',      'Jozour',            'Cairo',      'EG', 0, 'Build Wasl features. Remote-friendly.',         'https://circle.app/jobs/3', 3),
-  ('PeerTube Federation Maintainer', 'Federated Labs',    'Berlin',     'DE', 1, 'Operate the EU public PeerTube instance.',      'https://circle.app/jobs/4', 7),
-  ('Mobile Engineer (Rust + Dart)',  'Circle Foundation', 'Cairo',      'EG', 1, 'Work on the local mesh networking layer.',      'https://circle.app/jobs/5', 10);
+  ('Matrix Homeserver Engineer',     'Cirkle Foundation', 'Remote',     'EG', 1, 'Help us scale federated Synapse to 10M users.', 'https://cirkle.app/jobs/1', 10),
+  ('Senior Arabic UX Designer',      'Tabby',             'Riyadh',     'SA', 0, 'Design fintech flows for Arabic-first users.',  'https://cirkle.app/jobs/2', 8),
+  ('Junior Frontend (Flutter)',      'Jozour',            'Cairo',      'EG', 0, 'Build Wasl features. Remote-friendly.',         'https://cirkle.app/jobs/3', 3),
+  ('PeerTube Federation Maintainer', 'Federated Labs',    'Berlin',     'DE', 1, 'Operate the EU public PeerTube instance.',      'https://cirkle.app/jobs/4', 7),
+  ('Mobile Engineer (Rust + Dart)',  'Cirkle Foundation', 'Cairo',      'EG', 1, 'Work on the local mesh networking layer.',      'https://cirkle.app/jobs/5', 10);
 
 -- Rooms (Wasl)
 INSERT OR IGNORE INTO rooms (id, name, topic, room_type, created_by) VALUES
-  ('!direct-ahmed-layla:matrix.circle.app', 'Ahmed & Layla',    'Direct',                            'direct',    1),
-  ('!group-cairo-coffee:matrix.circle.app', 'Cairo Coffee Club','Where to find the best ahwa',      'group',     2),
-  ('!group-jozour-eng:matrix.circle.app',   'Jozour Engineering','Internal: Backend team',           'workspace', 3),
-  ('!broadcast-cairo-wx:matrix.circle.app', 'Cairo Weather',    'Daily updates from @cairo_weather','broadcast', 10),
-  ('!group-bookcircle:matrix.circle.app',   'Cairo Book Circle','Reading Naguib Mahfouz this month','group',     2);
+  ('!direct-ahmed-layla:matrix.cirkle.app', 'Ahmed & Layla',    'Direct',                            'direct',    1),
+  ('!group-cairo-coffee:matrix.cirkle.app', 'Cairo Coffee Club','Where to find the best ahwa',      'group',     2),
+  ('!group-jozour-eng:matrix.cirkle.app',   'Jozour Engineering','Internal: Backend team',           'workspace', 3),
+  ('!broadcast-cairo-wx:matrix.cirkle.app', 'Cairo Weather',    'Daily updates from @cairo_weather','broadcast', 10),
+  ('!group-bookcirkle:matrix.cirkle.app',   'Cairo Book Cirkle','Reading Naguib Mahfouz this month','group',     2);
 
 INSERT OR IGNORE INTO room_members (room_id, user_id, role) VALUES
-  ('!direct-ahmed-layla:matrix.circle.app', 1, 'member'),
-  ('!direct-ahmed-layla:matrix.circle.app', 2, 'member'),
-  ('!group-cairo-coffee:matrix.circle.app', 1, 'member'),
-  ('!group-cairo-coffee:matrix.circle.app', 2, 'owner'),
-  ('!group-cairo-coffee:matrix.circle.app', 4, 'member'),
-  ('!group-jozour-eng:matrix.circle.app',   3, 'owner'),
-  ('!group-jozour-eng:matrix.circle.app',   7, 'admin'),
-  ('!group-bookcircle:matrix.circle.app',   2, 'owner'),
-  ('!group-bookcircle:matrix.circle.app',   4, 'member'),
-  ('!group-bookcircle:matrix.circle.app',   5, 'member');
+  ('!direct-ahmed-layla:matrix.cirkle.app', 1, 'member'),
+  ('!direct-ahmed-layla:matrix.cirkle.app', 2, 'member'),
+  ('!group-cairo-coffee:matrix.cirkle.app', 1, 'member'),
+  ('!group-cairo-coffee:matrix.cirkle.app', 2, 'owner'),
+  ('!group-cairo-coffee:matrix.cirkle.app', 4, 'member'),
+  ('!group-jozour-eng:matrix.cirkle.app',   3, 'owner'),
+  ('!group-jozour-eng:matrix.cirkle.app',   7, 'admin'),
+  ('!group-bookcirkle:matrix.cirkle.app',   2, 'owner'),
+  ('!group-bookcirkle:matrix.cirkle.app',   4, 'member'),
+  ('!group-bookcirkle:matrix.cirkle.app',   5, 'member');
 
 -- Messages
 INSERT OR IGNORE INTO messages (id, room_id, sender_id, body, status) VALUES
-  ('m1', '!direct-ahmed-layla:matrix.circle.app', 2, 'Did you try the new koshari place in Abdeen?', 3),
-  ('m2', '!direct-ahmed-layla:matrix.circle.app', 1, 'Not yet, going on Friday inshallah 🙂',          3),
-  ('m3', '!direct-ahmed-layla:matrix.circle.app', 2, 'Save me a portion!',                            3),
-  ('m4', '!group-cairo-coffee:matrix.circle.app', 4, 'Sufi cafe in Zamalek tonight at 9pm.',          3),
-  ('m5', '!group-cairo-coffee:matrix.circle.app', 1, 'Count me in.',                                   3),
-  ('m6', '!group-jozour-eng:matrix.circle.app',   3, 'Synapse upgrade scheduled tomorrow 2am.',       3),
-  ('m7', '!group-jozour-eng:matrix.circle.app',   7, 'Acknowledged. CI is green.',                    3),
-  ('m8', '!broadcast-cairo-wx:matrix.circle.app', 10,'Cairo today: 27°C, dust storm warning until 4pm.', 3),
-  ('m9', '!group-bookcircle:matrix.circle.app',   2, 'Chapter 4 of Midaq Alley by Sunday 📖',          3),
-  ('m10','!group-bookcircle:matrix.circle.app',   5, 'Reading on the metro to Maadi right now.',      3);
+  ('m1', '!direct-ahmed-layla:matrix.cirkle.app', 2, 'Did you try the new koshari place in Abdeen?', 3),
+  ('m2', '!direct-ahmed-layla:matrix.cirkle.app', 1, 'Not yet, going on Friday inshallah 🙂',          3),
+  ('m3', '!direct-ahmed-layla:matrix.cirkle.app', 2, 'Save me a portion!',                            3),
+  ('m4', '!group-cairo-coffee:matrix.cirkle.app', 4, 'Sufi cafe in Zamalek tonight at 9pm.',          3),
+  ('m5', '!group-cairo-coffee:matrix.cirkle.app', 1, 'Count me in.',                                   3),
+  ('m6', '!group-jozour-eng:matrix.cirkle.app',   3, 'Synapse upgrade scheduled tomorrow 2am.',       3),
+  ('m7', '!group-jozour-eng:matrix.cirkle.app',   7, 'Acknowledged. CI is green.',                    3),
+  ('m8', '!broadcast-cairo-wx:matrix.cirkle.app', 10,'Cairo today: 27°C, dust storm warning until 4pm.', 3),
+  ('m9', '!group-bookcirkle:matrix.cirkle.app',   2, 'Chapter 4 of Midaq Alley by Sunday 📖',          3),
+  ('m10','!group-bookcirkle:matrix.cirkle.app',   5, 'Reading on the metro to Maadi right now.',      3);
 
 -- Videos (Mashahd)
 INSERT INTO videos (uploader_id, title, description, cid, thumbnail_cid, duration_sec, views, likes, city, language, nsfw) VALUES
   (5, 'Walking Khan El-Khalili at Sunset',      'A 4K stroll through Cairo''s oldest bazaar.',         'QmXoVid1', 'QmXoT1', 540, 12450, 980, 'Cairo',     'ar', 0),
   (2, 'Sufi Whirling Performance in Wikalat',   'Traditional ceremony, recorded live.',                 'QmXoVid2', 'QmXoT2', 720,  8200, 1240,'Cairo',     'ar', 0),
-  (3, 'Self-hosting Matrix on a 5$ VPS',        'Step-by-step tutorial using Circle''s installer.',     'QmXoVid3', 'QmXoT3', 1200, 5100, 432, 'Alexandria','en', 0),
+  (3, 'Self-hosting Matrix on a 5$ VPS',        'Step-by-step tutorial using Cirkle''s installer.',     'QmXoVid3', 'QmXoT3', 1200, 5100, 432, 'Alexandria','en', 0),
   (5, 'Pyramids by Drone at Dawn',              'Permit-cleared aerial shots.',                         'QmXoVid4', 'QmXoT4', 300, 32100, 2890,'Giza',      'ar', 0),
   (6, '上海外滩夜景 Shanghai Bund at Night',     'Walking timelapse along the Bund.',                    'QmXoVid5', 'QmXoT5', 480, 21300, 1820,'Shanghai',  'zh', 0),
   (7, 'Why ActivityPub matters',                'Berlin tech meetup talk.',                             'QmXoVid6', 'QmXoT6', 1860, 3400, 290, 'Berlin',    'en', 0),
@@ -104,14 +104,14 @@ INSERT INTO posts (author_id, content, hashtags, city, language, anonymous, repo
   (3, 'Federation > centralization. We don''t need their cloud. We have peers. #selfhost',                     '#selfhost #matrix',   'Alexandria','en', 0,  78, 540, 22),
   (4, 'PSA: Free vaccination at Kasr Al-Aini all week, no appointment needed.',                                '#health #cairo',      'Cairo',     'ar', 0, 220,1100, 65),
   (5, 'Anyone interested in a short-film collective? DM me.',                                                   '#film #cairo',        'Cairo',     'ar', 0,  12,  98, 24),
-  (10,'Today the Circle network reached 1 million federated accounts. Thank you to every node operator. 🌍',   '#milestone',          NULL,        'en', 0, 850,5400, 142),
+  (10,'Today the Cirkle network reached 1 million federated accounts. Thank you to every node operator. 🌍',   '#milestone',          NULL,        'en', 0, 850,5400, 142),
   (6, '今天上海的天空特别蓝。 #上海 #blue',                                                                       '#上海',                'Shanghai',  'zh', 0,  30, 240, 9),
   (7, 'GDPR right-to-be-forgotten worked flawlessly in the EU data plane. Proud to be a tester.',              '#gdpr #privacy',      'Berlin',    'en', 0,  44, 310, 18),
   (2, 'Quiet morning thoughts, shared anonymously.',                                                           NULL,                  NULL,        'en', 1,  0,   3,   0);
 
--- Circles (groups)
-INSERT INTO circles (slug, name, description, visibility, category, city, member_count, owner_id) VALUES
-  ('cairo-book-circle', 'Cairo Book Circle',   'Monthly Arabic literature meetups.',           'public',  'books',   'Cairo',     1240, 2),
+-- Cirkles (groups)
+INSERT INTO cirkles (slug, name, description, visibility, category, city, member_count, owner_id) VALUES
+  ('cairo-book-cirkle', 'Cairo Book Cirkle',   'Monthly Arabic literature meetups.',           'public',  'books',   'Cairo',     1240, 2),
   ('cairo-coffee',      'Cairo Coffee Club',   'Sharing the best ahwa spots.',                 'public',  'food',    'Cairo',     3200, 2),
   ('jozour-eng',        'Jozour Engineering',  'Private workspace for the backend team.',      'private', 'tech',    NULL,         24,  3),
   ('arabic-typography', 'Arabic Typography',   'Designers obsessed with Cairo font.',          'public',  'design',  NULL,         580, 8),
@@ -172,12 +172,12 @@ INSERT INTO transactions (from_user, to_user, amount, currency, method, status, 
 
 -- Mail
 INSERT INTO mail_messages (user_id, folder, from_addr, to_addr, subject, body, read_flag) VALUES
-  (1, 'inbox', 'team@circle.app',       'ahmed@circle.app',  'Welcome to Circle Mail',         'Your free @circle.app inbox is ready. 5 GB storage included.',                                       1),
-  (1, 'inbox', 'noreply@cairo-uni.eg',  'ahmed@circle.app',  'Alumni newsletter — April',      'Civil-engineering class of 2017 reunion confirmed for May 5.',                                       0),
-  (1, 'inbox', 'layla@circle.app',      'ahmed@circle.app',  'Saturday photo walk?',           'Bringing the Hasselblad. Meet at 6:30am, Al-Azhar Park gate?',                                        0),
-  (2, 'inbox', 'team@circle.app',       'layla@circle.app',  'Your verified badge',            'Circle Verify approved your over-18 attestation.',                                                   1),
-  (3, 'inbox', 'sysadmin@jozour.com',   'omar@circle.app',   'Synapse upgrade window',         'Maintenance scheduled 2am-4am Friday.',                                                              1),
-  (7, 'inbox', 'eu-ops@circle.app',     'klaus@circle.app',  'EU data-plane SLA report',       'Uptime last 30 days: 99.97%. Storage cost: €0.014 per active user.',                                  1);
+  (1, 'inbox', 'team@cirkle.app',       'ahmed@cirkle.app',  'Welcome to Cirkle Mail',         'Your free @cirkle.app inbox is ready. 5 GB storage included.',                                       1),
+  (1, 'inbox', 'noreply@cairo-uni.eg',  'ahmed@cirkle.app',  'Alumni newsletter — April',      'Civil-engineering class of 2017 reunion confirmed for May 5.',                                       0),
+  (1, 'inbox', 'layla@cirkle.app',      'ahmed@cirkle.app',  'Saturday photo walk?',           'Bringing the Hasselblad. Meet at 6:30am, Al-Azhar Park gate?',                                        0),
+  (2, 'inbox', 'team@cirkle.app',       'layla@cirkle.app',  'Your verified badge',            'Cirkle Verify approved your over-18 attestation.',                                                   1),
+  (3, 'inbox', 'sysadmin@jozour.com',   'omar@cirkle.app',   'Synapse upgrade window',         'Maintenance scheduled 2am-4am Friday.',                                                              1),
+  (7, 'inbox', 'eu-ops@cirkle.app',     'klaus@cirkle.app',  'EU data-plane SLA report',       'Uptime last 30 days: 99.97%. Storage cost: €0.014 per active user.',                                  1);
 
 -- Governance proposals
 INSERT INTO governance_proposals (title, body, proposer_id, status, votes_yes, votes_no) VALUES
@@ -204,11 +204,11 @@ INSERT INTO ad_revenue_ledger (month, advertiser, city, amount_usd, allocation) 
 
 -- Mini apps
 INSERT INTO mini_apps (slug, name, developer, category, description, install_count, verified) VALUES
-  ('prayer-times',    'Prayer Times',      'Circle Foundation',    'religion',  'Accurate prayer times for any city, offline.',           412000, 1),
+  ('prayer-times',    'Prayer Times',      'Cirkle Foundation',    'religion',  'Accurate prayer times for any city, offline.',           412000, 1),
   ('quran-reader',    'Quran Reader',      'Open Quran Project',   'religion',  'Full Quran with translations + tajweed audio.',          380000, 1),
   ('cairo-metro',     'Cairo Metro',       'Cairo Transport Co.',  'transport', 'Offline schedules + live alerts.',                       198000, 1),
-  ('fawry-pay',       'Fawry Voucher Pay', 'Fawry',                'finance',   'Generate Fawry vouchers without leaving Circle.',         95000, 1),
+  ('fawry-pay',       'Fawry Voucher Pay', 'Fawry',                'finance',   'Generate Fawry vouchers without leaving Cirkle.',         95000, 1),
   ('habit-tracker',   'Habit Tracker',     'Indie Dev — Omar',     'lifestyle', '100% on-device habit tracking.',                           7200, 0),
   ('arabic-keyboard', 'Arabic Lite KB',    'Open Source',          'tools',     'Lightweight RTL keyboard with classical script.',         12500, 1),
-  ('chess-club',      'Circle Chess',      'Community',            'games',     'Play chess over Matrix rooms.',                            4300, 0),
-  ('translate-stub',  'Quick Translate',   'Circle Foundation',    'tools',     '7-language on-device translation.',                       82000, 1);
+  ('chess-club',      'Cirkle Chess',      'Community',            'games',     'Play chess over Matrix rooms.',                            4300, 0),
+  ('translate-stub',  'Quick Translate',   'Cirkle Foundation',    'tools',     '7-language on-device translation.',                       82000, 1);

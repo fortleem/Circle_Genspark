@@ -7,7 +7,7 @@ type Beat = { pillar: string; step: string; tag?: string };
 type Journey = {
   persona: string;
   city: string;
-  signature: string; // What Circle uniquely unlocks for them
+  signature: string; // What Cirkle uniquely unlocks for them
   arc: Beat[];
 };
 
@@ -17,7 +17,7 @@ const JOURNEYS: Journey[] = [
     city: "Cairo · 22",
     signature: "Vault-protected portfolio, mesh-resilient communications during protests",
     arc: [
-      { pillar: "Onboarding", step: "Installs Circle from an APK shared on a flash drive — no Play Store needed." },
+      { pillar: "Onboarding", step: "Installs Cirkle from an APK shared on a flash drive — no Play Store needed." },
       { pillar: "Identity",   step: "Creates Dual Identity: @layla.work for clients, @anon-veil for activism.", tag: "Dual Identity" },
       { pillar: "Backup",     step: "Splits portfolio recovery 3-of-5 with her mother, sister, and three studio peers.", tag: "Family Vault" },
       { pillar: "Mashahd",    step: "Publishes a hand-drawn architectural walkthrough; viewers tip her via Pay." },
@@ -33,7 +33,7 @@ const JOURNEYS: Journey[] = [
     arc: [
       { pillar: "Identity",   step: "Verifies KYC tier 2 with on-device document scan — no provider sees the file." },
       { pillar: "Tickets",    step: "Issues 200 VIP passes for his demo day; each anchored SHA-256, no Ticketmaster.", tag: "Ticket Wallet" },
-      { pillar: "Pay",        step: "Collects deposits via Circle Pay NFC; settles into his federated node's bank rail." },
+      { pillar: "Pay",        step: "Collects deposits via Cirkle Pay NFC; settles into his federated node's bank rail." },
       { pillar: "Maktab",     step: "Runs the pitch deck collaboratively with 4 co-founders, fully E2E encrypted." },
       { pillar: "Mail",       step: "Sends investor outreach via PGP-signed anonymous-from envelope.", tag: "PGP Mail" },
       { pillar: "Constellation", step: "Profile constellation shows his inner orbit clustered around co-founders.", tag: "Constellation" },
@@ -48,7 +48,7 @@ const JOURNEYS: Journey[] = [
       { pillar: "DRE",        step: "DRE auto-places her on China plane; regional content rules apply silently." },
       { pillar: "Maktab",     step: "Collaborates with overseas clients on E2E design docs — no Adobe lock-in." },
       { pillar: "Lamahat",    step: "Posts hexagonal story tiles; gets 12k impressions across federated instances." },
-      { pillar: "Mini Apps",  step: "Sells Procreate brush packs via Circle's marketplace — 0% platform fee." },
+      { pillar: "Mini Apps",  step: "Sells Procreate brush packs via Cirkle's marketplace — 0% platform fee." },
       { pillar: "AI Consent", step: "Grants on-device only; revokes Mashahd federated; cloud stays off everywhere.", tag: "AI Matrix" },
       { pillar: "Echo",       step: "AI summarises her client thread on demand — playback proves she delivered." },
       { pillar: "Pulse",      step: "Pulse Ribbon shows her work trending in 4 cities — opens 2 new opportunities.", tag: "Pulse" },
@@ -71,14 +71,14 @@ const JOURNEYS: Journey[] = [
   {
     persona: "Yousef — Riyadh tech worker",
     city: "Riyadh · 29",
-    signature: "Daily-driver Circle — replaces 8 closed-source apps with one open identity",
+    signature: "Daily-driver Cirkle — replaces 8 closed-source apps with one open identity",
     arc: [
       { pillar: "Onboarding", step: "Onboards via Splash → picks Arabic; DRE auto-applies Saudi plane." },
       { pillar: "Wasl",       step: "First encrypted family group chat with end-to-end Olm/Megolm." },
       { pillar: "Channels",   step: "Joins 3 verified university channels; bookmarks bookmark his college dean." },
       { pillar: "Maps",       step: "Routes a Mecca trip offline — no Google telemetry, no ad-supported POIs." },
       { pillar: "Mail",       step: "On-device AI triages his inbox; spam vanishes; high-priority surfaces." },
-      { pillar: "Smart Router", step: "Drafts a long thought — Circle suggests it belongs in Channels not Midan.", tag: "Smart Router" },
+      { pillar: "Smart Router", step: "Drafts a long thought — Cirkle suggests it belongs in Channels not Midan.", tag: "Smart Router" },
       { pillar: "Profile",    step: "Trust score 98 · Gold tier · Constellation widget shows 12-person inner orbit." },
     ],
   },
@@ -91,7 +91,7 @@ const JOURNEYS: Journey[] = [
       { pillar: "Selfhost",   step: "Spins up her own node on a €4/mo Hetzner VPS; thesis archive lives there." },
       { pillar: "Mashahd",    step: "French-language lecture series — peer-tube federated, no YouTube takedowns." },
       { pillar: "Translate",  step: "Russian research papers translate on-device — corpus never leaves her laptop." },
-      { pillar: "Governance", step: "Votes in Circle's quadratic governance ballot on covenant amendment §17.4." },
+      { pillar: "Governance", step: "Votes in Cirkle's quadratic governance ballot on covenant amendment §17.4." },
     ],
   },
   {
@@ -103,7 +103,7 @@ const JOURNEYS: Journey[] = [
       { pillar: "SOS",        step: "Broadcast reaches 47 peers in 4 hops within 30 seconds — auto-prioritised.", tag: "SOS Beacon" },
       { pillar: "Wasl",       step: "Coordinates triage via mesh-routed messages; presence chip shows 23 responders online." },
       { pillar: "Maps",       step: "Offline tiles guide him through unfamiliar district — no internet required." },
-      { pillar: "Pulse",      step: "Cross-pillar Pulse alerts city-wide responders; Circle becomes the incident channel." },
+      { pillar: "Pulse",      step: "Cross-pillar Pulse alerts city-wide responders; Cirkle becomes the incident channel." },
     ],
   },
 ];
@@ -116,8 +116,8 @@ export function JourneysScreen() {
       title={names.module_journeys}
       arabicTitle="رحلات المستخدمين"
       section=""
-      tagline="Real user stories that demonstrate what Circle replaces — and unlocks"
-      intro="Five personas across five continents showing how Circle's modules combine in practice. Every journey could happen entirely without Big Tech intermediaries."
+      tagline="Real user stories that demonstrate what Cirkle replaces — and unlocks"
+      intro="Five personas across five continents showing how Cirkle's modules combine in practice. Every journey could happen entirely without Big Tech intermediaries."
     >
       <SectionHeader title="Personas" hint={`${JOURNEYS.length} narratives mapped to §35`} />
       <div className="space-y-4">

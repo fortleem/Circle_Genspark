@@ -24,7 +24,7 @@ const TOOLS = [
   { icon: Video, name: "Meet", desc: "E2EE video · up to 100 participants" },
   { icon: Calendar, name: "Cal", desc: "Shared CalDAV · syncs Outlook/Apple" },
   { icon: FolderOpen, name: "Drive", desc: "IPFS-pinned files · version history" },
-  { icon: BookOpen, name: "Learn", desc: "Courses · quizzes · certificates on Circle ID" },
+  { icon: BookOpen, name: "Learn", desc: "Courses · quizzes · certificates on Cirkle ID" },
 ];
 
 export function MadrasaScreen() {

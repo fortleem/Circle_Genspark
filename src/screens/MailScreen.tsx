@@ -1,4 +1,4 @@
-// — Circle Mail. Prototype design language + real /api/mail wiring.
+// — Cirkle Mail. Prototype design language + real /api/mail wiring.
 // Covers Folders, Encrypted by default, On-device AI summaries, No-ad-scan.
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
@@ -203,7 +203,7 @@ export function MailScreen() {
       </section>
 
       <ProtoFooter section="" title="Mail that won't read you">
-        Your @circle.app address is PGP-encrypted by default, federated over your home server, and free
+        Your @cirkle.app address is PGP-encrypted by default, federated over your home server, and free
         of ad-scanning. AI summaries run on-device only — never in the cloud. Compose, send, archive,
         and trash work exactly as you'd expect from any modern mail app.
       </ProtoFooter>
@@ -267,7 +267,7 @@ function MailComposeModal({ open, onClose, onSent }: { open: boolean; onClose: (
             </div>
 
             <div className="p-4 space-y-3">
-              <input value={to} onChange={e => setTo(e.target.value)} placeholder="To: someone@circle.network" className="w-full bg-muted/40 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary" />
+              <input value={to} onChange={e => setTo(e.target.value)} placeholder="To: someone@cirkle.network" className="w-full bg-muted/40 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary" />
               <input value={subject} onChange={e => setSubject(e.target.value)} placeholder="Subject" className="w-full bg-muted/40 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary" />
               <textarea value={body} onChange={e => setBody(e.target.value)} placeholder="Write your message…" rows={6} className="w-full bg-muted/40 rounded-lg p-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none" />
               <div className="flex items-center gap-2 flex-wrap">

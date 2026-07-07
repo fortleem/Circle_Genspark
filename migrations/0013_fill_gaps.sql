@@ -3,29 +3,29 @@
 
 -- Ensure the base rooms referenced below exist (seed.sql owns them, but migrations run before seed.sql in local --local mode).
 INSERT OR IGNORE INTO rooms (id, name, topic, room_type, is_encrypted, created_by) VALUES
-  ('!direct-ahmed-layla:matrix.circle.app', 'Ahmed & Layla', 'Direct', 'direct', 1, 1),
-  ('!group-cairo-coffee:matrix.circle.app', 'Cairo Coffee Club', 'Where to find the best ahwa', 'group', 1, 2),
-  ('!group-jozour-eng:matrix.circle.app', 'Jozour Engineering', 'Internal: Backend team', 'workspace', 1, 3),
-  ('!group-bookcircle:matrix.circle.app', 'Cairo Book Circle', 'Reading Naguib Mahfouz this month', 'group', 1, 2);
+  ('!direct-ahmed-layla:matrix.cirkle.app', 'Ahmed & Layla', 'Direct', 'direct', 1, 1),
+  ('!group-cairo-coffee:matrix.cirkle.app', 'Cairo Coffee Club', 'Where to find the best ahwa', 'group', 1, 2),
+  ('!group-jozour-eng:matrix.cirkle.app', 'Jozour Engineering', 'Internal: Backend team', 'workspace', 1, 3),
+  ('!group-bookcirkle:matrix.cirkle.app', 'Cairo Book Cirkle', 'Reading Naguib Mahfouz this month', 'group', 1, 2);
 
 INSERT OR IGNORE INTO room_members (room_id, user_id, role) VALUES
-  ('!direct-ahmed-layla:matrix.circle.app', 1, 'member'),
-  ('!direct-ahmed-layla:matrix.circle.app', 2, 'member'),
-  ('!group-cairo-coffee:matrix.circle.app', 1, 'member'),
-  ('!group-cairo-coffee:matrix.circle.app', 2, 'owner'),
-  ('!group-cairo-coffee:matrix.circle.app', 4, 'member'),
-  ('!group-jozour-eng:matrix.circle.app', 3, 'owner'),
-  ('!group-jozour-eng:matrix.circle.app', 7, 'admin'),
-  ('!group-bookcircle:matrix.circle.app', 2, 'owner'),
-  ('!group-bookcircle:matrix.circle.app', 4, 'member'),
-  ('!group-bookcircle:matrix.circle.app', 5, 'member');
+  ('!direct-ahmed-layla:matrix.cirkle.app', 1, 'member'),
+  ('!direct-ahmed-layla:matrix.cirkle.app', 2, 'member'),
+  ('!group-cairo-coffee:matrix.cirkle.app', 1, 'member'),
+  ('!group-cairo-coffee:matrix.cirkle.app', 2, 'owner'),
+  ('!group-cairo-coffee:matrix.cirkle.app', 4, 'member'),
+  ('!group-jozour-eng:matrix.cirkle.app', 3, 'owner'),
+  ('!group-jozour-eng:matrix.cirkle.app', 7, 'admin'),
+  ('!group-bookcirkle:matrix.cirkle.app', 2, 'owner'),
+  ('!group-bookcirkle:matrix.cirkle.app', 4, 'member'),
+  ('!group-bookcirkle:matrix.cirkle.app', 5, 'member');
 
 -- ───────────────── Self-host nodes ─────────────────
 INSERT OR IGNORE INTO self_host_nodes (id, node_kind, domain, operator, region, users_served, uptime_pct) VALUES
-  (1, 'matrix', 'cairo-node.circle.community', 'Cairo Tech Collective', 'global', 4200, 99.7),
+  (1, 'matrix', 'cairo-node.cirkle.community', 'Cairo Tech Collective', 'global', 4200, 99.7),
   (2, 'matrix', 'beirut-sovereign.mesh', 'Lebanese Digital Rights', 'global', 1800, 98.3),
-  (3, 'pinning', 'tunis-mesh.circle.tn', 'Tunis Free Internet', 'global', 920, 97.1),
-  (4, 'matrix', 'riyadh-enterprise.circle.sa', 'Saudi Open Source Society', 'global', 6100, 99.9),
+  (3, 'pinning', 'tunis-mesh.cirkle.tn', 'Tunis Free Internet', 'global', 920, 97.1),
+  (4, 'matrix', 'riyadh-enterprise.cirkle.sa', 'Saudi Open Source Society', 'global', 6100, 99.9),
   (5, 'matrix', 'amman-family.local', 'Khoury Family NAS', 'global', 12, 95.4),
   (6, 'peertube', 'dubai-media-hub.ae', 'Dubai Press Club', 'global', 3400, 99.5),
   (7, 'pinning', 'paris-diaspora.fr', 'Maghreb Diaspora Network', 'eu', 740, 96.8),
@@ -45,31 +45,31 @@ INSERT OR IGNORE INTO governance_proposals (id, title, body, proposer_id, status
 
 -- ───────────────── Pro jobs ─────────────────
 INSERT OR IGNORE INTO pro_jobs (id, title, company, city, country, remote, description, apply_url, posted_by) VALUES
-  (1, 'Senior Flutter Developer', 'Circle Foundation', 'Cairo', 'EG', 1, 'Build the next-gen mobile client with E2EE, BLE mesh, ONNX runtime.', 'https://jobs.circle.app/flutter-senior', 1),
-  (2, 'DevOps / SRE — Federation', 'Circle Foundation', 'Remote', NULL, 1, 'Operate 200+ federated Matrix+IPFS nodes across 6 DRE planes.', 'https://jobs.circle.app/sre-federation', 1),
-  (3, 'AI/ML Engineer — On-device', 'Circle Foundation', 'Riyadh', 'SA', 1, 'Optimize ONNX models for mobile: Whisper, NLLB, DistilBERT.', 'https://jobs.circle.app/ml-ondevice', 4),
+  (1, 'Senior Flutter Developer', 'Cirkle Foundation', 'Cairo', 'EG', 1, 'Build the next-gen mobile client with E2EE, BLE mesh, ONNX runtime.', 'https://jobs.cirkle.app/flutter-senior', 1),
+  (2, 'DevOps / SRE — Federation', 'Cirkle Foundation', 'Remote', NULL, 1, 'Operate 200+ federated Matrix+IPFS nodes across 6 DRE planes.', 'https://jobs.cirkle.app/sre-federation', 1),
+  (3, 'AI/ML Engineer — On-device', 'Cirkle Foundation', 'Riyadh', 'SA', 1, 'Optimize ONNX models for mobile: Whisper, NLLB, DistilBERT.', 'https://jobs.cirkle.app/ml-ondevice', 4),
   (4, 'UX Designer — Arabic-first', 'TechnoScale MENA', 'Dubai', 'AE', 0, 'Design RTL-first interfaces for 400M Arabic speakers.', 'https://technoscale.ae/jobs/ux', 6),
-  (5, 'Community Manager — Maghreb', 'Circle Foundation', 'Tunis', 'TN', 1, 'Grow Circle adoption across Morocco, Tunisia, Algeria, Libya.', 'https://jobs.circle.app/community-maghreb', 3),
-  (6, 'Cryptography Engineer', 'Circle Foundation', 'Berlin', 'DE', 1, 'Implement and audit: Shamir backup, BLS verification, E2EE key rotation.', 'https://jobs.circle.app/crypto-eng', 1),
-  (7, 'Product Manager — Payments', 'InstaPay Labs', 'Cairo', 'EG', 0, 'Lead Circle Pay integration with InstaPay, Vodafone Cash.', 'https://instapaylabs.eg/pm', 5),
-  (8, 'Content Moderator Lead', 'Circle Foundation', 'Remote', NULL, 1, 'Train community jury panelists. Build moderation playbooks for 12+ languages.', 'https://jobs.circle.app/mod-lead', 2);
+  (5, 'Community Manager — Maghreb', 'Cirkle Foundation', 'Tunis', 'TN', 1, 'Grow Cirkle adoption across Morocco, Tunisia, Algeria, Libya.', 'https://jobs.cirkle.app/community-maghreb', 3),
+  (6, 'Cryptography Engineer', 'Cirkle Foundation', 'Berlin', 'DE', 1, 'Implement and audit: Shamir backup, BLS verification, E2EE key rotation.', 'https://jobs.cirkle.app/crypto-eng', 1),
+  (7, 'Product Manager — Payments', 'InstaPay Labs', 'Cairo', 'EG', 0, 'Lead Cirkle Pay integration with InstaPay, Vodafone Cash.', 'https://instapaylabs.eg/pm', 5),
+  (8, 'Content Moderator Lead', 'Cirkle Foundation', 'Remote', NULL, 1, 'Train community jury panelists. Build moderation playbooks for 12+ languages.', 'https://jobs.cirkle.app/mod-lead', 2);
 
 -- ───────────────── Constellation — extra messages in EXISTING rooms for graph ─────
 INSERT OR IGNORE INTO messages (id, room_id, sender_id, body, status, is_encrypted) VALUES
-  ('msg-const-01', '!direct-ahmed-layla:matrix.circle.app', 2, 'Hey Yousef, did you see the new governance proposal?', 1, 1),
-  ('msg-const-02', '!direct-ahmed-layla:matrix.circle.app', 1, 'Yes! I voted yes on quadratic voting.', 1, 1),
-  ('msg-const-03', '!group-cairo-coffee:matrix.circle.app', 3, 'The cairo meetup is confirmed for Friday', 1, 1),
-  ('msg-const-04', '!group-cairo-coffee:matrix.circle.app', 4, 'Count me in. Bringing everyone.', 1, 1),
-  ('msg-const-05', '!group-cairo-coffee:matrix.circle.app', 5, 'Can we do a virtual option for remote folks?', 1, 1),
-  ('msg-const-06', '!direct-ahmed-layla:matrix.circle.app', 2, 'The new theater player is amazing btw', 1, 1),
-  ('msg-const-07', '!group-cairo-coffee:matrix.circle.app', 1, 'Absolutely. Setting up a Wasl video room.', 1, 1),
-  ('msg-const-08', '!group-cairo-coffee:matrix.circle.app', 6, 'I can drone-shoot the event if you want coverage', 1, 1),
-  ('msg-const-09', '!direct-ahmed-layla:matrix.circle.app', 1, 'Tariq offered to drone-shoot! Epic.', 1, 1),
-  ('msg-const-10', '!group-jozour-eng:matrix.circle.app', 7, 'I will live-translate to French for the Maghreb audience', 1, 1),
-  ('msg-const-11', '!group-jozour-eng:matrix.circle.app', 2, 'Great idea! The Tunis community asked for it.', 1, 1),
-  ('msg-const-12', '!group-bookcircle:matrix.circle.app', 3, 'This weeks book: Digital Minimalism by Cal Newport', 1, 1),
-  ('msg-const-13', '!group-bookcircle:matrix.circle.app', 5, 'Perfect timing — just finished it yesterday!', 1, 1),
-  ('msg-const-14', '!group-bookcircle:matrix.circle.app', 8, 'Can we discuss how it applies to Circle design?', 1, 1);
+  ('msg-const-01', '!direct-ahmed-layla:matrix.cirkle.app', 2, 'Hey Yousef, did you see the new governance proposal?', 1, 1),
+  ('msg-const-02', '!direct-ahmed-layla:matrix.cirkle.app', 1, 'Yes! I voted yes on quadratic voting.', 1, 1),
+  ('msg-const-03', '!group-cairo-coffee:matrix.cirkle.app', 3, 'The cairo meetup is confirmed for Friday', 1, 1),
+  ('msg-const-04', '!group-cairo-coffee:matrix.cirkle.app', 4, 'Count me in. Bringing everyone.', 1, 1),
+  ('msg-const-05', '!group-cairo-coffee:matrix.cirkle.app', 5, 'Can we do a virtual option for remote folks?', 1, 1),
+  ('msg-const-06', '!direct-ahmed-layla:matrix.cirkle.app', 2, 'The new theater player is amazing btw', 1, 1),
+  ('msg-const-07', '!group-cairo-coffee:matrix.cirkle.app', 1, 'Absolutely. Setting up a Wasl video room.', 1, 1),
+  ('msg-const-08', '!group-cairo-coffee:matrix.cirkle.app', 6, 'I can drone-shoot the event if you want coverage', 1, 1),
+  ('msg-const-09', '!direct-ahmed-layla:matrix.cirkle.app', 1, 'Tariq offered to drone-shoot! Epic.', 1, 1),
+  ('msg-const-10', '!group-jozour-eng:matrix.cirkle.app', 7, 'I will live-translate to French for the Maghreb audience', 1, 1),
+  ('msg-const-11', '!group-jozour-eng:matrix.cirkle.app', 2, 'Great idea! The Tunis community asked for it.', 1, 1),
+  ('msg-const-12', '!group-bookcirkle:matrix.cirkle.app', 3, 'This weeks book: Digital Minimalism by Cal Newport', 1, 1),
+  ('msg-const-13', '!group-bookcirkle:matrix.cirkle.app', 5, 'Perfect timing — just finished it yesterday!', 1, 1),
+  ('msg-const-14', '!group-bookcirkle:matrix.cirkle.app', 8, 'Can we discuss how it applies to Cirkle design?', 1, 1);
 
 -- ───────────────── Pro certifications ─────────────────
 CREATE TABLE IF NOT EXISTS pro_certifications (
@@ -119,15 +119,15 @@ INSERT OR IGNORE INTO jury_panels (id, juror_id, cases_heard, status) VALUES
 -- ───────────────── Extra notifications for richer inbox ─────────────────
 INSERT OR IGNORE INTO notifications (id, user_id, kind, title, body, link, unread, priority) VALUES
   (9, 1, 'gov', 'New proposal: Quadratic Voting', 'Community proposal #1 is open for voting', '/governance', 1, 2),
-  (10, 1, 'verify', 'Badge renewed', 'Your Circle Developer badge was auto-renewed', '/verify', 0, 0),
+  (10, 1, 'verify', 'Badge renewed', 'Your Cirkle Developer badge was auto-renewed', '/verify', 0, 0),
   (11, 1, 'midan', 'Trending in Cairo', 'Your post about metro line 4 is trending #3', '/midan', 1, 1),
   (12, 1, 'mesh', 'New mesh peer', 'tariq_dxb joined your local mesh via BLE', '/mesh', 1, 1);
 
 -- ───────────────── Additional mail ─────────────────
 INSERT OR IGNORE INTO mail_messages (id, user_id, from_addr, to_addr, subject, body, folder, read_flag) VALUES
-  (6, 1, 'governance@circle.app', 'yousef@circle.app', 'Weekly Governance Digest', 'This week: 3 new proposals, 2 passed. Your voting power: 94 credits remaining.', 'inbox', 0),
-  (7, 1, 'security@circle.app', 'yousef@circle.app', 'Monthly Security Report', 'Zero breaches. 14 failed login attempts blocked. E2EE key rotation completed.', 'inbox', 1),
-  (8, 1, 'yousef@circle.app', 'layla@circle.app', 'RE: Cairo meetup logistics', 'I booked the co-working space. Friday 6pm. Bringing projector for the demo.', 'sent', 1);
+  (6, 1, 'governance@cirkle.app', 'yousef@cirkle.app', 'Weekly Governance Digest', 'This week: 3 new proposals, 2 passed. Your voting power: 94 credits remaining.', 'inbox', 0),
+  (7, 1, 'security@cirkle.app', 'yousef@cirkle.app', 'Monthly Security Report', 'Zero breaches. 14 failed login attempts blocked. E2EE key rotation completed.', 'inbox', 1),
+  (8, 1, 'yousef@cirkle.app', 'layla@cirkle.app', 'RE: Cairo meetup logistics', 'I booked the co-working space. Friday 6pm. Bringing projector for the demo.', 'sent', 1);
 
 -- ───────────────── More photos for Lamahat ─────────────────
 INSERT OR IGNORE INTO photos (id, uploader_id, caption, city, cid, likes) VALUES
@@ -140,13 +140,13 @@ INSERT OR IGNORE INTO photos (id, uploader_id, caption, city, cid, likes) VALUES
 INSERT OR IGNORE INTO posts (id, author_id, content, hashtags, city, anonymous) VALUES
   (10, 6, 'Just captured the most insane sunset over Dubai Frame. Drone footage dropping tomorrow. #dubai #drone #photography', '#dubai #drone #photography', 'Dubai', 0),
   (11, 3, 'Tunis medina restoration funded! 200 artisan workshops getting renovated. #tunis #heritage', '#tunis #heritage', 'Tunis', 0),
-  (12, 7, 'Amman new public transport app is actually good? Circle Pay integration when? #amman #transit', '#amman #transit', 'Amman', 0),
+  (12, 7, 'Amman new public transport app is actually good? Cirkle Pay integration when? #amman #transit', '#amman #transit', 'Amman', 0),
   (13, 4, 'AlUla trip was life-changing. Hegra tombs at dawn, stars at night. #alula #travel', '#alula #travel', 'Riyadh', 0),
   (14, 2, 'Hot take: On-device AI is already better than cloud alternatives for Arabic. #ai #arabic', '#ai #arabic', 'Beirut', 0);
 
 -- ───────────────── More videos for Mashahd ─────────────────
 INSERT OR IGNORE INTO videos (id, title, description, uploader_id, thumbnail_cid, cid, views, likes, duration_sec) VALUES
   (100, 'Dubai Frame Sunset — 4K Drone Cinematic', 'Golden hour capture at 120m altitude.', 6, 'ipfs://QmThumbDubaiFrame', 'ipfs://QmVidDubaiFrame', 45200, 3100, 480),
-  (101, 'How Circle E2EE Actually Works (Explainer)', 'Deep dive into X25519 + Olm protocol.', 1, 'ipfs://QmThumbE2EE', 'ipfs://QmVidE2EE', 28700, 4200, 1200),
+  (101, 'How Cirkle E2EE Actually Works (Explainer)', 'Deep dive into X25519 + Olm protocol.', 1, 'ipfs://QmThumbE2EE', 'ipfs://QmVidE2EE', 28700, 4200, 1200),
   (102, 'Tunis Medina Walking Tour — Hidden Gems', '90 minutes through the UNESCO site.', 3, 'ipfs://QmThumbTunisTour', 'ipfs://QmVidTunisTour', 19800, 1800, 5400),
-  (103, 'Building a Self-Hosted Circle Node (Tutorial)', 'From docker-compose to federation in 15 minutes.', 1, 'ipfs://QmThumbSelfHost', 'ipfs://QmVidSelfHost', 12400, 2100, 900);
+  (103, 'Building a Self-Hosted Cirkle Node (Tutorial)', 'From docker-compose to federation in 15 minutes.', 1, 'ipfs://QmThumbSelfHost', 'ipfs://QmVidSelfHost', 12400, 2100, 900);

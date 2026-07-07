@@ -1,10 +1,10 @@
 // ╔══════════════════════════════════════════════════════════════════╗
-// ║  Constellation — Orbital connection viz (F8, Circle-unique)      ║
+// ║  Constellation — Orbital connection viz (F8, Cirkle-unique)      ║
 // ║                                                                  ║
 // ║  3 concentric orbits (inner/middle/outer) of your top contacts   ║
 // ║  weighted by message volume. No competitor visualizes social     ║
 // ║  graph this way; LinkedIn shows lists, IG shows grids, X shows   ║
-// ║  numeric counts — Circle shows your gravitational system.        ║
+// ║  numeric counts — Cirkle shows your gravitational system.        ║
 // ╚══════════════════════════════════════════════════════════════════╝
 import { useEffect, useState } from "react"
 import { apiGet, type Constellation as ConstType } from "@/lib/api"

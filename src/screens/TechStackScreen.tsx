@@ -20,8 +20,8 @@ export function TechStackScreen() {
       title={names.module_techstack}
       arabicTitle="مجموعة التقنيات"
       section=""
-      tagline="An auditable list of every tool that powers Circle"
-      intro="Circle is built entirely on open-source software. This page lists every major dependency so users, auditors, and self-hosters know exactly what's under the hood."
+      tagline="An auditable list of every tool that powers Cirkle"
+      intro="Cirkle is built entirely on open-source software. This page lists every major dependency so users, auditors, and self-hosters know exactly what's under the hood."
     >
       {STACK.map((g) => (
         <div key={g.area} className="mb-6">

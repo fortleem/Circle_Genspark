@@ -32,16 +32,16 @@ for vid in 100 101 102 103; do
     uid=$((j + 1))
     curl -s -X POST "$BASE/mashahd/videos/$vid/comments" \
       -H "Content-Type: application/json" \
-      -d "{\"user_id\":$uid,\"body\":\"$(echo 'Incredible cinematography!' 'This deserves more views.' 'The knowledge graph sidebar is genius.' 'Shared this with my whole family.' 'Best content on Circle this week.' 'The fact-checking overlay is so useful!' | shuf -n 1)\",\"is_bullet\":$((RANDOM % 2)),\"time_offset\":$((RANDOM % 240))}" > /dev/null
+      -d "{\"user_id\":$uid,\"body\":\"$(echo 'Incredible cinematography!' 'This deserves more views.' 'The knowledge graph sidebar is genius.' 'Shared this with my whole family.' 'Best content on Cirkle this week.' 'The fact-checking overlay is so useful!' | shuf -n 1)\",\"is_bullet\":$((RANDOM % 2)),\"time_offset\":$((RANDOM % 240))}" > /dev/null
   done
 done
 echo "Done"
 
 echo "=== Seeding Echoes ==="
-for room in "!general:matrix.circle.app" "!tech-talk:matrix.circle.app" "!direct-ahmed-layla:matrix.circle.app"; do
+for room in "!general:matrix.cirkle.app" "!tech-talk:matrix.cirkle.app" "!direct-ahmed-layla:matrix.cirkle.app"; do
   curl -s -X POST "$BASE/echoes" \
     -H "Content-Type: application/json" \
-    -d "{\"room_id\":\"$room\",\"span_start\":0,\"span_end\":50,\"summary\":\"Discussion about Circle features and Egyptian tech community growth.\",\"sentiment\":\"positive\",\"key_actors\":\"Ahmed, Layla, Omar\"}" > /dev/null
+    -d "{\"room_id\":\"$room\",\"span_start\":0,\"span_end\":50,\"summary\":\"Discussion about Cirkle features and Egyptian tech community growth.\",\"sentiment\":\"positive\",\"key_actors\":\"Ahmed, Layla, Omar\"}" > /dev/null
   curl -s -X POST "$BASE/echoes" \
     -H "Content-Type: application/json" \
     -d "{\"room_id\":\"$room\",\"span_start\":51,\"span_end\":100,\"summary\":\"Debate on privacy policies and community moderation standards.\",\"sentiment\":\"neutral\",\"key_actors\":\"Fatima, Youssef, Mei\"}" > /dev/null

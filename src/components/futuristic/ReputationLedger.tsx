@@ -1,7 +1,7 @@
 // ╔══════════════════════════════════════════════════════════════════╗
 // ║  ReputationLedger — Quadratic-voting power viz (§29)             ║
 // ║                                                                  ║
-// ║  Circle-unique. Shows your reputation tokens (RT) per pillar,    ║
+// ║  Cirkle-unique. Shows your reputation tokens (RT) per pillar,    ║
 // ║  the quadratic cost of casting N votes, and your delegation map. ║
 // ║  Tokens are non-transferable, decay on inactivity, mint on       ║
 // ║  positive moderation outcomes. No platform exposes governance    ║
@@ -48,7 +48,7 @@ export function ReputationLedger() {
           <h3 className="font-display text-base leading-tight">Reputation Ledger</h3>
           <p className="text-[11px] text-muted-foreground">
             <Sparkles className="w-2.5 h-2.5 inline mr-0.5 -mt-0.5" />
-            Quadratic voting power · Circle-unique
+            Quadratic voting power · Cirkle-unique
           </p>
         </div>
         <div className="text-right">

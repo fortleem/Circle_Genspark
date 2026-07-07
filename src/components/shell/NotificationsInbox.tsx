@@ -1,4 +1,4 @@
-// Circle Notifications Inbox — universal cross-pillar inbox in a slide-down sheet.
+// Cirkle Notifications Inbox — universal cross-pillar inbox in a slide-down sheet.
 // Triggered from the TopBar bell. Distinct from incumbents: shows priority bands,
 // pillar-coloured kind chips, "mark all read", and deep-links into the right route.
 import { useEffect, useState } from "react";

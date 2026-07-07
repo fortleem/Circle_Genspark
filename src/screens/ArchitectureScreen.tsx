@@ -13,7 +13,7 @@ const TECH_LAYERS = [
   { layer: "Media storage", tech: "IPFS (go-ipfs/Kubo)", cost: "$0", why: "Content-addressed, viewers become seeders" },
   { layer: "Video", tech: "PeerTube + WebTorrent + HLS", cost: "$0", why: "P2P streaming eliminates CDN costs" },
   { layer: "Push notifications", tech: "ntfy (self-host)", cost: "$0", why: "Replaces Firebase. Single $5 VPS handles 100k devices" },
-  { layer: "Email", tech: "Mailcow (Docker)", cost: "$0", why: "Free @circle.app via volunteer-hosted Mailcow node" },
+  { layer: "Email", tech: "Mailcow (Docker)", cost: "$0", why: "Free @cirkle.app via volunteer-hosted Mailcow node" },
   { layer: "Maps", tech: "MapLibre + OSM + IPFS tiles", cost: "$0", why: "OSM tiles pinned via IPFS, no Google Maps API" },
   { layer: "AI inference", tech: "ONNX Runtime + Hugging Face FREE", cost: "$0", why: "On-device for users; community VPS for heavy" },
 ];
@@ -44,7 +44,7 @@ const DB_TABLES = [
 // 3.4 Maktab installer
 const INSTALLER_STEPS = [
   "Install Docker & Docker Compose on Ubuntu 22.04 VPS ($5/mo)",
-  "Clone Circle's workspace-stack repository",
+  "Clone Cirkle's workspace-stack repository",
   "Generate config from .env template (SERVER_NAME, ADMIN_EMAIL)",
   "Start services: Synapse + Postgres + ntfy + Workspace Manager",
   "Register admin user with secure random password",
@@ -66,14 +66,14 @@ const MASHAHD_FLOW = [
 
 // 3.10 Cost table
 const COSTS = [
-  { item: "Hosting (per 1M users)", legacy: "$50,000/mo", circle: "$0", why: "Volunteer Matrix + IPFS" },
-  { item: "CDN (video)", legacy: "$20,000/mo", circle: "$0", why: "WebTorrent P2P" },
-  { item: "Push notifications", legacy: "$5,000/mo", circle: "$60/yr", why: "Single ntfy VPS" },
-  { item: "Maps API", legacy: "$10,000/mo", circle: "$0", why: "OSM + IPFS tiles" },
-  { item: "Email (1M users)", legacy: "$8,000/mo", circle: "$60/yr", why: "Mailcow VPS" },
-  { item: "AI inference", legacy: "$30,000/mo", circle: "$0", why: "On-device ONNX + free HF API" },
-  { item: "Translation", legacy: "$15,000/mo", circle: "$0", why: "NLLB on-device" },
-  { item: "TOTAL (1M users)", legacy: "$138,000/mo", circle: "≈ $120/yr", why: "VPS for ntfy + mail" },
+  { item: "Hosting (per 1M users)", legacy: "$50,000/mo", cirkle: "$0", why: "Volunteer Matrix + IPFS" },
+  { item: "CDN (video)", legacy: "$20,000/mo", cirkle: "$0", why: "WebTorrent P2P" },
+  { item: "Push notifications", legacy: "$5,000/mo", cirkle: "$60/yr", why: "Single ntfy VPS" },
+  { item: "Maps API", legacy: "$10,000/mo", cirkle: "$0", why: "OSM + IPFS tiles" },
+  { item: "Email (1M users)", legacy: "$8,000/mo", cirkle: "$60/yr", why: "Mailcow VPS" },
+  { item: "AI inference", legacy: "$30,000/mo", cirkle: "$0", why: "On-device ONNX + free HF API" },
+  { item: "Translation", legacy: "$15,000/mo", cirkle: "$0", why: "NLLB on-device" },
+  { item: "TOTAL (1M users)", legacy: "$138,000/mo", cirkle: "≈ $120/yr", why: "VPS for ntfy + mail" },
 ];
 
 export function ArchitectureScreen() {
@@ -85,7 +85,7 @@ export function ArchitectureScreen() {
       arabicTitle="البنية"
       section=""
       tagline="The full open-source stack that powers a $0/year super-app"
-      intro="Circle's architecture eliminates all recurring cloud costs through federation, P2P, self-hosting, and free tiers. Every layer is open-source, swappable, and self-hostable. Below is every component, its cost, and the exact data flow."
+      intro="Cirkle's architecture eliminates all recurring cloud costs through federation, P2P, self-hosting, and free tiers. Every layer is open-source, swappable, and self-hostable. Below is every component, its cost, and the exact data flow."
     >
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
@@ -162,7 +162,7 @@ export function ArchitectureScreen() {
         <p className="text-sm text-muted-foreground mb-3">
           Companies, schools, and governments deploy a sovereign workspace on a $5/mo VPS via one command:
         </p>
-        <pre className="bg-muted/40 rounded-lg p-3 text-xs overflow-x-auto mb-4"><code>$ curl -sSL https://circle.app/install-maktab.sh | bash</code></pre>
+        <pre className="bg-muted/40 rounded-lg p-3 text-xs overflow-x-auto mb-4"><code>$ curl -sSL https://cirkle.app/install-maktab.sh | bash</code></pre>
         <p className="text-xs text-muted-foreground mb-2">The installer:</p>
         <ol className="space-y-1.5">
           {INSTALLER_STEPS.map((s, i) => (
@@ -203,7 +203,7 @@ export function ArchitectureScreen() {
         </GlassCard>
         <GlassCard>
           <h3 className="font-medium flex items-center gap-2"><Mail className="w-4 h-4 text-secondary" /> Email stack</h3>
-          <p className="text-sm text-muted-foreground mt-2">Mailcow (Docker) on volunteer VPS hosts @circle.app addresses. SPF, DKIM, DMARC, PGP-by-default.</p>
+          <p className="text-sm text-muted-foreground mt-2">Mailcow (Docker) on volunteer VPS hosts @cirkle.app addresses. SPF, DKIM, DMARC, PGP-by-default.</p>
         </GlassCard>
       </div>
 
@@ -215,7 +215,7 @@ export function ArchitectureScreen() {
             <tr className="text-[10px] uppercase tracking-wider text-muted-foreground">
               <th className="text-left py-2 px-2">Item</th>
               <th className="text-right py-2 px-2">Big Tech</th>
-              <th className="text-right py-2 px-2">Circle</th>
+              <th className="text-right py-2 px-2">Cirkle</th>
               <th className="text-left py-2 px-2">Why</th>
             </tr>
           </thead>
@@ -224,7 +224,7 @@ export function ArchitectureScreen() {
               <tr key={r.item} className={`border-t border-border/30 ${r.item.startsWith("TOTAL") ? "font-bold bg-secondary/10" : ""}`}>
                 <td className="py-2 px-2">{r.item}</td>
                 <td className="py-2 px-2 text-right text-accent">{r.legacy}</td>
-                <td className="py-2 px-2 text-right text-secondary">{r.circle}</td>
+                <td className="py-2 px-2 text-right text-secondary">{r.cirkle}</td>
                 <td className="py-2 px-2 text-muted-foreground text-xs">{r.why}</td>
               </tr>
             ))}
@@ -236,9 +236,9 @@ export function ArchitectureScreen() {
       <SectionHeader title="Self-Host Everything — Single Script" />
       <GlassCard className="mb-12">
         <p className="text-sm text-muted-foreground mb-3">
-          Advanced users can deploy the full Circle stack (Synapse + IPFS + PeerTube + ntfy + Mailcow + Pleroma + MapLibre tile server) on a single beefy VPS with:
+          Advanced users can deploy the full Cirkle stack (Synapse + IPFS + PeerTube + ntfy + Mailcow + Pleroma + MapLibre tile server) on a single beefy VPS with:
         </p>
-        <pre className="bg-muted/40 rounded-lg p-3 text-xs overflow-x-auto"><code>$ curl -sSL https://circle.app/install-everything.sh | bash --domain mycircle.org</code></pre>
+        <pre className="bg-muted/40 rounded-lg p-3 text-xs overflow-x-auto"><code>$ curl -sSL https://cirkle.app/install-everything.sh | bash --domain mycirkle.org</code></pre>
         <p className="text-xs text-muted-foreground mt-3">Recommended specs: 8 vCPU, 16 GB RAM, 200 GB SSD — ~$40/month on Hetzner Cloud.</p>
       </GlassCard>
 

@@ -1,4 +1,4 @@
-// Circle — JSON API (46 endpoints) for all modules
+// Cirkle — JSON API (46 endpoints) for all modules
 // Mounted by functions/api/[[path]].ts at /api/*
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
@@ -11,7 +11,7 @@ export const api = new Hono<{ Bindings: Env }>()
 api.use('*', cors())
 
 // ─── HEALTH / META ──────────────────────────────────────────────────────────
-api.get('/health', (c) => c.json({ ok: true, service: 'circle-webapp', ts: Date.now() }))
+api.get('/health', (c) => c.json({ ok: true, service: 'cirkle-webapp', ts: Date.now() }))
 
 api.get('/names', (c) => {
   const lang = c.req.query('lang') ?? 'en-BRAND'
@@ -810,7 +810,7 @@ api.get('/mashahd/tip/suggest', async (c) => {
       widget, currency, amounts, gifts,
       country, age_restricted: false,
       blocked: false,
-      disclaimer: 'Non-custodial: Circle never sees payment details. Widget handles KYC/AML.',
+      disclaimer: 'Non-custodial: Cirkle never sees payment details. Widget handles KYC/AML.',
     }
   })
 })
@@ -829,10 +829,10 @@ api.post('/mashahd/tip', async (c) => {
   `, id, body.from_user, body.to_user, body.video_id ?? null, body.amount, body.currency, body.widget)
   return c.json({
     ok: true, id,
-    widget_url: `https://widget.${body.widget}.com/embed?ref=circle&id=${id}`,
-    settlement: 'non-custodial — Circle never holds funds',
-    circle_fee_bp: 150,
-    legal: 'KYC/AML handled by widget provider; Circle is not a money transmitter',
+    widget_url: `https://widget.${body.widget}.com/embed?ref=cirkle&id=${id}`,
+    settlement: 'non-custodial — Cirkle never holds funds',
+    cirkle_fee_bp: 150,
+    legal: 'KYC/AML handled by widget provider; Cirkle is not a money transmitter',
   })
 })
 
@@ -1069,9 +1069,9 @@ api.get('/follows/:user_id/status/:viewer_id', async (c) => {
 })
 
 // ─── CIRCLES (Groups) ───────────────────────────────────────────────────
-api.get('/circles', async (c) => {
-  const circles = await all(c.env.DB, 'SELECT * FROM circles ORDER BY member_count DESC')
-  return c.json({ circles })
+api.get('/cirkles', async (c) => {
+  const cirkles = await all(c.env.DB, 'SELECT * FROM cirkles ORDER BY member_count DESC')
+  return c.json({ cirkles })
 })
 
 // ─── /CHANNELS ───────────────────────────────────────────────────────
@@ -1215,7 +1215,7 @@ api.post('/translate', async (c) => {
   const body = await c.req.json<{ text: string; to: string; from?: string }>()
   const samples: Record<string, Record<string, string>> = {
     en: { ar: 'مرحبا بكم في دواير', zh: '欢迎来到圆圈', fr: 'Bienvenue sur Cercle', es: 'Bienvenido a Círculo', de: 'Willkommen bei Kreis', it: 'Benvenuti in Cerchio' },
-    ar: { en: 'Welcome to Circle', zh: '欢迎来到圆圈', fr: 'Bienvenue sur Cercle', es: 'Bienvenido a Círculo', de: 'Willkommen bei Kreis', it: 'Benvenuti in Cerchio' }
+    ar: { en: 'Welcome to Cirkle', zh: '欢迎来到圆圈', fr: 'Bienvenue sur Cercle', es: 'Bienvenido a Círculo', de: 'Willkommen bei Kreis', it: 'Benvenuti in Cerchio' }
   }
   const translated = samples[body.from ?? 'auto']?.[body.to] ?? `[${body.to}] ${body.text}`
   return c.json({
@@ -1308,7 +1308,7 @@ api.get('/roadmap', async (c) => {
 })
 
 // ════════════════════════════════════════════════════════════════════════
-//   NOTIFICATIONS — universal inbox (Circle-unique cross-pillar feed)
+//   NOTIFICATIONS — universal inbox (Cirkle-unique cross-pillar feed)
 // ════════════════════════════════════════════════════════════════════════
 
 api.get('/notifications/:user_id', async (c) => {
@@ -1447,7 +1447,7 @@ api.post('/shares', async (c) => {
 })
 
 // ════════════════════════════════════════════════════════════════════════
-//   COMMAND PALETTE — server-side fuzzy search across content (Circle-unique)
+//   COMMAND PALETTE — server-side fuzzy search across content (Cirkle-unique)
 //   Returns top-N hits across rooms, channels, videos, photos, posts, users
 // ════════════════════════════════════════════════════════════════════════
 
@@ -1834,7 +1834,7 @@ api.post('/privacy/sim', async (c) => {
   // Heuristic: simulate the visible surface for the given viewer kind
   const profiles: Record<string, { fields: string[]; score: number; recs: string[] }> = {
     stranger:    { fields: ['@handle','display_name','city'], score: 18, recs: ['Hide city from public profile','Enable Ghost mode in Wasl'] },
-    friend:      { fields: ['@handle','display_name','city','posts','photos','stories'], score: 62, recs: ['Restrict stories to inner circle'] },
+    friend:      { fields: ['@handle','display_name','city','posts','photos','stories'], score: 62, recs: ['Restrict stories to inner cirkle'] },
     employer:    { fields: ['@handle','display_name','pro_profile','public_posts'], score: 34, recs: ['Separate professional persona via Dual Identity'] },
     advertiser:  { fields: ['city_level_geohash5'], score: 4,  recs: ['Already opted out of ad targeting · zero tracking'] },
     state:       { fields: ['@handle','display_name','city','public_posts','kyc_hash'], score: 28, recs: ['DRE compliance is read-only · no further mitigation needed'] },
@@ -2191,7 +2191,7 @@ api.post('/pay/intent', async (c) => {
     qr_url: method.qr_supported ? `/api/pay/qr/${id}` : null,
     ussd: method.ussd_code ?? null,
     estimated_fee: +(body.amount * method.fee_pct / 100).toFixed(2),
-    disclaimer: 'Circle Pay is non-custodial. Your wallet app handles authentication and KYC.',
+    disclaimer: 'Cirkle Pay is non-custodial. Your wallet app handles authentication and KYC.',
   })
 })
 
@@ -2288,7 +2288,7 @@ api.post('/auth/register', async (c) => {
   const handle = body.handle ?? body.display_name.toLowerCase().replace(/\s+/g, '.').replace(/[^a-z0-9.]/g, '') + '.' + Math.random().toString(36).slice(2, 5)
 
   // Create user (generate matrix_id from handle)
-  const matrixId = `@${handle}:matrix.circle.app`
+  const matrixId = `@${handle}:matrix.cirkle.app`
   const r = await run(c.env.DB,
     `INSERT INTO users (handle, matrix_id, display_name, country, city, verified) VALUES (?, ?, ?, ?, ?, 0)`,
     handle, matrixId, body.display_name, body.country ?? 'EG', body.city ?? 'Cairo')
@@ -2511,7 +2511,7 @@ api.post('/emergency/alert', async (c) => {
   })
 })
 
-api.post('/emergency/notify-circle', async (c) => {
+api.post('/emergency/notify-cirkle', async (c) => {
   const body = await c.req.json<{
     type: string;
     location: any;
@@ -2519,7 +2519,7 @@ api.post('/emergency/notify-circle', async (c) => {
     user_id: number;
   }>()
 
-  // In production: send push notifications, SMS, and in-app alerts to emergency circle
+  // In production: send push notifications, SMS, and in-app alerts to emergency cirkle
   return c.json({
     ok: true,
     notified: body.contact_ids.length,
@@ -2595,7 +2595,7 @@ api.post('/sage/caption', async (c) => {
   return c.json({
     ok: true,
     caption: captions[Math.floor(Math.random() * captions.length)],
-    hashtags: ['#Cairo', '#StreetPhotography', '#DailyLife', '#Circle'],
+    hashtags: ['#Cairo', '#StreetPhotography', '#DailyLife', '#Cirkle'],
   })
 })
 

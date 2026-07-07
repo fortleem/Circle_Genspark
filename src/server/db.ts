@@ -1,4 +1,4 @@
-// Circle — D1 helpers (server-side, runs in Cloudflare Workers)
+// Cirkle — D1 helpers (server-side, runs in Cloudflare Workers)
 // Used only inside functions/api/* via the Pages Functions adapter.
 import type { D1Database } from '@cloudflare/workers-types'
 

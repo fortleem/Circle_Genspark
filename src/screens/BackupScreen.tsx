@@ -16,7 +16,7 @@ export function BackupScreen() {
       arabicTitle="النسخ الاحتياطي"
       section=""
       tagline="Your data, your backups — encrypted, federated, recoverable from anywhere"
-      intro="Circle Backup creates encrypted snapshots of your full state (Wasl, Lamahat, Mail, Pay, ID, Contacts) and distributes them across IPFS, your own server, or trusted peer-mesh nodes. Restore on any new device with your Circle ID."
+      intro="Cirkle Backup creates encrypted snapshots of your full state (Wasl, Lamahat, Mail, Pay, ID, Contacts) and distributes them across IPFS, your own server, or trusted peer-mesh nodes. Restore on any new device with your Cirkle ID."
     >
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
         <StatTile label="Last backup" value="2h ago" hint="auto-daily" />
@@ -29,7 +29,7 @@ export function BackupScreen() {
       <div className="grid sm:grid-cols-3 gap-3 mb-8">
         {[
           { icon: Cloud, t: "IPFS pinning", d: "Distributed storage across federated nodes" },
-          { icon: Server, t: "Self-hosted", d: "Your own Circle node or NAS" },
+          { icon: Server, t: "Self-hosted", d: "Your own Cirkle node or NAS" },
           { icon: HardDrive, t: "Local + peer mesh", d: "Encrypted shards across trusted peers" },
         ].map((d) => (
           <GlassCard key={d.t}>
@@ -40,8 +40,8 @@ export function BackupScreen() {
         ))}
       </div>
 
-      {/* Circle-unique: Family Vault — Shamir M-of-N social recovery */}
-      <SectionHeader title="Family Vault" hint="Circle-unique · M-of-N recovery" />
+      {/* Cirkle-unique: Family Vault — Shamir M-of-N social recovery */}
+      <SectionHeader title="Family Vault" hint="Cirkle-unique · M-of-N recovery" />
       <div className="mb-8">
         <FamilyVaultPanel />
       </div>

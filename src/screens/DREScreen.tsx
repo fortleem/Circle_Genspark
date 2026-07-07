@@ -45,7 +45,7 @@ export function DREScreen() {
       arabicTitle="محرك المناطق"
       section=""
       tagline="Smart traffic routing across six data planes — stay reachable everywhere"
-      intro="Circle operates in a world of conflicting national laws and censorship regimes. Instead of building separate apps or asking users to 'choose a region', the DRE fetches a signed JSON configuration based on IP-derived country and instantly adapts every module — without an app update."
+      intro="Cirkle operates in a world of conflicting national laws and censorship regimes. Instead of building separate apps or asking users to 'choose a region', the DRE fetches a signed JSON configuration based on IP-derived country and instantly adapts every module — without an app update."
     >
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-12">
         <StatTile label="Current country" value={country} />
@@ -73,7 +73,7 @@ export function DREScreen() {
       <SectionHeader title="Try the DRE" hint="Pick a country to re-evaluate config" />
       <GlassCard className="mb-12">
         <p className="text-sm text-muted-foreground mb-3">
-          Below is the live DRE in action. Click any country — Circle re-routes infrastructure, adjusts feature flags, and reloads UI strings without a single app update.
+          Below is the live DRE in action. Click any country — Cirkle re-routes infrastructure, adjusts feature flags, and reloads UI strings without a single app update.
         </p>
         <div className="flex flex-wrap gap-1.5 mb-4">
           {KNOWN_COUNTRIES.map((cc) => (
@@ -146,10 +146,10 @@ export function DREScreen() {
           When a user travels (e.g., Egypt → Shanghai), the DRE re-evaluates the configuration every 24h or on network change. The user's <strong>home plane stays their primary identity</strong>; they don't get pushed into the local plane.
         </p>
         <ul className="mt-3 space-y-1.5 text-xs text-muted-foreground">
-          <li>• Egyptian user in Shanghai keeps <code className="font-mono bg-muted px-1 rounded">@ahmed:matrix.circle.app</code> (may be slower due to Great Firewall)</li>
+          <li>• Egyptian user in Shanghai keeps <code className="font-mono bg-muted px-1 rounded">@ahmed:matrix.cirkle.app</code> (may be slower due to Great Firewall)</li>
           <li>• App offers "temporary local relay" via community node in Hong Kong</li>
           <li>• Payment methods: still Vodafone Cash (if roaming OK) or Alipay for local</li>
-          <li>• Chinese citizen abroad: stays on matrix.circle.cn, obeys Chinese law even in EU</li>
+          <li>• Chinese citizen abroad: stays on matrix.cirkle.cn, obeys Chinese law even in EU</li>
         </ul>
       </GlassCard>
 
@@ -171,7 +171,7 @@ export function DREScreen() {
         </GlassCard>
         <GlassCard>
           <h3 className="font-medium text-sm flex items-center gap-2"><Lock className="w-3.5 h-3.5 text-secondary" /> Config integrity</h3>
-          <p className="text-xs text-muted-foreground mt-1">Configuration JSON is Ed25519-signed by Circle. The client verifies the signature before applying — prevents MITM attacks that could force a user into a rogue data plane.</p>
+          <p className="text-xs text-muted-foreground mt-1">Configuration JSON is Ed25519-signed by Cirkle. The client verifies the signature before applying — prevents MITM attacks that could force a user into a rogue data plane.</p>
         </GlassCard>
         <GlassCard>
           <h3 className="font-medium text-sm flex items-center gap-2"><Megaphone className="w-3.5 h-3.5 text-secondary" /> Advertiser compliance</h3>

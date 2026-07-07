@@ -1,4 +1,4 @@
-// Emergency Screen — Fire / Ambulance / Police SOS with live location & emergency circle
+// Emergency Screen — Fire / Ambulance / Police SOS with live location & emergency cirkle
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -144,8 +144,8 @@ export function EmergencyScreen() {
         user_id: 1,
       });
       
-      // Also notify emergency circle contacts
-      await apiPost("/emergency/notify-circle", {
+      // Also notify emergency cirkle contacts
+      await apiPost("/emergency/notify-cirkle", {
         type: selectedType,
         location: location,
         contact_ids: contacts.map(c => c.id),
@@ -192,7 +192,7 @@ export function EmergencyScreen() {
         </motion.div>
         <h1 className="font-display text-3xl text-center mb-2">Alert Dispatched</h1>
         <p className="text-muted-foreground text-center mb-6">
-          {etype.label} emergency alert sent to authorities and your emergency circle
+          {etype.label} emergency alert sent to authorities and your emergency cirkle
         </p>
         <div className="glass rounded-2xl p-4 w-full max-w-sm mb-4">
           <div className="text-sm space-y-2">
@@ -279,7 +279,7 @@ export function EmergencyScreen() {
             Emergency <span className="text-base text-muted-foreground tracking-widest">طوارئ</span>
           </h1>
           <p className="text-[10px] uppercase tracking-widest text-red-500 mt-0.5">
-            Instant alert · Live location · Emergency circle
+            Instant alert · Live location · Emergency cirkle
           </p>
         </div>
       </div>
@@ -351,12 +351,12 @@ export function EmergencyScreen() {
         </div>
       </div>
 
-      {/* Emergency Circle Contacts */}
+      {/* Emergency Cirkle Contacts */}
       <div className="px-5 mt-8">
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-display text-xl flex items-center gap-2">
             <Users className="w-5 h-5 text-secondary" />
-            Emergency Circle
+            Emergency Cirkle
           </h2>
           <button
             onClick={() => setShowAddContact(true)}
@@ -448,7 +448,7 @@ export function EmergencyScreen() {
             <h3 className="font-display text-sm">Important</h3>
           </div>
           <div className="text-xs text-muted-foreground space-y-1.5 leading-relaxed">
-            <p>• Your live location will be shared with emergency services and your emergency circle contacts.</p>
+            <p>• Your live location will be shared with emergency services and your emergency cirkle contacts.</p>
             <p>• Location tracking continues until you manually stop it or close the app.</p>
             <p>• False alerts may result in legal consequences in some jurisdictions.</p>
             <p>• This feature supplements but does not replace calling emergency numbers directly.</p>

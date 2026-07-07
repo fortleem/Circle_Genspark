@@ -28,7 +28,7 @@ const ACHIEVEMENTS = [
   { id: 4, icon: MessageCircle, title: "Connector", desc: "100+ meaningful conversations", color: "from-blue-400 to-indigo-600", earned: true },
   { id: 5, icon: Star, title: "Community Star", desc: "Top 5% engagement score", color: "from-purple-400 to-pink-600", earned: true },
   { id: 6, icon: Trophy, title: "Governance Hero", desc: "Voted on 50+ proposals", color: "from-teal-400 to-cyan-600", earned: false, progress: 34 },
-  { id: 7, icon: Globe, title: "World Traveler", desc: "Used Circle in 10+ countries", color: "from-sky-400 to-blue-600", earned: false, progress: 60 },
+  { id: 7, icon: Globe, title: "World Traveler", desc: "Used Cirkle in 10+ countries", color: "from-sky-400 to-blue-600", earned: false, progress: 60 },
   { id: 8, icon: Zap, title: "Power User", desc: "Used all 31 modules", color: "from-yellow-400 to-orange-500", earned: false, progress: 87 },
 ];
 
@@ -215,7 +215,7 @@ export function ProfileScreen() {
                 <h3 className="font-medium text-sm">Data Sovereignty</h3>
               </div>
               <p className="text-xs text-muted-foreground">
-                All your data is encrypted with your personal key. Circle cannot read your messages, photos, or files.
+                All your data is encrypted with your personal key. Cirkle cannot read your messages, photos, or files.
                 You can export or permanently delete everything at any time.
               </p>
               <div className="flex gap-2 mt-3">
@@ -283,7 +283,7 @@ export function ProfileScreen() {
             </Section>
 
             <Section title="Personalization">
-              <Row icon={Sparkles} title="AI personalization" sub="What Circle knows about you" />
+              <Row icon={Sparkles} title="AI personalization" sub="What Cirkle knows about you" />
               <Row icon={theme === 'dark' ? Moon : Sun} title="Theme" sub={theme === "dark" ? "Dark · Aurora" : "Light · Cream"} onClick={toggleTheme} />
               <Row icon={Languages} title="Language" sub={locale === "ar" ? "العربية (RTL)" : "English"} onClick={toggleLocale} />
               <Row icon={Globe} title="Region" sub="Egypt · Cairo" />

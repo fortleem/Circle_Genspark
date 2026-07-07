@@ -1,4 +1,4 @@
-// Reusable page wrapper used by every Circle screen.
+// Reusable page wrapper used by every Cirkle screen.
 // Provides: section badge, blueprint anchor, hero header, description, content slot.
 import { motion } from "framer-motion";
 import { ReactNode } from "react";

@@ -189,7 +189,7 @@ export function WaslScreen() {
                       )}
                     </div>
                   </div>
-                  {/* Live signal-mesh dot (Circle-unique presence indicator) */}
+                  {/* Live signal-mesh dot (Cirkle-unique presence indicator) */}
                   <span
                     className="signal-dot absolute -bottom-0.5 -right-0.5"
                     data-state={r.is_encrypted ? "mesh" : "off"}
@@ -431,7 +431,7 @@ function PrivacyDrawer({ onClose }: { onClose: () => void }) {
               </div>
             </div>
 
-            {/* Auth method picker (§6.2 — Zero cost to Circle) */}
+            {/* Auth method picker (§6.2 — Zero cost to Cirkle) */}
             <div className="mt-4 rounded-2xl border border-secondary/30 bg-secondary/5 p-3">
               <div className="flex items-center gap-1.5 text-secondary mb-2 text-[11px] uppercase tracking-widest">
                 <KeyRound className="w-3 h-3" /> Authentication method
@@ -459,7 +459,7 @@ function PrivacyDrawer({ onClose }: { onClose: () => void }) {
                 ))}
               </div>
               <p className="text-[10px] text-muted-foreground">
-                No phone number required. No billing details ever collected. Circle pays $0; SMS users pay
+                No phone number required. No billing details ever collected. Cirkle pays $0; SMS users pay
                 their own carrier.
               </p>
             </div>
@@ -901,14 +901,14 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
           </div>
         )}
 
-        {/* On-device AI Thread Synopsis — Circle-unique, not in WhatsApp/Telegram/Signal.
+        {/* On-device AI Thread Synopsis — Cirkle-unique, not in WhatsApp/Telegram/Signal.
             Generates a 3-sentence summary from the most recent messages, fully on-device. */}
         {messages.length >= 4 && (
           <ThreadSynopsis messages={messages.slice(-30)} />
         )}
       </div>
 
-      {/* Echo Playback — temporal AI summary spans (Circle-unique F7) */}
+      {/* Echo Playback — temporal AI summary spans (Cirkle-unique F7) */}
       <EchoPlayback roomId={room.id} />
 
       {/* Messages */}
@@ -951,7 +951,7 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
                         <Forward className="w-3 h-3" />
                       </button>
                     )}
-                    {/* Circle thread-strip — gold side-rail (mine) or stitched border (theirs),
+                    {/* Cirkle thread-strip — gold side-rail (mine) or stitched border (theirs),
                         NOT a WhatsApp/Telegram bubble. */}
                     <div
                       className={`relative px-4 py-2.5 text-sm break-words ${
@@ -1344,7 +1344,7 @@ function GIFPickerModal({
             <div className="rounded-xl border border-dashed border-border bg-muted/30 p-6 text-center">
               <Upload className="w-8 h-8 mx-auto opacity-40 mb-2" />
               <p className="text-xs text-muted-foreground mb-2">
-                Upload a GIF to your local IPFS node. The CID is shared via Matrix; nothing is uploaded to Circle servers.
+                Upload a GIF to your local IPFS node. The CID is shared via Matrix; nothing is uploaded to Cirkle servers.
               </p>
               <input
                 value={uploadName}
@@ -1698,7 +1698,7 @@ function BroadcastAnalyticsModal({ room, onClose }: { room: Room; onClose: () =>
 
         <div className="rounded-xl bg-secondary/5 border border-secondary/20 p-3 text-[11px] text-muted-foreground">
           <Shield className="w-3 h-3 inline mr-1 text-secondary" />
-          Aggregates only. Circle never tracks who reacted or read what — only counts.
+          Aggregates only. Cirkle never tracks who reacted or read what — only counts.
         </div>
       </div>
     </ModalShell>
@@ -1882,7 +1882,7 @@ function formatDuration(sec: number): string {
 }
 
 /* ─────────────────────────── On-device AI Thread Synopsis ─────────────────────────── */
-// Circle-unique feature: a 3-line summary generated locally from recent messages.
+// Cirkle-unique feature: a 3-line summary generated locally from recent messages.
 // No payload leaves the device. (Heuristic extractor for now; pluggable into a local LLM later.)
 
 function ThreadSynopsis({ messages }: { messages: Message[] }) {

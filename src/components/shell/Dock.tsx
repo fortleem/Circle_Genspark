@@ -1,4 +1,4 @@
-// Circle — Floating mobile dock (8 primary tabs). Hidden on md+ where sidebar takes over.
+// Cirkle — Floating mobile dock (8 primary tabs). Hidden on md+ where sidebar takes over.
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
 import { PRIMARY_TABS } from "@/lib/tabs";

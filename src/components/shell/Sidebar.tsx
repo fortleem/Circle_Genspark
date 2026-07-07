@@ -1,13 +1,13 @@
-// Circle — Desktop sidebar. Advanced retractable (full / icon-rail) with persistence.
+// Cirkle — Desktop sidebar. Advanced retractable (full / icon-rail) with persistence.
 // Production-only items are shown; internal/docs-only routes are hidden but still routable.
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { ChevronsLeft, ChevronsRight } from "lucide-react";
 import { GROUPED, GROUP_LABELS, type NavGroupKey } from "@/lib/tabs";
 import { useApp } from "@/providers/AppProvider";
-import { CircleMark } from "@/components/brand/CircleMark";
+import { CirkleMark } from "@/components/brand/CirkleMark";
 
-const STORAGE_KEY = "circle.sidebar.collapsed";
+const STORAGE_KEY = "cirkle.sidebar.collapsed";
 
 export function Sidebar() {
   const { names } = useApp();
@@ -34,7 +34,7 @@ export function Sidebar() {
       {/* Brand + collapse toggle */}
       <div className="flex items-center justify-between mb-2 px-1">
         <NavLink to="/" className="flex items-center gap-3 min-w-0">
-          <CircleMark size={collapsed ? 30 : 36} />
+          <CirkleMark size={collapsed ? 30 : 36} />
           {!collapsed && (
             <div className="leading-none min-w-0">
               <div className="font-display text-xl gradient-text-gold truncate">{names.brand_name}</div>

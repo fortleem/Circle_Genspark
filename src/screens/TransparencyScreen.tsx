@@ -30,11 +30,11 @@ const MODERATION = [
 ];
 
 const OPEN_SOURCE = [
-  { repo: "circle-core", stars: 4200, lang: "Rust", desc: "Core server and federation" },
-  { repo: "circle-mobile", stars: 2800, lang: "Swift/Kotlin", desc: "Native mobile apps" },
-  { repo: "circle-web", stars: 1900, lang: "TypeScript", desc: "Web client (this app)" },
-  { repo: "circle-ai", stars: 3400, lang: "Python", desc: "On-device ML models" },
-  { repo: "circle-crypto", stars: 1200, lang: "Rust", desc: "E2EE & key management" },
+  { repo: "cirkle-core", stars: 4200, lang: "Rust", desc: "Core server and federation" },
+  { repo: "cirkle-mobile", stars: 2800, lang: "Swift/Kotlin", desc: "Native mobile apps" },
+  { repo: "cirkle-web", stars: 1900, lang: "TypeScript", desc: "Web client (this app)" },
+  { repo: "cirkle-ai", stars: 3400, lang: "Python", desc: "On-device ML models" },
+  { repo: "cirkle-crypto", stars: 1200, lang: "Rust", desc: "E2EE & key management" },
 ];
 
 export function TransparencyScreen() {

@@ -178,7 +178,7 @@ export function LamahatScreen() {
         <Clock className="w-5 h-5 text-muted-foreground" />
       </div>
 
-      {/* Circle hex-mosaic — NOT an Instagram square grid.
+      {/* Cirkle hex-mosaic — NOT an Instagram square grid.
           Honeycomb cells with gold strokes; alternating rows offset to interlock. */}
       {loading ? (
         <div className="px-5 py-10 text-sm text-muted-foreground text-center">Loading photos…</div>
@@ -215,7 +215,7 @@ export function LamahatScreen() {
                         </span>
                       </div>
                     </div>
-                    {/* Anonymous frost veil — distinctive to Circle */}
+                    {/* Anonymous frost veil — distinctive to Cirkle */}
                     {isAnon && <div className="anon-veil absolute inset-0" />}
                   </div>
 
@@ -230,7 +230,7 @@ export function LamahatScreen() {
                   <button
                     onClick={() => fireShare({ pillar: 'lamahat', id: String(p.id), title: p.caption ?? p.city ?? 'Photo' })}
                     className="absolute -bottom-1 right-9 w-7 h-7 rounded-full bg-card/80 backdrop-blur grid place-items-center gold-stroke opacity-0 group-hover:opacity-100 transition"
-                    title="Share across Circle"
+                    title="Share across Cirkle"
                   >
                     <Share2 className="w-3.5 h-3.5" />
                   </button>
@@ -265,7 +265,7 @@ export function LamahatScreen() {
         <div className="grid grid-cols-2 gap-2 text-[11px]">
           <PolicyChip icon={EyeOff} label="Screenshot block" desc="Inherited " />
           <PolicyChip icon={Eye} label="Forwarding consent" desc="One-time per share" />
-          <PolicyChip icon={Hash} label="Per-post audience" desc="Followers / Circle / Public" />
+          <PolicyChip icon={Hash} label="Per-post audience" desc="Followers / Cirkle / Public" />
           <PolicyChip icon={BadgeCheck} label="On-device NSFW" desc="Falconsai · score >0.7 blur" />
         </div>
       </div>

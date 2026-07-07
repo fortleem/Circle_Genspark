@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
-// Circle (دواير) — Vite config for Cloudflare Pages
+// Cirkle (دواير) — Vite config for Cloudflare Pages
 // SPA frontend; backend API lives in /functions (Cloudflare Pages Functions with D1 binding)
 export default defineConfig(() => ({
   server: {

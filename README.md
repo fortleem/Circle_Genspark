@@ -1,11 +1,11 @@
-# Circle (دواير) — AI-Native Social Operating System
+# Cirkle (دواير) — AI-Native Social Operating System
 
 > A privacy-first, mesh-native, zero-cost super app for the global majority. Distinctive design identity that stands apart from every incumbent (WhatsApp / IG / X / YouTube / Telegram / TikTok).
 
 ## Project Overview
 
-- **Name**: Circle (دواير, *Dawayer*)
-- **Goal**: Production-ready blueprint v12.0 implementation — covering §1 to §35 with **Circle-unique futuristic features** that have no equivalent in any competitor.
+- **Name**: Cirkle (دواير, *Dawayer*)
+- **Goal**: Production-ready blueprint v12.0 implementation — covering §1 to §35 with **Cirkle-unique futuristic features** that have no equivalent in any competitor.
 - **Tech Stack**: Vite 5 · React 18 · TypeScript 5 · Hono 4 · D1 SQLite · Tailwind 3 · shadcn/ui · framer-motion · TanStack Query · Cloudflare Pages
 - **License**: Apache-2.0 · 100% free · zero ads
 
@@ -15,7 +15,7 @@
 - **Sandbox (live)**: https://3000-it5nz74mq9tqimweqqnml-c81df28e.sandbox.novita.ai
 - **Production**: (deploy pending — see PRODUCTION_CHECKLIST.md)
 
-## Circle-Unique Futuristic Features (no incumbent has these)
+## Cirkle-Unique Futuristic Features (no incumbent has these)
 
 | # | Feature | Status | Why uncompetable |
 |---|---------|--------|------------------|
@@ -39,22 +39,22 @@
 
 ## Pillar Screens — World-Class Upgrades (Wave 3)
 
-Each pillar now beats its global benchmark on parity AND adds Circle uniques:
+Each pillar now beats its global benchmark on parity AND adds Cirkle uniques:
 
 ### Mashahd 🎬 (beats YouTube)
-**Full-screen TheaterPlayer** with YouTube parity (quality picker, captions multi-lang, smart speed 0.5-3×, PiP, keyboard shortcuts) + Circle uniques:
+**Full-screen TheaterPlayer** with YouTube parity (quality picker, captions multi-lang, smart speed 0.5-3×, PiP, keyboard shortcuts) + Cirkle uniques:
 AI-chaptered timeline · Anchor-share (URL pinned to seconds) · Knowledge graph (people/places/sources) · Live scene poll · Fact-check note · Watch-party invite · Tip-while-watching · Reactions burst · Danmaku bullet comments.
 
 ### Wasl 💬 (beats WhatsApp)
-**WaslComposerPro** with WhatsApp parity + Circle uniques:
+**WaslComposerPro** with WhatsApp parity + Cirkle uniques:
 On-device voice transcript (Web Speech API · never uploaded) · Scheduled send (local queue) · Inline translate preview (EN/AR/FR/ES/ZH) · Vanish timer (10s→7d) · Slash-command palette (/poll /location /payment /event /quote /ai) · Smart-reply chips · Privacy halo.
 
 ### Lamahat 📷 (beats Instagram)
-**StoryCraftStudio** with IG parity + Circle uniques:
+**StoryCraftStudio** with IG parity + Cirkle uniques:
 8 CSS filter presets (Saffron/Souq/Nile Dawn/Marble/Ramadan/Noir/Cyan/Original) · Music-sync with BPM auto-suggested by mood · AI auto-tags (offline) · Geo-anchor (None/Hood/City — never precise GPS) · Collaborative albums · On-device NSFW preview · Schedule post.
 
 ### Midan 🟢 (beats X/Twitter)
-**MidanSignal** suite with X parity + Circle uniques:
+**MidanSignal** suite with X parity + Cirkle uniques:
 SignalMeter real-time 0-100 score (rage/noise/signal detection) · AntiRageGate (10s breather + auto-rephrase when rage ≥ 0.4) · ConversationGraph per-post signal:noise:dispute breakdown · CrossPillarQuote (embed Mashahd video / Lamahat photo / Wasl message).
 
 ## API Endpoints
@@ -77,7 +77,7 @@ SignalMeter real-time 0-100 score (rage/noise/signal detection) · AntiRageGate 
 - `POST /api/shares` (cross-pillar handoff)
 - `GET /api/command/search?q=…` (universal palette)
 
-### Futuristic (Circle-unique)
+### Futuristic (Cirkle-unique)
 - `GET /api/presence/mesh` · `POST /api/presence/:user_id`
 - `GET /api/pulse` · `POST /api/pulse/event`
 - `GET /api/capsules/feed` · `GET /api/capsules/:user_id` · `POST /api/capsules`
@@ -105,7 +105,7 @@ SignalMeter real-time 0-100 score (rage/noise/signal detection) · AntiRageGate 
 ## Data Architecture
 
 - **Storage**: Cloudflare D1 (SQLite at edge)
-- **DB name**: `circle-production`
+- **DB name**: `cirkle-production`
 - **Migrations**: `0001` → `0015` (Citizen Shield applied locally)
 - **Tables**: 30+ including `users`, `rooms`, `messages`, `posts`, `videos`, `photos`, `mail_outbox`, `notifications`, `shares`, `presence`, `pulse_events`, `time_capsules`, `whispers`, `reality_lens`, `echoes`, `citizen_reports`, `citizen_evidence`, `citizen_witnesses`, `citizen_office_index`
 
@@ -125,7 +125,7 @@ SignalMeter real-time 0-100 score (rage/noise/signal detection) · AntiRageGate 
 
 ```bash
 # Apply all migrations
-npx wrangler d1 migrations apply circle-production --local
+npx wrangler d1 migrations apply cirkle-production --local
 
 # Build + start
 npm run build

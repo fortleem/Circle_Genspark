@@ -45,20 +45,20 @@ CREATE INDEX IF NOT EXISTS idx_identity_verifications_user ON identity_verificat
 
 -- Seed auth methods for existing demo users
 INSERT OR IGNORE INTO auth_methods (user_id, method, identifier, verified) VALUES
-  (1, 'email', 'ahmed@circle.eg', 1),
+  (1, 'email', 'ahmed@cirkle.eg', 1),
   (1, 'phone', '+20-1001234567', 1),
-  (1, 'telegram', '@ahmed_circle', 1),
-  (2, 'email', 'layla@circle.eg', 1),
+  (1, 'telegram', '@ahmed_cirkle', 1),
+  (2, 'email', 'layla@cirkle.eg', 1),
   (2, 'phone', '+20-1112345678', 1),
-  (3, 'email', 'omar@circle.eg', 1),
+  (3, 'email', 'omar@cirkle.eg', 1),
   (3, 'telegram', '@omar_dev', 1),
-  (4, 'email', 'fatima@circle.eg', 1),
+  (4, 'email', 'fatima@cirkle.eg', 1),
   (5, 'phone', '+20-1223456789', 1),
-  (6, 'email', 'mei@circle.cn', 1),
-  (7, 'email', 'carlos@circle.br', 1),
-  (8, 'email', 'anna@circle.de', 1),
+  (6, 'email', 'mei@cirkle.cn', 1),
+  (7, 'email', 'carlos@cirkle.br', 1),
+  (8, 'email', 'anna@cirkle.de', 1),
   (9, 'phone', '+91-9876543210', 1),
-  (10, 'email', 'sarah@circle.uk', 1);
+  (10, 'email', 'sarah@cirkle.uk', 1);
 
 -- Seed identity verifications
 INSERT OR IGNORE INTO identity_verifications (user_id, provider, status, national_id_hash, verification_ref, verified_name, verified_at, metadata) VALUES

@@ -1,7 +1,7 @@
 // ╔══════════════════════════════════════════════════════════════════╗
 // ║  CulturalInterpreter — Tipping & etiquette guide (F11)           ║
 // ║                                                                  ║
-// ║  When you land in a new city, Circle teaches you the unwritten   ║
+// ║  When you land in a new city, Cirkle teaches you the unwritten   ║
 // ║  rules: tipping norms, greetings, taboos, dress codes.           ║
 // ║  No travel app does this beyond price comparison.                ║
 // ╚══════════════════════════════════════════════════════════════════╝
@@ -112,7 +112,7 @@ export function CulturalInterpreter({ defaultCity = 'Cairo' }: { defaultCity?: s
               <FactRow Icon={AlertTriangle} title="Avoid" body={profile.taboo} tone="warning" />
 
               <div className="text-[10px] text-muted-foreground border-t border-border/30 pt-2 flex items-center gap-1">
-                <Globe2 className="w-3 h-3" /> Compiled from open civic data · updated by local Circle members
+                <Globe2 className="w-3 h-3" /> Compiled from open civic data · updated by local Cirkle members
               </div>
             </div>
           </motion.div>

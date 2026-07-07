@@ -1,7 +1,7 @@
-// MadrasaWorkspace — Full educational workspace (Blueprint §12) — Circle's school module
+// MadrasaWorkspace — Full educational workspace (Blueprint §12) — Cirkle's school module
 // NOT just schools — covers classrooms, attendance, grading, timetables,
 // assignments, parents, resources, announcements. Self-hosted Matrix HQ
-// for any educational org: K-12 schools, universities, hifz circles,
+// for any educational org: K-12 schools, universities, hifz cirkles,
 // language schools, training academies.
 //
 // Tabs: Overview · Classes · People · Schedule · Assignments · Grades ·
