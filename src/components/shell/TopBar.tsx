@@ -3,7 +3,7 @@
 import { Sun, Moon, Bell, Search, Globe2, Command } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useApp } from "@/providers/AppProvider";
-import { CirkleMark } from "@/components/brand/CirkleMark";
+import { CirkleMark } from "@/components/brand/CircleMark";
 import { NAV_ITEMS, findNavMatch } from "@/lib/tabs";
 import { useEffect, useState } from "react";
 import {

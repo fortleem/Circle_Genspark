@@ -15,10 +15,10 @@ export function CirkleMark({ size = 40, animated = true }: { size?: number; anim
         </linearGradient>
       </defs>
       {/* Arabic-inspired interlocking cirkles */}
-      <cirkle cx="50" cy="32" r="22" stroke="url(#cg)" strokeWidth="1.5" opacity="0.9" />
-      <cirkle cx="32" cy="60" r="22" stroke="url(#cg)" strokeWidth="1.5" opacity="0.9" />
-      <cirkle cx="68" cy="60" r="22" stroke="url(#cg)" strokeWidth="1.5" opacity="0.9" />
-      <cirkle cx="50" cy="50" r="6" fill="url(#cg)" />
+      <circle cx="50" cy="32" r="22" stroke="url(#cg)" strokeWidth="1.5" opacity="0.9" />
+      <circle cx="32" cy="60" r="22" stroke="url(#cg)" strokeWidth="1.5" opacity="0.9" />
+      <circle cx="68" cy="60" r="22" stroke="url(#cg)" strokeWidth="1.5" opacity="0.9" />
+      <circle cx="50" cy="50" r="6" fill="url(#cg)" />
     </Wrap>
   );
 }

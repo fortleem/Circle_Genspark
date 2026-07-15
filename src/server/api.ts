@@ -6,6 +6,7 @@ import { all, first, run, type Env } from './db'
 import { configFor, planeFor, KNOWN_COUNTRIES } from './dre'
 import { getNames, ALL_LANGS } from './i18n'
 import { groqChat, openaiChat, sageChat, generateSmartReplies, moderateContent, analyzeSoulResonance, hfEmbed, hfVision, SAGE_SYSTEM, pillarContext, GROQ_CHAT_MODEL, GROQ_FAST_MODEL, OPENAI_CHAT_MODEL, type SageMsg } from './ai'
+import { brainAsk, providerHealth, geminiWebSearch, classifyIntent, type BrainEnv } from './brain'
 
 export const api = new Hono<{ Bindings: Env }>()
 api.use('*', cors())
@@ -29,6 +30,113 @@ api.get('/region/plane/:country', (c) => c.json({
   country: c.req.param('country'),
   plane: planeFor(c.req.param('country'))
 }))
+
+// All country nodes worldwide — every country gets its own legal/compliance node
+api.get('/region/countries', (c) => c.json({ count: KNOWN_COUNTRIES.length, countries: KNOWN_COUNTRIES }))
+
+// Full node config for a single country (compliance, payments, emergency, news, transport)
+api.get('/region/node/:country', (c) => {
+  const cc = c.req.param('country').toUpperCase()
+  return c.json({ ...configFor(cc), generated_at: new Date().toISOString() })
+})
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CIRCLE BRAIN AI — central orchestrator (§18 Self-Learning AI Core)
+   Routes every request through: intent classification → module data → memory
+   recall → live web grounding (Gemini google_search) → provider mesh answer
+   → interaction logging → knowledge distillation (self-training loop).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+// Ask the Brain anything — it orchestrates all modules + web + memory
+api.post('/brain/ask', async (c) => {
+  const body = await c.req.json<{
+    text: string; user_id?: number; history?: SageMsg[]; country?: string; lang?: string
+  }>().catch(() => ({} as any))
+  if (!body.text) return c.json({ ok: false, error: 'text required' }, 400)
+  const country = body.country ?? c.req.header('cf-ipcountry') ?? 'EG'
+  const a = await brainAsk(c.env as unknown as BrainEnv, body.text, {
+    user_id: body.user_id ?? null, history: body.history, country, lang: body.lang,
+  })
+  if (!a.ok) return c.json({ ok: false, error: a.error, intent: a.intent }, 502)
+  return c.json(a)
+})
+
+// Intent-only classification (used by clients for routing without answering)
+api.post('/brain/intent', async (c) => {
+  const body = await c.req.json<{ text: string }>().catch(() => ({} as any))
+  if (!body.text) return c.json({ ok: false, error: 'text required' }, 400)
+  const intent = await classifyIntent(c.env as unknown as BrainEnv, body.text)
+  return c.json({ ok: true, intent })
+})
+
+// Live web search grounding (Gemini google_search tool)
+api.post('/brain/web-search', async (c) => {
+  const body = await c.req.json<{ query: string; lang?: string }>().catch(() => ({} as any))
+  if (!body.query) return c.json({ ok: false, error: 'query required' }, 400)
+  const r = await geminiWebSearch(c.env.GEMINI_API_KEY, body.query, body.lang ?? 'en')
+  if (!r.ok) return c.json({ ok: false, error: (r as { error: string }).error }, 502)
+  return c.json({ ok: true, text: r.text, sources: r.sources })
+})
+
+// Provider mesh health — probes Groq / Gemini / OpenAI / HuggingFace live
+api.get('/brain/health', async (c) => {
+  const providers = await providerHealth(c.env as unknown as BrainEnv)
+  const alive = Object.values(providers).filter((p) => p.alive).length
+  return c.json({ ok: alive > 0, alive_providers: alive, providers, orchestrator: 'circle-brain-v1' })
+})
+
+// Brain memory — what the Brain has learned (global + per-user)
+api.get('/brain/knowledge', async (c) => {
+  const uid = c.req.query('user_id')
+  const rows = await all(c.env.DB, `
+    SELECT id, user_id, topic, fact, confidence, source, created_at
+    FROM brain_knowledge WHERE user_id IS NULL ${uid ? 'OR user_id = ?' : ''}
+    ORDER BY updated_at DESC LIMIT 50
+  `, ...(uid ? [Number(uid)] : []))
+  return c.json({ knowledge: rows })
+})
+
+// Teach the Brain a fact manually (training input)
+api.post('/brain/knowledge', async (c) => {
+  const body = await c.req.json<{ fact: string; topic?: string; user_id?: number; confidence?: number }>().catch(() => ({} as any))
+  if (!body.fact) return c.json({ ok: false, error: 'fact required' }, 400)
+  await run(c.env.DB, `
+    INSERT INTO brain_knowledge (user_id, topic, fact, confidence, source) VALUES (?, ?, ?, ?, 'manual')
+  `, body.user_id ?? null, (body.topic ?? 'general').slice(0, 60), body.fact.slice(0, 500), Math.min(1, Math.max(0, body.confidence ?? 0.9)))
+  return c.json({ ok: true })
+})
+
+// Interaction log + feedback (thumbs up/down feeds the training loop)
+api.get('/brain/interactions', async (c) => {
+  const rows = await all(c.env.DB, `
+    SELECT id, user_id, intent, module, used_web, provider, question, latency_ms, feedback, created_at
+    FROM brain_interactions ORDER BY created_at DESC LIMIT 30
+  `)
+  return c.json({ interactions: rows })
+})
+
+api.post('/brain/interactions/:id/feedback', async (c) => {
+  const body = await c.req.json<{ feedback: number }>().catch(() => ({} as any))
+  const fb = body.feedback === 1 ? 1 : -1
+  await run(c.env.DB, 'UPDATE brain_interactions SET feedback = ? WHERE id = ?', fb, Number(c.req.param('id')))
+  return c.json({ ok: true })
+})
+
+// Brain stats — learning progress dashboard
+api.get('/brain/stats', async (c) => {
+  const [inter, know, web, avgLat] = await Promise.all([
+    first<{ n: number }>(c.env.DB, 'SELECT COUNT(*) n FROM brain_interactions'),
+    first<{ n: number }>(c.env.DB, 'SELECT COUNT(*) n FROM brain_knowledge'),
+    first<{ n: number }>(c.env.DB, 'SELECT COUNT(*) n FROM brain_interactions WHERE used_web = 1'),
+    first<{ v: number }>(c.env.DB, 'SELECT AVG(latency_ms) v FROM brain_interactions'),
+  ])
+  const byIntent = await all(c.env.DB, 'SELECT intent, COUNT(*) n FROM brain_interactions GROUP BY intent ORDER BY n DESC LIMIT 10')
+  return c.json({
+    interactions: inter?.n ?? 0, knowledge_facts: know?.n ?? 0,
+    web_grounded: web?.n ?? 0, avg_latency_ms: Math.round(avgLat?.v ?? 0),
+    by_intent: byIntent,
+  })
+})
 
 // ─── USERS / CIRCLE ID ──────────────────────────────────────────────────────
 api.get('/users', async (c) => {
@@ -839,7 +947,7 @@ api.post('/mashahd/tip', async (c) => {
 // §7.4.5 Webhook from widget provider (confirms tip) — hardened against missing tip / bad payloads
 api.post('/mashahd/tip/webhook', async (c) => {
   try {
-    const body = await c.req.json<{ id?: string; webhook_ref?: string; status?: 'confirmed' | 'failed' }>().catch(() => ({}))
+    const body = await c.req.json<{ id?: string; webhook_ref?: string; status?: 'confirmed' | 'failed' }>().catch(() => ({} as { id?: string; webhook_ref?: string; status?: 'confirmed' | 'failed' }))
     if (!body || !body.id || !body.status) return c.json({ ok: false, error: 'invalid_payload' }, 400)
 
     // Verify tip exists first
@@ -1957,6 +2065,8 @@ api.get('/sage/health', (c) => {
 })
 
 // Chat — accepts {messages, pillar?, lang?, conversation_id?, user_id?}
+// NOW POWERED BY CIRCLE BRAIN: every sage chat is orchestrated by the Brain
+// (intent routing + module data + memory recall + web grounding + learning).
 api.post('/sage/chat', async (c) => {
   const body = await c.req.json<{
     messages: SageMsg[]
@@ -1971,21 +2081,35 @@ api.post('/sage/chat', async (c) => {
     return c.json({ ok: false, error: 'messages[] required' }, 400)
   }
 
-  // Build the system prompt: persona + pillar context + language hint
-  const sys: SageMsg[] = [{ role: 'system', content: SAGE_SYSTEM }]
-  const pc = pillarContext(body.pillar)
-  if (pc) sys.push(pc)
-  if (body.lang) sys.push({ role: 'system', content: `Reply in language: ${body.lang}. If "ar", use Modern Standard Arabic with warmth.` })
-
+  const lastUserMsg = [...body.messages].reverse().find((m) => m.role === 'user')
   const t0 = Date.now()
-  const r = await groqChat(c.env.GROQ_API_KEY, [...sys, ...body.messages], {
-    model: body.fast ? GROQ_FAST_MODEL : GROQ_CHAT_MODEL,
-    temperature: 0.55,
-    max_tokens: 700,
+
+  // Route through Circle Brain (full orchestration)
+  const brain = await brainAsk(c.env as unknown as BrainEnv, lastUserMsg?.content ?? '', {
+    user_id: body.user_id ?? null,
+    history: body.messages.filter((m) => m.role !== 'system').slice(0, -1),
+    country: c.req.header('cf-ipcountry') ?? 'EG',
+    lang: body.lang,
   })
+
+  let r: { ok: true; text: string } | { ok: false; error: string }
+  if (brain.ok) {
+    r = { ok: true, text: brain.text }
+  } else {
+    // Fallback to legacy direct-Groq sage path if the Brain fails entirely
+    const sys: SageMsg[] = [{ role: 'system', content: SAGE_SYSTEM }]
+    const pc = pillarContext(body.pillar)
+    if (pc) sys.push(pc)
+    if (body.lang) sys.push({ role: 'system', content: `Reply in language: ${body.lang}. If "ar", use Modern Standard Arabic with warmth.` })
+    r = await groqChat(c.env.GROQ_API_KEY, [...sys, ...body.messages], {
+      model: body.fast ? GROQ_FAST_MODEL : GROQ_CHAT_MODEL,
+      temperature: 0.55,
+      max_tokens: 700,
+    })
+  }
   const latency = Date.now() - t0
 
-  if (!r.ok) return c.json({ ok: false, error: r.error }, 502)
+  if (!r.ok) return c.json({ ok: false, error: (r as { error: string }).error }, 502)
 
   // Best-effort persist
   try {
@@ -2007,14 +2131,14 @@ api.post('/sage/chat', async (c) => {
       }
       await run(c.env.DB,
         `INSERT INTO sage_messages (conversation_id, role, content, model, latency_ms) VALUES (?, 'assistant', ?, ?, ?)`,
-        convId, r.text, `groq:${body.fast ? GROQ_FAST_MODEL : GROQ_CHAT_MODEL}`, latency
+        convId, r.text, brain.ok ? `brain:${brain.provider}` : `groq:${body.fast ? GROQ_FAST_MODEL : GROQ_CHAT_MODEL}`, latency
       )
       await run(c.env.DB, `UPDATE sage_conversations SET last_at = CURRENT_TIMESTAMP WHERE id = ?`, convId)
-      return c.json({ ok: true, text: r.text, conversation_id: convId, latency_ms: latency })
+      return c.json({ ok: true, text: r.text, reply: r.text, conversation_id: convId, latency_ms: latency, brain: brain.ok ? { intent: brain.intent.intent, used_web: brain.used_web, sources: brain.sources, provider: brain.provider } : undefined })
     }
   } catch (_) { /* db best-effort */ }
 
-  return c.json({ ok: true, text: r.text, latency_ms: latency })
+  return c.json({ ok: true, text: r.text, reply: r.text, latency_ms: latency, brain: brain.ok ? { intent: brain.intent.intent, used_web: brain.used_web, sources: brain.sources, provider: brain.provider } : undefined })
 })
 
 // Summarize arbitrary content
@@ -2026,7 +2150,7 @@ api.post('/sage/summarize', async (c) => {
     { role: 'system', content: `Summarize the following content in ${body.max_words ?? 80} words or less, in language "${body.lang ?? 'en'}". Be punchy and concrete.` },
     { role: 'user', content: body.content.slice(0, 8000) },
   ], { model: GROQ_FAST_MODEL, temperature: 0.3, max_tokens: 300 })
-  if (!r.ok) return c.json({ ok: false, error: r.error }, 502)
+  if (!r.ok) return c.json({ ok: false, error: (r as { error: string }).error }, 502)
   return c.json({ ok: true, summary: r.text })
 })
 
@@ -2038,7 +2162,7 @@ api.post('/sage/translate', async (c) => {
     { role: 'system', content: `You are a professional translator. Translate the user message into ${body.target}. Preserve tone, slang, and emoji. Output ONLY the translation — no commentary.` },
     { role: 'user', content: body.text.slice(0, 3000) },
   ], { model: GROQ_FAST_MODEL, temperature: 0.2, max_tokens: 600 })
-  if (!r.ok) return c.json({ ok: false, error: r.error }, 502)
+  if (!r.ok) return c.json({ ok: false, error: (r as { error: string }).error }, 502)
   return c.json({ ok: true, translation: r.text.trim() })
 })
 
@@ -2050,7 +2174,7 @@ api.post('/sage/moderate', async (c) => {
     { role: 'system', content: 'You are a content classifier for a social platform. Return ONLY JSON: {"rage":0..100,"noise":0..100,"signal":0..100,"reason":"short"}. rage=hostile/inflammatory, noise=low-value/spam, signal=substantive/civil. Sum need not equal 100.' },
     { role: 'user', content: body.text.slice(0, 2000) },
   ], { model: GROQ_FAST_MODEL, temperature: 0.1, max_tokens: 150, json: true })
-  if (!r.ok) return c.json({ ok: false, error: r.error }, 502)
+  if (!r.ok) return c.json({ ok: false, error: (r as { error: string }).error }, 502)
   try {
     return c.json({ ok: true, ...JSON.parse(r.text) })
   } catch {
@@ -2063,7 +2187,7 @@ api.post('/sage/embed', async (c) => {
   const body = await c.req.json<{ inputs: string | string[] }>().catch(() => ({} as any))
   if (!body.inputs) return c.json({ ok: false, error: 'inputs required' }, 400)
   const r = await hfEmbed(c.env.HF_API_KEY, body.inputs)
-  if (!r.ok) return c.json({ ok: false, error: r.error }, 502)
+  if (!r.ok) return c.json({ ok: false, error: (r as { error: string }).error }, 502)
   return c.json({ ok: true, vectors: r.vectors })
 })
 
@@ -2072,7 +2196,7 @@ api.post('/sage/vision', async (c) => {
   const body = await c.req.json<{ image_url: string }>().catch(() => ({} as any))
   if (!body.image_url) return c.json({ ok: false, error: 'image_url required' }, 400)
   const r = await hfVision(c.env.HF_API_KEY, body.image_url)
-  if (!r.ok) return c.json({ ok: false, error: r.error }, 502)
+  if (!r.ok) return c.json({ ok: false, error: (r as { error: string }).error }, 502)
   return c.json({ ok: true, caption: r.caption })
 })
 
@@ -2205,7 +2329,7 @@ api.post('/pay/intent/:id/confirm', async (c) => {
   if (!intent) return c.json({ ok: false, error: 'not_found' }, 404)
   await run(c.env.DB,
     `UPDATE pay_intents SET status='confirmed', external_ref=?, confirmed_at=CURRENT_TIMESTAMP WHERE id = ?`,
-    body.external_ref ?? `mock_${Date.now()}`, id)
+    (body as { external_ref?: string }).external_ref ?? `mock_${Date.now()}`, id)
   // Move funds in our shadow wallet ledger (mock — real wallet apps move real money)
   if (intent.recipient_user_id) {
     await run(c.env.DB,
@@ -2570,22 +2694,33 @@ api.post('/sage/content-suggest', async (c) => {
   return c.json({ ok: true, suggestions: suggestions[body.pillar] ?? suggestions.midan })
 })
 
-api.post('/sage/moderate', async (c) => {
+// Content-safety quick check (offline keyword heuristic + AI escalation)
+api.post('/sage/moderate-quick', async (c) => {
   const body = await c.req.json<{ content: string; type?: string }>()
-  // Simple content moderation - in production uses AI
   const flagged = /\b(spam|scam|hack|violence)\b/i.test(body.content)
-  return c.json({
-    ok: true,
-    safe: !flagged,
-    score: flagged ? 0.2 : 0.95,
-    flags: flagged ? ['potential_violation'] : [],
-    action: flagged ? 'review' : 'approve',
-  })
+  if (!flagged) return c.json({ ok: true, safe: true, score: 0.95, flags: [], action: 'approve' })
+  // Escalate suspicious content to the real AI moderator
+  const ai = await moderateContent(c.env, body.content)
+  return c.json({ ok: true, safe: ai.safe, score: ai.score / 100, flags: ai.flags, action: ai.safe ? 'approve' : 'review', suggestion: ai.suggestion })
 })
 
 api.post('/sage/caption', async (c) => {
   const body = await c.req.json<{ image_url?: string; context?: string }>()
-  // AI-generated caption for photos
+  // Real AI caption when an image URL is provided (HF BLIP vision)
+  if (body.image_url) {
+    const v = await hfVision(c.env.HF_API_KEY, body.image_url)
+    if (v.ok) {
+      return c.json({ ok: true, caption: v.caption, hashtags: ['#Cirkle', '#Lamahat'], source: 'hf_vision' })
+    }
+  }
+  // Text-context caption via LLM
+  if (body.context) {
+    const r = await sageChat(c.env, [
+      { role: 'system', content: 'Write one short, evocative photo caption (max 15 words) plus 4 hashtags. Return JSON {"caption":"...","hashtags":["#..."]}' },
+      { role: 'user', content: body.context },
+    ], { json: true, max_tokens: 120, temperature: 0.8 })
+    if (r.ok) { try { return c.json({ ok: true, ...JSON.parse(r.text), source: r.provider }) } catch { /* fallthrough */ } }
+  }
   const captions = [
     "A beautiful moment captured in the golden light of Cairo",
     "Streets alive with the energy of daily life",
@@ -2596,6 +2731,7 @@ api.post('/sage/caption', async (c) => {
     ok: true,
     caption: captions[Math.floor(Math.random() * captions.length)],
     hashtags: ['#Cairo', '#StreetPhotography', '#DailyLife', '#Cirkle'],
+    source: 'fallback',
   })
 })
 

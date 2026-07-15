@@ -49,9 +49,9 @@ export function DREScreen() {
     >
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-12">
         <StatTile label="Current country" value={country} />
-        <StatTile label="Active plane" value={region.plane} />
-        <StatTile label="CDN" value={region.cdn ?? "—"} />
-        <StatTile label="Default lang" value={region.defaultLang ?? "—"} />
+        <StatTile label="Active plane" value={region.region} />
+        <StatTile label="Currency" value={region.currency ?? "—"} />
+        <StatTile label="Default lang" value={region.language?.default ?? "—"} />
       </div>
 
       {/* Overview - already in intro */}

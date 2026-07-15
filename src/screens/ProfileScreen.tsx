@@ -325,9 +325,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Row({ icon: Icon, title, sub, toggle, toggled, onToggle, onClick, to }: {
   icon: any; title: string; sub: string; toggle?: boolean; toggled?: boolean; onToggle?: () => void; onClick?: () => void; to?: string;
 }) {
-  const Wrapper = to ? Link : 'button';
-  return (
-    <Wrapper {...(to ? { to } : {})} onClick={onClick ?? onToggle} className="w-full text-start px-4 py-3 flex items-center gap-3 hover:bg-muted/40 transition">
+  const rowCls = "w-full text-start px-4 py-3 flex items-center gap-3 hover:bg-muted/40 transition";
+  const inner = (
+    <>
       <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center"><Icon className="w-4 h-4 text-secondary" /></div>
       <div className="flex-1 min-w-0">
         <div className="text-sm font-medium">{title}</div>
@@ -340,7 +340,12 @@ function Row({ icon: Icon, title, sub, toggle, toggled, onToggle, onClick, to }:
       ) : (
         <ChevronRight className="w-4 h-4 text-muted-foreground" />
       )}
-    </Wrapper>
+    </>
+  );
+  return to ? (
+    <Link to={to} onClick={onClick ?? onToggle} className={rowCls}>{inner}</Link>
+  ) : (
+    <button onClick={onClick ?? onToggle} className={rowCls}>{inner}</button>
   );
 }
 

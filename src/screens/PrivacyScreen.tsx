@@ -56,8 +56,8 @@ export function PrivacyScreen() {
           <div className="relative flex items-center gap-6">
             <div className="relative w-24 h-24">
               <svg className="w-24 h-24 -rotate-90" viewBox="0 0 100 100">
-                <cirkle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="8" className="text-muted/30" />
-                <cirkle cx="50" cy="50" r="40" fill="none" stroke="url(#privGrad)" strokeWidth="8"
+                <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="8" className="text-muted/30" />
+                <circle cx="50" cy="50" r="40" fill="none" stroke="url(#privGrad)" strokeWidth="8"
                   strokeDasharray={`${privacyScore * 2.51} 251`} strokeLinecap="round" />
                 <defs><linearGradient id="privGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stopColor="hsl(var(--secondary))" />

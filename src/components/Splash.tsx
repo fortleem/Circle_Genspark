@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { CirkleMark } from "@/components/brand/CirkleMark";
+import { CirkleMark } from "@/components/brand/CircleMark";
 
 export function Splash() {
   return (

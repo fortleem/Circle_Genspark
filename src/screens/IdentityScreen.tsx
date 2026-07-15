@@ -3,7 +3,7 @@ import { PageShell, GlassCard, SectionHeader, StatTile } from "@/components/shel
 import { Sparkles, Palette, Type, Globe, FileJson, MessageCircle, AppWindow, Check } from "lucide-react";
 import { useApp } from "@/providers/AppProvider";
 import { ALL_LANGS, getNames } from "@/lib/i18n";
-import { CirkleMark } from "@/components/brand/CirkleMark";
+import { CirkleMark } from "@/components/brand/CircleMark";
 import { useState } from "react";
 
 const PRIMARY_MODULES = [

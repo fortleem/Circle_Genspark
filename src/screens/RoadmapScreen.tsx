@@ -1,6 +1,6 @@
 // — Roadmap
 import { PageShell, GlassCard, EmptyState, SectionHeader } from "@/components/shell/PageShell";
-import { ListChecks, Check, Clock, Cirkle as CirkleIcon } from "lucide-react";
+import { ListChecks, Check, Clock, Circle as CirkleIcon } from "lucide-react";
 import { useApi } from "@/hooks/useApi";
 import type { RoadmapPhase } from "@/lib/api";
 import { useApp } from "@/providers/AppProvider";

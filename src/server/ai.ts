@@ -14,7 +14,7 @@ export const GROQ_FAST_MODEL    = 'llama-3.1-8b-instant'
 export const HF_EMBED_MODEL     = 'sentence-transformers/all-MiniLM-L6-v2'
 export const HF_VISION_MODEL    = 'Salesforce/blip-image-captioning-base'
 export const OPENAI_CHAT_MODEL  = 'gpt-4o-mini'
-export const GEMINI_CHAT_MODEL  = 'gemini-2.0-flash-lite'
+export const GEMINI_CHAT_MODEL  = 'gemini-2.5-flash'   // verified working on provided key
 
 export type SageMsg = { role: 'system' | 'user' | 'assistant'; content: string }
 
@@ -252,7 +252,8 @@ export async function sageChat(
   const oai = await openaiChat(env.OPENAI_API_KEY, messages, opts)
   if (oai.ok) return { ok: true, text: oai.text, provider: 'openai' }
 
-  return { ok: false, error: `All providers failed. Groq: ${groq.error}. Gemini: ${gemini.error}. OpenAI: ${oai.error}` }
+  const err = (r: { ok: boolean; error?: string }) => (r as { error?: string }).error ?? 'unknown'
+  return { ok: false, error: `All providers failed. Groq: ${err(groq)}. Gemini: ${err(gemini)}. OpenAI: ${err(oai)}` }
 }
 
 // ────────────────────────────────────────────────────────────────────────

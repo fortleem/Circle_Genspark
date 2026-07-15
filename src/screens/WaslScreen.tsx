@@ -1892,7 +1892,7 @@ function ThreadSynopsis({ messages }: { messages: Message[] }) {
     // Heuristic extractive summary: most active sender, top 2 longest non-trivial messages, time span.
     const senders = new Map<string, number>();
     messages.forEach(m => {
-      const k = m.display_name ?? `@${m.handle}` ?? `User ${m.sender_id}`;
+      const k = m.display_name ?? (m.handle ? `@${m.handle}` : `User ${m.sender_id}`);
       senders.set(k, (senders.get(k) ?? 0) + 1);
     });
     const topSender = [...senders.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? "—";

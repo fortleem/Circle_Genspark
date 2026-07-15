@@ -6,6 +6,10 @@ export interface Env {
   DB: D1Database
   HF_API_KEY?: string
   GROQ_API_KEY?: string
+  GEMINI_API_KEY?: string
+  OPENAI_API_KEY?: string
+  OPENREGISTRY_PAT?: string
+  ORIZON_VISA_API_KEY?: string
 }
 
 export async function all<T = any>(db: D1Database, sql: string, ...params: any[]): Promise<T[]> {

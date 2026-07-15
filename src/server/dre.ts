@@ -562,7 +562,7 @@ const NEWS_OVERRIDES: Record<string, NewsSource[]> = {
 const TRANSPORT_OVERRIDES: Record<string, Transportation> = {
   EG: { ride_hail: ['uber','careem','inDriver'], transit_app: ['google_maps','careem','cairo_metro'], bike_scooter: ['rabbit_mobility'], car_rental: ['europcar','hertz','sixt'], domestic_rail: ['enr'], domestic_air: ['egyptair'] },
   SA: { ride_hail: ['uber','careem','inDriver'], transit_app: ['google_maps','riyadh_bus'], bike_scooter: ['rabbit'], car_rental: ['europcar','hertz','sixt'], domestic_rail: ['sra'], domestic_air: ['saudia','flynas'] },
-  AE: { ride_hail: ['uber','careem','inDriver'], transit_app: ['google_maps','s'hail','nol'], bike_scooter: ['lime'], car_rental: ['europcar','hertz','sixt'], domestic_rail: ['rta_metro'], domestic_air: ['emirates','flydubai'] },
+  AE: { ride_hail: ['uber','careem','inDriver'], transit_app: ['google_maps','shail','nol'], bike_scooter: ['lime'], car_rental: ['europcar','hertz','sixt'], domestic_rail: ['rta_metro'], domestic_air: ['emirates','flydubai'] },
   US: { ride_hail: ['uber','lyft'], transit_app: ['google_maps','transit','citymapper'], bike_scooter: ['citi_bike','lime'], car_rental: ['hertz','enterprise','sixt'], domestic_rail: ['amtrak'], domestic_air: ['delta','american','united'] },
   UK: { ride_hail: ['uber','bolt'], transit_app: ['citymapper','tfl_go'], bike_scooter: ['lime'], car_rental: ['europcar','hertz','sixt'], domestic_rail: ['national_rail'], domestic_air: ['british_airways','easyjet'] },
   IN: { ride_hail: ['ola','uber','rapido'], transit_app: ['google_maps','moovit'], bike_scooter: ['bounce','vogo'], car_rental: ['zoomcar','europcar'], domestic_rail: ['irctc'], domestic_air: ['indigo','air_india'] },

@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { CirkleMark } from "@/components/brand/CirkleMark";
+import { CirkleMark } from "@/components/brand/CircleMark";
 import { useApp } from "@/providers/AppProvider";
 import { ui } from "@/lib/uiStrings";
 

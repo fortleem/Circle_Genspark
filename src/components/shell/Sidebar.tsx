@@ -5,7 +5,7 @@ import { NavLink } from "react-router-dom";
 import { ChevronsLeft, ChevronsRight } from "lucide-react";
 import { GROUPED, GROUP_LABELS, type NavGroupKey } from "@/lib/tabs";
 import { useApp } from "@/providers/AppProvider";
-import { CirkleMark } from "@/components/brand/CirkleMark";
+import { CirkleMark } from "@/components/brand/CircleMark";
 
 const STORAGE_KEY = "cirkle.sidebar.collapsed";
 
