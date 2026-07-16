@@ -2,6 +2,30 @@
 
 > A privacy-first, mesh-native, zero-cost super app for the global majority. Distinctive design identity that stands apart from every incumbent (WhatsApp / IG / X / YouTube / Telegram / TikTok).
 
+
+## 🧠 Circle Brain AI — Central Orchestrator (NEW)
+
+Circle Brain (عقل دواير) is the working brain of the platform. Every AI request flows through it:
+
+**Pipeline**: intent classification → module data gathering → memory recall → live web grounding (Gemini google_search) → provider-mesh answer (Groq → Gemini → OpenAI failover) → interaction logging → knowledge distillation (self-learning).
+
+| Endpoint | What it does |
+|---|---|
+| `POST /api/brain/ask` | Ask anything — full orchestration (modules + web + memory) |
+| `POST /api/brain/intent` | Intent-only classification for client routing |
+| `POST /api/brain/web-search` | Live web grounding with cited sources |
+| `GET /api/brain/health` | Live probe of Groq / Gemini / OpenAI / HuggingFace |
+| `GET/POST /api/brain/knowledge` | Self-learned memory (read / teach) |
+| `GET /api/brain/interactions` + `POST …/:id/feedback` | Orchestration log + training feedback |
+| `GET /api/brain/stats` | Learning progress dashboard |
+| `GET /api/region/countries` | All 249 country nodes worldwide |
+| `GET /api/region/node/:cc` | Per-country legal/compliance/payments/emergency node |
+
+- **Frontend**: floating Brain orb (bottom-right) = real conversation UI with web-source citations; AI Core screen shows the live Brain dashboard (provider mesh, learned facts, recent orchestrations).
+- **`/api/sage/chat` is now Brain-powered** — legacy Groq path kept only as failover.
+- **Self-learning**: every exchange distils at most one durable, non-sensitive fact into `brain_knowledge` (D1) and is recalled into future prompts.
+- **Module authority**: payments/emergency/region questions are answered ONLY from Circle's own country-node data — web results can never override them.
+
 ## Project Overview
 
 - **Name**: Cirkle (دواير, *Dawayer*)
