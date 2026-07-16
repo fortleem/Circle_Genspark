@@ -4,14 +4,37 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Bot, Cpu, Database, ShieldCheck, Sparkles, Lock, Activity, Zap,
+  Brain, Globe, BookOpen, MessageSquare, CircleDot,
 } from "lucide-react";
 import { apiGet, apiPost } from "@/lib/api";
 import { ProtoHeader, ProtoFooter } from "@/components/shell/ProtoHeader";
 import { AIConsents } from "@/components/futuristic/AIConsents";
 
+type BrainHealth = {
+  ok: boolean; alive_providers: number; orchestrator: string;
+  providers: Record<string, { configured: boolean; alive: boolean; latency_ms: number | null; detail?: string }>;
+};
+type BrainStats = {
+  interactions: number; knowledge_facts: number; web_grounded: number;
+  avg_latency_ms: number; by_intent: Array<{ intent: string; n: number }>;
+};
+type BrainFact = { id: number; topic: string; fact: string; confidence: number; source: string };
+type BrainInteraction = { id: number; intent: string; module: string; used_web: number; provider: string; question: string; latency_ms: number; created_at: string };
+
 export function AICoreScreen() {
   const [training, setTraining] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [brainHealth, setBrainHealth] = useState<BrainHealth | null>(null);
+  const [brainStats, setBrainStats] = useState<BrainStats | null>(null);
+  const [facts, setFacts] = useState<BrainFact[]>([]);
+  const [interactions, setInteractions] = useState<BrainInteraction[]>([]);
+
+  useEffect(() => {
+    apiGet<BrainStats>("/brain/stats").then(setBrainStats).catch(() => {});
+    apiGet<{ knowledge: BrainFact[] }>("/brain/knowledge").then((d) => setFacts(d.knowledge ?? [])).catch(() => {});
+    apiGet<{ interactions: BrainInteraction[] }>("/brain/interactions").then((d) => setInteractions(d.interactions ?? [])).catch(() => {});
+    apiGet<BrainHealth>("/brain/health").then(setBrainHealth).catch(() => {});
+  }, []);
 
   const load = () => {
     setLoading(true);
@@ -67,6 +90,93 @@ export function AICoreScreen() {
           </div>
         }
       />
+
+      {/* ─── CIRCLE BRAIN — the platform's working brain ─── */}
+      <section id="circle-brain" className="px-5">
+        <div className="rounded-3xl border border-secondary/30 bg-gradient-to-br from-secondary/10 via-background to-primary/10 p-5">
+          <header className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-hero text-primary-foreground flex items-center justify-center">
+                <Brain className="w-6 h-6" />
+              </div>
+              <div>
+                <h2 className="font-display text-lg leading-tight">Circle Brain <span className="text-muted-foreground text-sm">عقل دواير</span></h2>
+                <p className="text-[11px] text-muted-foreground">Central orchestrator · intent routing · live web grounding · self-learning</p>
+              </div>
+            </div>
+            <span className={`inline-flex items-center gap-1.5 text-[10px] px-2.5 py-1 rounded-full font-mono ${brainHealth?.ok ? "bg-emerald-500/15 text-emerald-500" : "bg-muted text-muted-foreground"}`}>
+              <CircleDot className="w-3 h-3" />
+              {brainHealth ? (brainHealth.ok ? "ONLINE" : "DEGRADED") : "…"}
+            </span>
+          </header>
+
+          {/* Provider mesh */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+            {["groq", "gemini", "openai", "huggingface"].map((p) => {
+              const st = brainHealth?.providers?.[p];
+              return (
+                <div key={p} className="rounded-2xl bg-background/60 border border-border p-3">
+                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{p}</div>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <span className={`w-2 h-2 rounded-full ${st?.alive ? "bg-emerald-500" : st?.configured ? "bg-amber-500" : "bg-muted-foreground/40"}`} />
+                    <span className="text-sm font-medium">{st?.alive ? "live" : st?.configured ? "down" : "—"}</span>
+                  </div>
+                  <div className="text-[10px] text-muted-foreground">{st?.latency_ms != null ? `${st.latency_ms}ms` : "probing…"}</div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Learning stats */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+            {[
+              { l: "Interactions", v: brainStats?.interactions ?? "…", i: MessageSquare },
+              { l: "Facts learned", v: brainStats?.knowledge_facts ?? "…", i: BookOpen },
+              { l: "Web-grounded", v: brainStats?.web_grounded ?? "…", i: Globe },
+              { l: "Avg latency", v: brainStats ? `${(brainStats.avg_latency_ms / 1000).toFixed(1)}s` : "…", i: Zap },
+            ].map((s) => (
+              <div key={s.l} className="rounded-2xl bg-background/60 border border-border p-3">
+                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-muted-foreground">
+                  <s.i className="w-3 h-3 text-secondary" />{s.l}
+                </div>
+                <div className="font-display text-xl mt-1">{s.v}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Knowledge memory */}
+          {facts.length > 0 && (
+            <div className="mb-4">
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">What the Brain has learned</div>
+              <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                {facts.slice(0, 8).map((f) => (
+                  <div key={f.id} className="flex items-start gap-2 text-[11px] rounded-xl bg-background/60 border border-border px-3 py-2">
+                    <span className="shrink-0 mt-0.5 text-[9px] px-1.5 py-0.5 rounded-full bg-secondary/15 text-secondary font-mono">{f.topic}</span>
+                    <span className="text-muted-foreground">{f.fact}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Recent orchestrations */}
+          {interactions.length > 0 && (
+            <div>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Recent orchestrations</div>
+              <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                {interactions.slice(0, 6).map((it) => (
+                  <div key={it.id} className="flex items-center gap-2 text-[11px] rounded-xl bg-background/60 border border-border px-3 py-2">
+                    <span className="shrink-0 text-[9px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-mono">{it.intent}</span>
+                    {it.used_web === 1 && <Globe className="w-3 h-3 shrink-0 text-secondary" />}
+                    <span className="truncate text-muted-foreground flex-1">{it.question}</span>
+                    <span className="shrink-0 text-[9px] text-muted-foreground font-mono">{it.provider}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Stat tiles */}
       <div className="px-5 grid grid-cols-2 sm:grid-cols-4 gap-2">
