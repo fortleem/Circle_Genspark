@@ -170,20 +170,20 @@ async function gatherPlatformContext(db: D1Database, intent: BrainIntent): Promi
     switch (intent.intent) {
       case 'trending': {
         const rows = await all(db, `
-          SELECT hashtags, COUNT(*) n FROM midan_posts
+          SELECT hashtags, COUNT(*) n FROM posts
           WHERE hashtags IS NOT NULL AND created_at > datetime('now','-7 day')
           GROUP BY hashtags ORDER BY n DESC LIMIT 8
-        `).catch(() => all(db, `SELECT content, likes FROM midan_posts ORDER BY likes DESC LIMIT 5`))
+        `).catch(() => all(db, `SELECT content, likes FROM posts ORDER BY likes DESC LIMIT 5`))
         return rows.length ? `LIVE MIDAN TRENDS (internal data): ${JSON.stringify(rows).slice(0, 900)}` : null
       }
       case 'platform_stats': {
         const [u, p, v, g] = await Promise.all([
           first<{ n: number }>(db, 'SELECT COUNT(*) n FROM users'),
-          first<{ n: number }>(db, 'SELECT COUNT(*) n FROM midan_posts').catch(() => null),
+          first<{ n: number }>(db, 'SELECT COUNT(*) n FROM posts').catch(() => null),
           first<{ n: number }>(db, 'SELECT COUNT(*) n FROM videos').catch(() => null),
-          first<{ n: number }>(db, 'SELECT COUNT(*) n FROM cirkle_groups').catch(() => null),
+          first<{ n: number }>(db, 'SELECT COUNT(*) n FROM cirkles').catch(() => null),
         ])
-        return `PLATFORM STATS: users=${u?.n ?? 0}, midan_posts=${p?.n ?? 0}, videos=${v?.n ?? 0}, groups=${g?.n ?? 0}`
+        return `PLATFORM STATS: users=${u?.n ?? 0}, midan_posts=${p?.n ?? 0}, videos=${v?.n ?? 0}, cirkles=${g?.n ?? 0}`
       }
       case 'payments':
       case 'region_info': {
