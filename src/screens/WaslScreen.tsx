@@ -10,7 +10,7 @@ import {
   QrCode, FileText, Hash, Clock, Eye, EyeOff, Mail, MessageSquare, Paperclip,
   Volume2, Vibrate, ShieldAlert, ScrollText, Loader2, Check, CheckCheck,
   BarChart3, Heart, Bell, BellOff, BellRing, Pin, LogOut, Send as SendIcon,
-  Globe, AtSign, AlertTriangle, Zap, Upload,
+  Globe, AtSign, AlertTriangle, Zap, Upload, Handshake, CalendarPlus,
 } from "lucide-react";
 import {
   apiGet, apiPost,
@@ -665,6 +665,7 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
   const [showMadrasa, setShowMadrasa] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
+  const [showCommit, setShowCommit] = useState(false);
   const [forwardMsg, setForwardMsg] = useState<Message | null>(null);
 
   const messagesEnd = useRef<HTMLDivElement>(null);
@@ -830,6 +831,13 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
         </div>
         {!isBroadcast && (
           <>
+            <button
+              onClick={() => setShowCommit(true)}
+              className="w-9 h-9 rounded-full hover:bg-muted/60 flex items-center justify-center text-secondary"
+              title="Commit — seal an agreement"
+            >
+              <Handshake className="w-4 h-4" />
+            </button>
             <button
               onClick={() => setShowCall("voice")}
               className="w-9 h-9 rounded-full hover:bg-muted/60 flex items-center justify-center"
@@ -1116,6 +1124,7 @@ function ChatView({ room, onBack }: { room: Room; onBack: () => void }) {
         )}
         {showOptions && <RoomOptionsModal room={room} onClose={() => setShowOptions(false)} />}
         {showAnalytics && <BroadcastAnalyticsModal room={room} onClose={() => setShowAnalytics(false)} />}
+        {showCommit && <CommitModal room={room} onClose={() => setShowCommit(false)} />}
         {forwardMsg && <ForwardModal msg={forwardMsg} room={room} onClose={() => setForwardMsg(null)} />}
       </AnimatePresence>
     </div>
@@ -1830,6 +1839,214 @@ function ForwardModal({ msg, room, onClose }: { msg: Message; room: Room; onClos
 }
 
 /* ─────────────────────────── Modal shell ─────────────────────────── */
+
+/* ─────────────────────────── Commit Service (sealed agreements) ─────────────────────────── */
+
+type WaslCommit = {
+  id: string; room_id: string; proposer_id: number; counterparty_id: number | null;
+  kind: string; title: string; terms: string; amount: number | null; currency: string | null;
+  due_at: string | null; status: "proposed" | "committed" | "declined" | "cancelled" | "fulfilled";
+  seal_hash: string | null; proposed_at: string; committed_at: string | null;
+};
+
+function CommitModal({ room, onClose }: { room: Room; onClose: () => void }) {
+  const [tab, setTab] = useState<"list" | "new">("list");
+  const [commits, setCommits] = useState<WaslCommit[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  // New-commit form
+  const [kind, setKind] = useState("agreement");
+  const [title, setTitle] = useState("");
+  const [terms, setTerms] = useState("");
+  const [amount, setAmount] = useState("");
+  const [currency, setCurrency] = useState("EGP");
+  const [dueAt, setDueAt] = useState("");
+  const [emailFor, setEmailFor] = useState<string | null>(null); // commit id being emailed
+  const [emailTo, setEmailTo] = useState("");
+
+  const load = () => {
+    setLoading(true);
+    apiGet<{ commits: WaslCommit[] }>(`/wasl/commits?room_id=${encodeURIComponent(room.id)}`)
+      .then((d) => setCommits(d.commits ?? []))
+      .catch(() => setCommits([]))
+      .finally(() => setLoading(false));
+  };
+  useEffect(load, [room.id]);
+
+  async function propose() {
+    if (!title.trim() || !terms.trim() || busy) return;
+    setBusy(true);
+    try {
+      await apiPost(`/wasl/rooms/${encodeURIComponent(room.id)}/commits`, {
+        proposer_id: ME, kind, title: title.trim(), terms: terms.trim(),
+        amount: amount ? Number(amount) : null, currency,
+        due_at: dueAt ? dueAt.replace("T", " ") + ":00" : null,
+      });
+      setTitle(""); setTerms(""); setAmount(""); setDueAt("");
+      setTab("list"); load();
+    } catch { /* ignore */ } finally { setBusy(false); }
+  }
+
+  async function respond(id: string, action: "confirm" | "decline" | "cancel" | "fulfil") {
+    if (busy) return;
+    setBusy(true);
+    try { await apiPost(`/wasl/commits/${id}/respond`, { actor_id: ME, action }); load(); }
+    catch { /* ignore */ } finally { setBusy(false); }
+  }
+
+  async function sendEmail(id: string) {
+    if (!emailTo.trim() || busy) return;
+    setBusy(true);
+    try {
+      await apiPost(`/wasl/commits/${id}/email`, { actor_id: ME, to: emailTo.trim() });
+      setEmailFor(null); setEmailTo("");
+    } catch { /* ignore */ } finally { setBusy(false); }
+  }
+
+  const statusStyle: Record<string, string> = {
+    proposed: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
+    committed: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+    declined: "bg-red-500/15 text-red-500",
+    cancelled: "bg-muted text-muted-foreground",
+    fulfilled: "bg-secondary/15 text-secondary",
+  };
+
+  return (
+    <ModalShell onClose={onClose} title="🤝 Commit">
+      <div className="space-y-4">
+        <p className="text-[11px] text-muted-foreground -mt-2">
+          Agree on a price, trade, or deal — press Commit and it's sealed with an immutable hash. Add to calendar or forward to email.
+        </p>
+        <div className="flex gap-2">
+          {(["list", "new"] as const).map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`flex-1 rounded-full py-2 text-xs font-medium transition ${
+                tab === t ? "bg-gradient-hero text-primary-foreground" : "glass"
+              }`}
+            >
+              {t === "list" ? `Agreements (${commits.length})` : "+ New commit"}
+            </button>
+          ))}
+        </div>
+
+        {tab === "new" ? (
+          <div className="space-y-3">
+            <div className="flex gap-1.5 flex-wrap">
+              {["price", "trade", "agreement", "service", "rental"].map((k) => (
+                <button
+                  key={k}
+                  onClick={() => setKind(k)}
+                  className={`px-3 py-1 rounded-full text-[11px] capitalize ${
+                    kind === k ? "bg-secondary text-secondary-foreground" : "glass"
+                  }`}
+                >
+                  {k}
+                </button>
+              ))}
+            </div>
+            <input
+              value={title} onChange={(e) => setTitle(e.target.value)}
+              placeholder="Title — e.g. Sell iPhone 13 128GB"
+              className="w-full rounded-xl bg-muted/40 border border-border px-3 py-2.5 text-sm outline-none focus:border-secondary"
+            />
+            <textarea
+              value={terms} onChange={(e) => setTerms(e.target.value)} rows={3}
+              placeholder="Full terms — what exactly was agreed?"
+              className="w-full rounded-xl bg-muted/40 border border-border px-3 py-2.5 text-sm outline-none focus:border-secondary resize-none"
+            />
+            <div className="flex gap-2">
+              <input
+                value={amount} onChange={(e) => setAmount(e.target.value)} type="number" placeholder="Amount (optional)"
+                className="flex-1 rounded-xl bg-muted/40 border border-border px-3 py-2.5 text-sm outline-none focus:border-secondary"
+              />
+              <select
+                value={currency} onChange={(e) => setCurrency(e.target.value)}
+                className="rounded-xl bg-muted/40 border border-border px-2 py-2.5 text-sm outline-none"
+              >
+                {["EGP", "USD", "EUR", "SAR", "AED", "GBP"].map((c) => <option key={c}>{c}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="text-[10px] uppercase tracking-widest text-muted-foreground">Due / delivery date (optional)</label>
+              <input
+                value={dueAt} onChange={(e) => setDueAt(e.target.value)} type="datetime-local"
+                className="w-full rounded-xl bg-muted/40 border border-border px-3 py-2.5 text-sm outline-none focus:border-secondary"
+              />
+            </div>
+            <button
+              onClick={propose}
+              disabled={!title.trim() || !terms.trim() || busy}
+              className="w-full rounded-full bg-gradient-hero text-primary-foreground py-2.5 text-sm font-medium disabled:opacity-40 flex items-center justify-center gap-1.5"
+            >
+              {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Handshake className="w-4 h-4" />}
+              Propose commit
+            </button>
+          </div>
+        ) : loading ? (
+          <div className="py-8 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground" /></div>
+        ) : commits.length === 0 ? (
+          <div className="py-8 text-center text-xs text-muted-foreground">
+            No agreements in this chat yet. Press "+ New commit" to seal your first deal.
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {commits.map((cm) => (
+              <div key={cm.id} className="rounded-2xl border border-border bg-muted/20 p-3 space-y-2">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium truncate">{cm.title}</div>
+                    <div className="text-[10px] text-muted-foreground capitalize">{cm.kind}{cm.amount ? ` · ${cm.amount.toLocaleString()} ${cm.currency}` : ""}{cm.due_at ? ` · due ${cm.due_at.slice(0, 16)}` : ""}</div>
+                  </div>
+                  <span className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-medium capitalize ${statusStyle[cm.status] ?? "glass"}`}>{cm.status}</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground line-clamp-2">{cm.terms}</p>
+                {cm.seal_hash && (
+                  <div className="flex items-center gap-1.5 text-[10px] text-emerald-600 dark:text-emerald-400 font-mono truncate">
+                    <Lock className="w-3 h-3 shrink-0" /> seal {cm.seal_hash.slice(0, 20)}…
+                  </div>
+                )}
+                <div className="flex flex-wrap gap-1.5">
+                  {cm.status === "proposed" && cm.proposer_id !== ME && (
+                    <>
+                      <button onClick={() => respond(cm.id, "confirm")} className="px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[11px] font-medium">✓ Confirm & seal</button>
+                      <button onClick={() => respond(cm.id, "decline")} className="px-3 py-1 rounded-full bg-red-500/10 text-red-500 text-[11px]">Decline</button>
+                    </>
+                  )}
+                  {cm.status === "proposed" && cm.proposer_id === ME && (
+                    <button onClick={() => respond(cm.id, "cancel")} className="px-3 py-1 rounded-full glass text-[11px]">Cancel</button>
+                  )}
+                  {cm.status === "committed" && (
+                    <button onClick={() => respond(cm.id, "fulfil")} className="px-3 py-1 rounded-full bg-secondary/15 text-secondary text-[11px]">Mark fulfilled</button>
+                  )}
+                  <a
+                    href={`/api/wasl/commits/${cm.id}/calendar.ics`} download
+                    className="px-3 py-1 rounded-full glass text-[11px] flex items-center gap-1"
+                  >
+                    <CalendarPlus className="w-3 h-3" /> Calendar
+                  </a>
+                  <button onClick={() => { setEmailFor(emailFor === cm.id ? null : cm.id); setEmailTo(""); }} className="px-3 py-1 rounded-full glass text-[11px] flex items-center gap-1">
+                    <Mail className="w-3 h-3" /> Email
+                  </button>
+                </div>
+                {emailFor === cm.id && (
+                  <div className="flex gap-1.5">
+                    <input
+                      value={emailTo} onChange={(e) => setEmailTo(e.target.value)} placeholder="name@example.com" type="email"
+                      className="flex-1 rounded-xl bg-muted/40 border border-border px-3 py-1.5 text-xs outline-none focus:border-secondary"
+                    />
+                    <button onClick={() => sendEmail(cm.id)} disabled={!emailTo.trim() || busy} className="px-3 rounded-xl bg-secondary text-secondary-foreground text-xs disabled:opacity-40">Send</button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </ModalShell>
+  );
+}
 
 function ModalShell({ children, onClose, title }: { children: React.ReactNode; onClose: () => void; title: string }) {
   return (
