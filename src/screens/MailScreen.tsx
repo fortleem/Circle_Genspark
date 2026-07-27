@@ -12,7 +12,8 @@ import { motion as motionAlias, AnimatePresence } from "framer-motion";
 import { X, Send as SendArrow, Lock, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 
-const ME = 1;
+import { getMe } from "@/lib/session";
+const ME = getMe();
 
 const FOLDERS = [
   { id: "inbox", icon: Inbox, label: "Inbox" },

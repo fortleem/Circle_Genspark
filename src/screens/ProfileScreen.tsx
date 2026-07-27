@@ -13,7 +13,8 @@ import { TicketWallet } from "@/components/futuristic/TicketWallet";
 import { useApi } from "@/hooks/useApi";
 import { Link } from "react-router-dom";
 
-const ME = 1;
+import { getMe } from "@/lib/session";
+const ME = getMe();
 
 // Mock activity data for heatmap (last 12 weeks)
 const HEATMAP_DATA = Array.from({ length: 84 }, (_, i) => ({

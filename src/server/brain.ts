@@ -22,6 +22,7 @@ import {
 } from './ai'
 import { all, first, run } from './db'
 import { configFor } from './dre'
+import { getCountryNews } from './news'
 
 const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta'
 
@@ -63,7 +64,8 @@ export async function classifyIntent(env: BrainEnv, text: string): Promise<Brain
   const fallback: BrainIntent = { intent: 'chat', module: 'brain', needs_web: false, needs_data: false, lang: 'en', entities: {} }
   const r = await groqChat(env.GROQ_API_KEY, [
     { role: 'system', content: `Classify the user request for Circle super-app routing. Return ONLY JSON:
-{"intent":"chat|search_web|trending|payments|region_info|translate|navigate|emergency|summarize|moderate|platform_stats",
+{"intent":"chat|search_web|trending|news|payments|region_info|translate|navigate|emergency|summarize|moderate|platform_stats",
+ (use "news" when the user asks for news/headlines/what is happening in a country or city)
  "module":"wasl|mashahd|lamahat|midan|pay|madrasa|rihla|shield|verify|mesh|maps|translate|home|brain",
  "needs_web":bool (true if answer requires CURRENT/live info: news, prices, weather, events, sports, recent releases),
  "needs_data":bool (true if it asks about Circle platform content: trends, posts, videos, groups, channels, stats),
@@ -194,7 +196,14 @@ async function gatherPlatformContext(db: D1Database, intent: BrainIntent): Promi
       case 'emergency': {
         const cc = (intent.entities.country ?? 'EG').toUpperCase()
         const cfg = configFor(cc)
-        return `EMERGENCY NUMBERS for ${cfg.country_name}: police=${cfg.emergencyNumbers.police}, ambulance=${cfg.emergencyNumbers.ambulance}, fire=${cfg.emergencyNumbers.fire}`
+        return `EMERGENCY NUMBERS for ${cfg.country_name}: police=${cfg.emergencyNumbers.police}, ambulance=${cfg.emergencyNumbers.ambulance}, fire=${cfg.emergencyNumbers.fire}. PLATFORM: Circle Citizen Emergency Witness — one press starts tamper-evident live video/audio recording (hash-chained, cannot be edited), notifies nearby citizens to confirm; rights violations route to the government oversight channel and can be shared on Midan; medical emergencies can privately alert the user's Family Emergency circle. Guide the user to the Emergency screen (/emergency).`
+      }
+      case 'news': {
+        const cc = (intent.entities.country ?? 'EG').toUpperCase()
+        const news = await getCountryNews(db, cc)
+        if (!news.items.length) return null
+        const head = news.items.slice(0, 8).map((n, i) => `${i + 1}. [${n.source}] ${n.title}`).join('\n')
+        return `LIVE LOCAL HEADLINES for ${cc} (scraped from famous local outlets minutes ago — AUTHORITATIVE, cite these):\n${head}`
       }
       default: return null
     }
@@ -233,7 +242,7 @@ export async function brainAsk(
   // Platform intents (payments/region/emergency/trending/stats) are answered from
   // OUR authoritative country-node data — web search is skipped for them so that
   // external results (e.g. "Circle" the USDC company) can never override our modules.
-  const platformIntent = ['payments', 'region_info', 'emergency', 'trending', 'platform_stats'].includes(intent.intent)
+  const platformIntent = ['payments', 'region_info', 'emergency', 'trending', 'platform_stats', 'news'].includes(intent.intent)
   const [moduleCtx, memories, web] = await Promise.all([
     intent.needs_data || platformIntent
       ? gatherPlatformContext(env.DB, intent) : Promise.resolve(null),

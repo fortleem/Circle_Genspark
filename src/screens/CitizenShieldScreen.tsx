@@ -41,7 +41,8 @@ const STATUS_META: Record<string, { label: string; color: string; icon: any }> =
   closed: { label: "Closed", color: "bg-slate-500/20 text-slate-500", icon: CheckCircle2 },
 };
 
-const ME = 1;
+import { getMe } from "@/lib/session";
+const ME = getMe();
 
 export default function CitizenShieldScreen() {
   const navigate = useNavigate();

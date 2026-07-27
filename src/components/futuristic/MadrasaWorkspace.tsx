@@ -15,7 +15,8 @@ import {
 } from "lucide-react";
 import { apiGet, apiPost } from "@/lib/api";
 
-const ME = 1;
+import { getMe } from "@/lib/session";
+const ME = getMe();
 
 type Tab = "overview" | "classes" | "people" | "schedule" | "assignments" | "grades" | "resources" | "announcements" | "admin";
 

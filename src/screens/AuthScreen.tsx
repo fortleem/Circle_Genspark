@@ -9,6 +9,7 @@ import {
   Smartphone, Globe2, BadgeCheck, Lock, Sparkles, AlertCircle,
 } from "lucide-react";
 import { apiGet, apiPost } from "@/lib/api";
+import { setSession as persistSession } from "@/lib/session";
 import { toast } from "sonner";
 
 type AuthStep = 'choose' | 'register' | 'login' | 'otp' | 'verify-identity' | 'success';
@@ -109,8 +110,7 @@ export function AuthScreen() {
         session_id: session.session_id,
         otp,
       });
-      localStorage.setItem('cirkle-session', session.session_id);
-      localStorage.setItem('cirkle-user', JSON.stringify(res.user));
+      persistSession(session.session_id, res.user);
       toast.success('Welcome to Cirkle!');
       setStep('success');
       setTimeout(() => navigate('/'), 1500);

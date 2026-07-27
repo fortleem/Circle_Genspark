@@ -22,7 +22,8 @@ import { fireShare } from "@/components/shell/ShareSheet";
 import WaslComposerPro from "@/components/futuristic/WaslComposerPro";
 import MadrasaWorkspace from "@/components/futuristic/MadrasaWorkspace";
 
-const ME = 1;
+import { getMe } from "@/lib/session";
+const ME = getMe();
 
 type Kind = "all" | "dm" | "group" | "channel" | "maktab";
 

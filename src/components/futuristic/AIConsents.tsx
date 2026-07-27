@@ -12,7 +12,8 @@ import { Brain, Cpu, Network, Cloud, Check, Sparkles, Loader2 } from "lucide-rea
 import { motion } from "framer-motion"
 import { toast } from "sonner"
 
-const ME = 1
+import { getMe } from "@/lib/session"
+const ME = getMe()
 
 type Tier = "on_device" | "federated" | "cloud"
 

@@ -20,7 +20,8 @@ import {
 import { fireShare } from "@/components/shell/ShareSheet";
 import TheaterPlayer from "@/components/futuristic/TheaterPlayer";
 
-const ME = 1;
+import { getMe } from "@/lib/session";
+const ME = getMe();
 const VIEWER_COUNTRY = "EG"; // derived from IP server-side in production
 
 type Filter = "For you" | "Shorts" | "Live" | "Channels" | "Music" | "Local";

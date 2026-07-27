@@ -12,7 +12,8 @@ import { ShieldCheck, KeyRound, Users, Plus, Check, X, Sparkles, Loader2 } from 
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 
-const ME = 1
+import { getMe } from "@/lib/session"
+const ME = getMe()
 
 // Mock holder pool (in real impl, comes from /contacts endpoint)
 const HOLDER_POOL = [

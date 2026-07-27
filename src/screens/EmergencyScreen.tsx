@@ -13,7 +13,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import { apiGet, apiPost } from "@/lib/api";
 
-const ME = 1;
+import { getMe } from "@/lib/session";
+const ME = getMe();
 
 type EmergencyKind = "fire" | "medical" | "crime" | "rights_violation";
 type RecordMode = "video" | "audio";

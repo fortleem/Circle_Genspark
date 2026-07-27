@@ -16,7 +16,8 @@ import { apiGet, type NotificationCounts } from "@/lib/api";
 import { NotificationsInbox } from "@/components/shell/NotificationsInbox";
 import { MeshStatusChip } from "@/components/shell/MeshStatusChip";
 
-const ME = 1;
+import { getMe } from "@/lib/session";
+const ME = getMe();
 
 export function TopBar() {
   const { theme, toggleTheme, locale, setLocale, allLangs, names, country, setCountry, region } = useApp();

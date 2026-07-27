@@ -11,7 +11,8 @@ import { apiPost } from "@/lib/api"
 import { Hourglass, Lock, Sparkles, X, Calendar } from "lucide-react"
 import { toast } from "sonner"
 
-const ME = 1
+import { getMe } from "@/lib/session"
+const ME = getMe()
 
 const PRESETS: { k: string; label: string; days: number }[] = [
   { k: '1d',  label: 'Tomorrow',   days: 1 },

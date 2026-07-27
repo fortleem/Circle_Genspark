@@ -12,7 +12,8 @@ import { apiGet, apiPost, type Wallet, type Txn } from "@/lib/api";
 import { ProtoHeader, ProtoFooter } from "@/components/shell/ProtoHeader";
 import { toast } from "sonner";
 
-const ME = 1; // Demo current-user id
+import { getMe } from "@/lib/session";
+const ME = getMe();
 
 interface PaymentMethod {
   id: string;

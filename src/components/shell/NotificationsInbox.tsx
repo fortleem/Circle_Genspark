@@ -10,7 +10,8 @@ import {
 } from "lucide-react";
 import { apiGet, apiPost, type Notification, type NotificationCounts } from "@/lib/api";
 
-const ME = 1;
+import { getMe } from "@/lib/session";
+const ME = getMe();
 
 const KIND_META: Record<Notification["kind"], { icon: any; tone: string; label: string }> = {
   wasl:    { icon: MessageCircle, tone: "from-primary/30 to-primary/10",     label: "Chat" },

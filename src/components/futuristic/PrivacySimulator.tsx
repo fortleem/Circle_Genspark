@@ -16,7 +16,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 
-const ME = 1
+import { getMe } from "@/lib/session"
+const ME = getMe()
 
 type ViewerKind = "stranger" | "friend" | "employer" | "advertiser" | "state"
 

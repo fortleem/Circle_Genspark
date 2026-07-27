@@ -10,7 +10,8 @@ import { apiPost } from "@/lib/api"
 import { Flame, Eye, Clock, X, Send } from "lucide-react"
 import { toast } from "sonner"
 
-const ME = 1
+import { getMe } from "@/lib/session"
+const ME = getMe()
 
 const TTL_PRESETS = [10, 30, 60, 300]      // seconds
 const VIEW_PRESETS = [1, 3, 5]              // max views

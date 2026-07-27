@@ -30,7 +30,8 @@ type Destination =
   | { kind: 'wasl'; room_id: string; room_name: string }
   | { kind: 'mail'; to_addr: string }
 
-const ME = 1
+import { getMe } from "@/lib/session"
+const ME = getMe()
 
 export function ShareSheet() {
   const [open, setOpen] = useState(false)

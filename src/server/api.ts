@@ -4,6 +4,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { all, first, run, type Env } from './db'
 import { configFor, planeFor, KNOWN_COUNTRIES } from './dre'
+import { getCountryNews } from './news'
 import { getNames, ALL_LANGS } from './i18n'
 import { groqChat, openaiChat, sageChat, generateSmartReplies, moderateContent, analyzeSoulResonance, hfEmbed, hfVision, SAGE_SYSTEM, pillarContext, GROQ_CHAT_MODEL, GROQ_FAST_MODEL, OPENAI_CHAT_MODEL, type SageMsg } from './ai'
 import { brainAsk, providerHealth, geminiWebSearch, classifyIntent, type BrainEnv } from './brain'
@@ -42,6 +43,23 @@ api.get('/region/countries', (c) => c.json({ count: KNOWN_COUNTRIES.length, coun
 api.get('/region/node/:country', (c) => {
   const cc = c.req.param('country').toUpperCase()
   return c.json({ ...configFor(cc), generated_at: new Date().toISOString() })
+})
+
+// LIVE LOCAL NEWS — scraped from famous local outlets (RSS) + Google News
+// local edition fallback so every one of the 249 country nodes gets real,
+// location-based headlines. Cached in D1 for 15 minutes.
+api.get('/news/:country', async (c) => {
+  const cc = c.req.param('country').toUpperCase()
+  const lang = c.req.query('lang') ?? undefined
+  const result = await getCountryNews(c.env.DB, cc, lang)
+  return c.json(result)
+})
+
+// Convenience: news for the caller's current region (default EG)
+api.get('/news', async (c) => {
+  const cc = (c.req.query('country') ?? 'EG').toUpperCase()
+  const result = await getCountryNews(c.env.DB, cc)
+  return c.json(result)
 })
 
 /* ═══════════════════════════════════════════════════════════════════════════
