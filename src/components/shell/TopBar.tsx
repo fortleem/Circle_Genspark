@@ -1,6 +1,6 @@
 // Cirkle — Sticky glass TopBar with title, locale switch, theme toggle, region,
 // notifications bell with live unread badge + command-palette shortcut hint.
-import { Sun, Moon, Bell, Search, Globe2, Command } from "lucide-react";
+import { Sun, Moon, Bell, Search, Globe2, Command, LogIn, LogOut, UserRound, ShieldCheck } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useApp } from "@/providers/AppProvider";
 import { CirkleMark } from "@/components/brand/CircleMark";
@@ -16,7 +16,7 @@ import { apiGet, type NotificationCounts } from "@/lib/api";
 import { NotificationsInbox } from "@/components/shell/NotificationsInbox";
 import { MeshStatusChip } from "@/components/shell/MeshStatusChip";
 
-import { getMe } from "@/lib/session";
+import { getMe, getUser, getSessionId, isSignedIn, clearSession, onSessionChange, type SessionUser } from "@/lib/session";
 const ME = getMe();
 
 export function TopBar() {
@@ -26,6 +26,24 @@ export function TopBar() {
   const [q, setQ] = useState("");
   const [showInbox, setShowInbox] = useState(false);
   const [counts, setCounts] = useState<NotificationCounts>({ total: 0, unread: 0, high: 0 });
+  const [sessionUser, setSessionUser] = useState<SessionUser | null>(() => (isSignedIn() ? getUser() : null));
+
+  // React live to sign-in / sign-out from anywhere in the app.
+  useEffect(() => {
+    return onSessionChange(() => setSessionUser(isSignedIn() ? getUser() : null));
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      const sid = getSessionId();
+      if (sid) await fetch("/api/auth/logout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ session_id: sid }) });
+    } catch { /* best-effort */ }
+    clearSession();
+    nav("/auth");
+  };
+
+  const initials = (sessionUser?.display_name || sessionUser?.handle || "?")
+    .split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
 
   // Resolve current screen's display title + hint.
   const current = NAV_ITEMS
@@ -182,6 +200,48 @@ export function TopBar() {
               <span className="signal-dot absolute -bottom-0.5 -right-0.5" data-state="mesh" />
             )}
           </button>
+
+          {/* Identity — avatar dropdown when signed in, Sign-in button otherwise */}
+          {sessionUser ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                id="topbar-account"
+                className="w-9 h-9 rounded-full ring-2 ring-secondary/60 hover:ring-secondary bg-muted/60 flex items-center justify-center transition overflow-hidden"
+                aria-label={`Account · ${sessionUser.display_name || sessionUser.handle}`}
+              >
+                <span className="text-[10px] font-mono font-bold">{initials}</span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-60">
+                <DropdownMenuLabel className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-secondary" />
+                  <span className="min-w-0">
+                    <span className="block truncate">{sessionUser.display_name || sessionUser.handle}</span>
+                    <span className="block text-[10px] text-muted-foreground font-mono truncate">@{sessionUser.handle} · verified session</span>
+                  </span>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => nav("/profile")}>
+                  <UserRound className="w-4 h-4 me-2" /> My profile
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => nav("/auth")}>
+                  <ShieldCheck className="w-4 h-4 me-2" /> Identity &amp; security
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
+                  <LogOut className="w-4 h-4 me-2" /> Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <button
+              id="topbar-signin"
+              onClick={() => nav("/auth")}
+              className="h-9 px-3 rounded-full gold-stroke text-[11px] font-semibold uppercase tracking-wide hover:bg-muted/60 flex items-center gap-1.5 transition"
+              aria-label="Sign in"
+            >
+              <LogIn className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Sign in</span>
+            </button>
+          )}
         </div>
       </header>
 
